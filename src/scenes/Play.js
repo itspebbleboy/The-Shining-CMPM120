@@ -1,24 +1,35 @@
 class Play extends Phaser.Scene {
   constructor() {
     super("playScene");
+
+  }
+
+  preload(){
+    //state machine for eye orientation
+    //load images
+    
   }
 
   create(){
-    this.map = [
+    this.hotelMap = [
       [],
       [],
       [],
     ]
-    this.hotel = new Graph(map);
+    this.hotel = new Graph(hotelMap);
+
+    this.hedgeMap = [
+      [],
+      [],
+      [],
+    ]
+    this.hedge = new Graph(hedgeMap);
   }
 
-  preload(){
-    //state machine for the player/camera's orientation
+  update(){
+    //player's location, cardinal direction, & image display
+
     
   }
-  update(){
 
-  }
-
-  
 }
