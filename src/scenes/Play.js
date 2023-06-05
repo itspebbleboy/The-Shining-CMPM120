@@ -65,9 +65,69 @@ class Play extends Phaser.Scene {
       cardDirec: CD.NORTH,
       imageDisplay: currImage,
     }
+    //kinda like an enum but da enum do things
+    this.eyeState = { //in update you do a currEyeState.update();
+      NAMEOFSTATE1: {
+        name: '',
+        enter: () => {
+          //set currEyeState to be this state
+          //do things that happen when you first enter this state
+        },
+        update: () => {
+        //do things u need to do in this state
+        //check for state switch condition
+          //if state switch condition, enter the state
+        },
+      },
+      NAMEOFSTATE2: {
+        name: '',
+        enter: () => {
+          //set currEyeState to be this state
+          //do things that happen when you first enter this state
+        },
+        update: () => {
+        //do things u need to do in this state
+        //check for state switch condition
+          //if state switch condition, enter the state
+        },
+      }
+    }
+    //#region << PAUSE MENU STATE MACHINE EXAMPLE >>
+    /*
+    this.pauseState = { //kinda like an enum but the enum does things
+      RESUMEBUT: {
+          name: 'resumeButton',
+          enter: () => {
+              this.currPauseState = this.pauseState.RESUMEBUT;
+              this.resText.setBackgroundColor(color_pal.grey);
+              //make button less setBackgroundColor
+              console.log('resume enter');
+              this.soundManager.play('sfx_select');
+          },
+          update: () => {
+              if(Phaser.Input.Keyboard.JustDown(keyENTER)){ //if enter is pressed, run resume
+                  console.log("pressed enter while resume");
+                  this.resText.setBackgroundColor(color_pal.black);
+                  //this.resumeScene(this.data.key);
+                  this.resumeScene(this.prevScene, this.input);
+                  //this.scene.resume("playScene");
+              }
+              if(Phaser.Input.Keyboard.JustDown(keyDOWN)){ //if down, change state to VOLSLIDER & enter
+                  //this.currPauseState=this.pauseState.VOLSLIDER;
+                  this.resText.setBackgroundColor(color_pal.black);
+                  this.pauseState.VOLSLIDER.enter();
+              }
+              if(Phaser.Input.Keyboard.JustDown(keyUP)){ //if down, enter RESTARTBUT & 
+                  //this.currPauseState=this.pauseState.VOLSLIDER;
+                  this.resText.setBackgroundColor(color_pal.black);
+                  this.pauseState.RESTARTBUT.enter();
+              }
+          },
+      },
+      */
+    //#endregion
 
-    
-    
+
     
   }
 
