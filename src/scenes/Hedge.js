@@ -1,4 +1,4 @@
-class Play extends Phaser.Scene {
+class Hedge extends Phaser.Scene {
   constructor() {
     super("playScene");
   }
