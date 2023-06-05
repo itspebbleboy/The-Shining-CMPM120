@@ -2,9 +2,9 @@
 const config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
-    width: 800,
-    height: 600,
-    scene: [Play]
+    width: 2048,
+    height: 2048,
+    scene: [testing, Play]
   };
   
   // Create a new Phaser game

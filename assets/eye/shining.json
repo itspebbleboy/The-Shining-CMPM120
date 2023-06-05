@@ -1,0 +1,7 @@
+{"frames":
+{"pupil4":{"frame":{"x":0,"y":0,"w":2048,"h":2048},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":2048,"h":2048},"sourceSize":{"w":2048,"h":2048}},
+"pupil3":{"frame":{"x":0,"y":2049,"w":2048,"h":2048},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":2048,"h":2048},"sourceSize":{"w":2048,"h":2048}},
+"pupil2":{"frame":{"x":2049,"y":0,"w":2048,"h":2048},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":2048,"h":2048},"sourceSize":{"w":2048,"h":2048}},
+"pupil1":{"frame":{"x":2049,"y":2049,"w":2048,"h":2048},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":2048,"h":2048},"sourceSize":{"w":2048,"h":2048}}},
+
+"meta":{"app":"https://www.leshylabs.com/apps/sstool/","version":"Leshy SpriteSheet Tool v0.8.4","image":"pupil","size":{"w":4097,"h":4097},"scale":1}}
