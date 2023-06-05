@@ -5,6 +5,7 @@ const RoomType = {
     DEAD_END: 3,
 };
 
+
 class Graph {
     constructor(scene, map) {
         this.nodes = [];
