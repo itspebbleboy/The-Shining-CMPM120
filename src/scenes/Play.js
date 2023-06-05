@@ -6,6 +6,7 @@ class Play extends Phaser.Scene {
 
   preload(){
     //state machine for eye orientation
+    
     //load images
     const CD ={ 
       NORTH: 0,
@@ -13,9 +14,23 @@ class Play extends Phaser.Scene {
       SOUTH: 2,
       EAST: 3,
     }
+    //#region << HOTEL AND EYE >>
+    // << EYE ELEMENTS >>
+    this.load.atlas('pupil', './assets/eye/pupil.png', './assets/eye/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
+    this.load.image('eye', './assets/eye/eye.png');
+
+    // << HOTEL AREAS >> 
+    this.load.image('deadend', './assets/hotel/deadend.png');
+    this.load.image('door', './assets/hotel/door.png');
+    this.load.image('hallway', './assets/hotel/hallway.png');
+    this.load.image('intersection', './assets/hotel/intersection.png');
+
+    //#endregion
   }
 
   create(){
+  
+    //#region << THE HOTEL MAP >>
     this.hotelMap = [
       [0,0,0,0,0,3,0],
       [0,0,0,3,0,2,0],
@@ -27,27 +42,33 @@ class Play extends Phaser.Scene {
     ]
 
     console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
-
     this.hotel = new Graph(this, this.hotelMap);
+    //#endregion
+    
     /*
+    //#region << THE HEDGE MAZE MAP >>
     this.hedgeMap = [
       [],
       [],
       [],
     ]
     this.hedge = new Graph(this, this.hedgeMap);
+    //#endregion
     */
     this.hotel.displayGraph(this, 100, 100, 100);
 
     //set player's location
     //cardinal direction
     //& image display
+
     this.playerConfig={
       node: this.hotel.getNode(0),
       cardDirec: CD.NORTH,
       imageDisplay: currImage,
     }
 
+    
+    
     
   }
 
