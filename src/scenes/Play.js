@@ -8,6 +8,12 @@ class Play extends Phaser.Scene {
     //state machine for eye orientation
 
     //load images
+    const CD ={ 
+      NORTH: 0,
+      WEST: 1,
+      SOUTH: 2,
+      EAST: 3,
+    }
     //#region << HOTEL AND EYE >>
     // << EYE ELEMENTS >>
     this.load.atlas('pupil', './assets/eye/pupil.png', './assets/eye/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
@@ -25,20 +31,44 @@ class Play extends Phaser.Scene {
   
     //#region << THE HOTEL MAP >>
     this.hotelMap = [
-      [],
-      [],
-      [],
+      [0,0,0,0,0,3,0],
+      [0,0,0,3,0,2,0],
+      [0,3,0,2,0,2,0],
+      [3,1,2,1,2,1,3],
+      [0,2,0,0,0,2,0],
+      [3,1,2,2,2,1,3],
+      [0,3,0,0,0,3,0],
     ]
-    this.hotel = new Graph(hotelMap);
+
+    console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
+    this.hotel = new Graph(this, this.hotelMap);
     //#endregion
+    
+    /*
     //#region << THE HEDGE MAZE MAP >>
     this.hedgeMap = [
       [],
       [],
       [],
     ]
-    this.hedge = new Graph(hedgeMap);
+    this.hedge = new Graph(this, this.hedgeMap);
     //#endregion
+    */
+    this.hotel.displayGraph(this, 100, 100, 100);
+
+    //set player's location
+    //cardinal direction
+    //& image display
+
+    this.playerConfig={
+      node: this.hotel.getNode(0),
+      cardDirec: CD.NORTH,
+      imageDisplay: currImage,
+    }
+
+    
+    
+    
   }
 
   update(){
