@@ -16,7 +16,7 @@ class Play extends Phaser.Scene {
     }
     //#region << HOTEL AND EYE >>
     // << EYE ELEMENTS >>
-    this.load.atlas('pupil', './assets/eye/pupil.png', './assets/eye/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
+    this.load.atlas('pupil_atlas', './assets/eye/pupil.png', './assets/eye/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
 
     // << HOTEL AREAS >> 
     this.load.image('deadend', './assets/hotel/deadend.png');
@@ -56,21 +56,63 @@ class Play extends Phaser.Scene {
     */
     this.hotel.displayGraph(this, 100, 100, 100);
 
+    //#region just some shit for testing 
+    this.add.image(0,0,'hallway').setOrigin(0,0);
+    this.eye = this.add.image(0,0,'pupil_atlas', 'pupil1').setOrigin(0,0); // load eye alone texture
+    this.pupil = this.add.image(0,0,'pupil_atlas', 'pupil_alone').setOrigin(0,0); // load in pupil alone
+
+    this.moveEyeRight();
+    this.moveEyeLeft();
+    this.time.delayedCall(1000, () =>{
+      console.log("what the fuck");
+      this.moveEyeLeft();
+    },null, this);
+    
+   
+    //#endregion
+
     //set player's location
     //cardinal direction
     //& image display
-
+    /*
     this.playerConfig={
       node: this.hotel.getNode(0),
       cardDirec: CD.NORTH,
       imageDisplay: currImage,
     }
+    */
     //kinda like an enum but da enum do things
     this.eyeState = { //in main update() you do a currEyeState.update();
-      NAMEOFSTATE1: {
-        name: '',
+      LEFT: {
+        name: 'left',
         enter: () => {
           //set currEyeState to be this state
+          this.currEyeState = this.eyeState.LEFT; // this or string?
+          //do things that happen when you first enter this state
+
+
+        },
+        update: () => {
+          //do things u need to do in this state
+          //check for state switch condition
+          //if state switch condition, enter the state
+          if(Phaser.Input.Keyboard.JustDown(keyRIght) || Phaser.Input.Keyboard.JustDown(keyD)){
+              console.log("pressed right while in left");
+              // cause states are called in scenes we can assume that the eye will move in update before entering the right state
+              //this.add.image('pupil_atlas', 'pupil')
+              this.moveEyeRight();
+              this.eyeState.RIGHT.enter();  // go to the right scene
+
+          }
+          }
+
+        },
+      RIGHT: {
+        name: 'right',
+        enter: () => {
+          //set currEyeState to be this state
+          this.currEyeState = this.eyeState.RIGHT;
+          
           //do things that happen when you first enter this state
         },
         update: () => {
@@ -79,10 +121,11 @@ class Play extends Phaser.Scene {
           //if state switch condition, enter the state
         },
       },
-      NAMEOFSTATE2: {
-        name: '',
+      FORWARD: {
+        name: 'forward',
         enter: () => {
           //set currEyeState to be this state
+          this.currEyeState = this.eyeState.FORWARD
           //do things that happen when you first enter this state
         },
         update: () => {
@@ -139,11 +182,59 @@ class Play extends Phaser.Scene {
     //moves eye right
     //from state left -> forward
     //or state forward -> right
+    console.log("in eye right");
+    let eyeRight = this.tweens.add({
+      //delay: 125,
+      targets: this.eye,
+      x: 500,
+      ease: 'Linear',
+      duration: 250,
+      repeat: 0,
+      //yoyo: true,
+      //hold: 1650,
+      paused: true
+    });
+    eyeRight.play();
+    //if(this.currEyeState == this.eyeState.LEFT){
+
+    //}
+    //if(this.currEyeState == this.eyeState.FORWARD){
+
+    //}
+    //this.add.image('pupil_atlas', 'pupil');
+    
   }
   moveEyeLeft(){
     //moves eye left
     //from state right -> forward
     //or state forward -> left
+    console.log("in eye left");
+    let eyeLeft = this.tweens.add({
+      //delay: 500,
+      targets: this.eye,
+      x: -500,
+      ease: 'Linear',
+      duration: 250,
+      repeat: 0,
+      //yoyo: true,
+      //hold: 1650,
+      paused: true
+    });
+    eyeLeft.play();
+
+  }
+
+  movePupilLeft(){
+    //moves pupil left
+    //from state right -> forward
+    //or state forward -> left
+
+  }
+
+  movePupilRight(){
+    // moves pupil to the left
+    // from state left ->forward
+    // or state forward ->right
   }
   changeCardinalDirection(currCardDirection, leftOrRIght){
     //given the current cardinal direction & if the movement is towards the left or the right
