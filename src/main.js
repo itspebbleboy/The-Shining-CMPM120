@@ -2,8 +2,8 @@
 const config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
-    width: 800,
-    height: 600,
+    width: 2048,
+    height: 2048,
     scene: [Play]
   };
   

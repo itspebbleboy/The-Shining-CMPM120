@@ -9,8 +9,8 @@ class Graph {
     constructor(scene, map) {
         this.nodes = [];
         this.buildGraph(map);
-        this.numRows = 0;
-        this.numCols = 0;
+        this.numRows = map.length; // Assign the correct value to numRows
+        this.numCols = map[0].length; // Assign the correct value to numCols
     }
 
     addNode(rType, value){
@@ -34,12 +34,11 @@ class Graph {
     }
 
     buildGraph(map) {
-        this.numRows = map.length;
-        this.numCols = map[0].length;
-
+        this.numRows = map.length; // Assign the correct value to numRows
+        this.numCols = map[0].length; // Assign the correct value to numCols
         // Create nodes for each cell in the map
-        for (let row = 0; row < numRows; row++) {
-            for (let col = 0; col < numCols; col++) {
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
                 const rType = map[row][col];
                 const node = this.addNode(rType, 10*col+row);
                 map[row][col] = node;
@@ -47,8 +46,8 @@ class Graph {
         }
 
         // Connect neighboring nodes based on the map
-        for (let row = 0; row < numRows; row++) {
-            for (let col = 0; col < numCols; col++) {
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
                 const currentNode = map[row][col];
 
                 // Check north neighbor
@@ -58,13 +57,13 @@ class Graph {
                 }
 
                 // Check south neighbor
-                if (row < numRows - 1) {
+                if (row < this.numRows - 1) {
                 const neighbor = map[row + 1][col];
                 currentNode.setNeighbor('south', neighbor);
                 }
 
                 // Check east neighbor
-                if (col < numCols - 1) {
+                if (col < this.numCols - 1) {
                 const neighbor = map[row][col + 1];
                 currentNode.setNeighbor('east', neighbor);
                 }
@@ -77,11 +76,69 @@ class Graph {
             }
         }
     }
+    /*
+    displayGraph(scene, startX, startY, tileSize) {
+        // Iterate through the nodes
+
+        for(let i = 0; i<this.numRows; i++){
+
+        }
+        this.nodes.forEach((node, index) => {
+          // Calculate the position of the node on the screen
+          const row = Math.floor(node.value / this.numCols);
+          const col = node.value % this.numCols;
+          const x = startX + tileSize * col;
+          const y = startY + tileSize * row;
+      
+          // Create a Phaser text object to represent the node with index and room type
+          this.currText=`${index}`+" "+ `${node.roomType}`;
+          const text = scene.add.text(x, y, this.currText, {
+            fontSize: "10px",
+            color: "#ffffff",
+            depth: "1",
+          });
+          text.depth =1;
+          console.log("added text: " + `${index} ${node.roomType}`);
+      
+          // Adjust the anchor to align the text properly
+          text.setOrigin(0.5);
+      
+          // Add the text object to the scene
+          scene.add.existing(text);
+        });
+    }*/
+    displayGraph(scene, startX, startY, tileSize) {
+        // Iterate through the rows and columns
+        for (let i = 0; i < this.numRows; i++) {
+          for (let j = 0; j < this.numCols; j++) {
+            // Calculate the index of the node
+            const index = i * this.numCols + j;
+      
+            // Calculate the position of the node on the screzen
+            const x = startX + tileSize * j;
+            const y = startY + tileSize * i;
+      
+            // Create a Phaser text object to represent the node with index and room type
+            const node = this.nodes[index];
+            this.currText= ' [ '+ `${y/100}` + ','+ `${x/100}` + ' ' + ` ${node.roomType}` + ' ] ';
+            const text = scene.add.text(x, y, this.currText, {
+              fontSize: "10px",
+              color: "#ffffff",
+            });
+      
+            // Adjust the anchor to align the text properly
+            text.setOrigin(0.5);
+      
+            // Add the text object to the scene
+            scene.add.existing(text);
+          }
+        }
+      }
 }
 
 class Node {
     constructor(rType, value) {
-        this.value
+        this.value = value;
         this.roomType = rType;
         this.neighbors = {
             north: null,    
