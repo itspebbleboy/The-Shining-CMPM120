@@ -6,12 +6,11 @@ class Play extends Phaser.Scene {
 
   preload(){
     //state machine for eye orientation
-    
+
     //load images
     //#region << HOTEL AND EYE >>
     // << EYE ELEMENTS >>
     this.load.atlas('pupil', './assets/eye/pupil.png', './assets/eye/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
-    this.load.image('eye', './assets/eye/eye.png');
 
     // << HOTEL AREAS >> 
     this.load.image('deadend', './assets/hotel/deadend.png');
