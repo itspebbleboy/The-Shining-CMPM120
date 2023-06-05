@@ -5,10 +5,97 @@ class Play extends Phaser.Scene {
   }
 
   preload(){
+    //#region << DEFINE KEYS >>
+    keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    keyESC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    keyENTER = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    //#endregion
+
+    //#region >> EYE STATE MACHINE >>
     //state machine for eye orientation
+        //kinda like an enum but da enum do things
+        this.eyeState = { //in main update() you do a currEyeState.update();
+          LEFT: {
+            name: 'left',
+            enter: () => {
+              //set currEyeState to be this state
+              console.log("Entered Left");
+              this.currEyeState = this.eyeState.LEFT; 
+              //do things that happen when you first enter this state
+    
+    
+            },
+            update: () => {
+              //do things u need to do in this state
+              //check for state switch condition
+              //if state switch condition, enter the state
+              if(Phaser.Input.Keyboard.JustDown(keyRight) || Phaser.Input.Keyboard.JustDown(keyD)){
+                  console.log("pressed right while in left");
+                  // cause states are called in scenes we can assume that the eye will move in update before entering the right state
+                  //this.add.image('pupil_atlas', 'pupil')
+                  this.moveEyeRight();
+                  this.eyeState.FORWARD.enter();  // go to the right scene
+              }
+    
+            },
+          RIGHT: {
+            name: 'right',
+            enter: () => {
+              //set currEyeState to be this state
+              console.log("Entered right");
+              this.currEyeState = this.eyeState.RIGHT;
+              
+              //do things that happen when you first enter this state
+            },
+            update: () => {
+              //do things u need to do in this state
+              //check for state switch condition
+              //if state switch condition, enter the state
+              if(Phaser.Input.Keyboard.JustDown(keyLeft) || Phaser.Input.Keyboard.JustDown(keyA)){
+                console.log("pressed left while in right");
+                // cause states are called in scenes we can assume that the eye will move in update before entering the right state
+                //this.add.image('pupil_atlas', 'pupil')
+                this.moveEyeLeft();
+                this.eyeState.FORWARD.enter();  // go to the right scene
+              }
+            },
+          },
+          FORWARD: {
+            name: 'forward',
+            enter: () => {
+              console.log("Enter forward");
+              //set currEyeState to be this state
+              this.currEyeState = this.eyeState.FORWARD;
+              //do things that happen when you first enter this state
+            },
+            update: () => {
+            //do things u need to do in this state
+            //check for state switch condition
+              //if state switch condition, enter the state
+              if(Phaser.Input.Keyboard.JustDown(keyRight) || Phaser.Input.Keyboard.JustDown(keyD)){
+                console.log("pressed right while in forward");
+                // cause states are called in scenes we can assume that the eye will move in update before entering the right state
+                //this.add.image('pupil_atlas', 'pupil')
+                this.moveEyeRight();
+                this.eyeState.RIGHT.enter();  // go to the right scene
+    
+              }
+              if(Phaser.Input.Keyboard.JustDown(keyRight) || Phaser.Input.Keyboard.JustDown(keyA)){
+                console.log("pressed left while in forward");
+                this.moveEyeLeft();
+                this.eyeState.LEFT.enter();   // go to the left scene
+              }
+              }
+            },
+          }
+        }
+    //#endregion
 
     //load images
-    const CD ={ 
+    this.CD ={ 
       NORTH: 0,
       WEST: 1,
       SOUTH: 2,
@@ -25,10 +112,14 @@ class Play extends Phaser.Scene {
     this.load.image('intersection', './assets/hotel/intersection.png');
 
     //#endregion
+  
+    //this.eyeState.FORWARD.enter();
+    this.currEyeState=this.eyeState.FORWARD;
   }
 
   create(){
-  
+    
+
     //#region << THE HOTEL MAP >>
     this.hotelMap = [
       [0,0,0,0,0,3,0],
@@ -61,80 +152,20 @@ class Play extends Phaser.Scene {
     this.eye = this.add.image(0,0,'pupil_atlas', 'pupil1').setOrigin(0,0); // load eye alone texture
     this.pupil = this.add.image(0,0,'pupil_atlas', 'pupil_alone').setOrigin(0,0); // load in pupil alone
 
-    this.moveEyeRight();
-    this.moveEyeLeft();
-    this.time.delayedCall(1000, () =>{
-      console.log("what the fuck");
-      this.moveEyeLeft();
-    },null, this);
-    
    
     //#endregion
 
     //set player's location
     //cardinal direction
     //& image display
-    /*
+    
     this.playerConfig={
       node: this.hotel.getNode(0),
-      cardDirec: CD.NORTH,
-      imageDisplay: currImage,
+      cardDirec: this.CD.NORTH,
+      //imageDisplay: currImage,
     }
-    */
-    //kinda like an enum but da enum do things
-    this.eyeState = { //in main update() you do a currEyeState.update();
-      LEFT: {
-        name: 'left',
-        enter: () => {
-          //set currEyeState to be this state
-          this.currEyeState = this.eyeState.LEFT; // this or string?
-          //do things that happen when you first enter this state
+  
 
-
-        },
-        update: () => {
-          //do things u need to do in this state
-          //check for state switch condition
-          //if state switch condition, enter the state
-          if(Phaser.Input.Keyboard.JustDown(keyRIght) || Phaser.Input.Keyboard.JustDown(keyD)){
-              console.log("pressed right while in left");
-              // cause states are called in scenes we can assume that the eye will move in update before entering the right state
-              //this.add.image('pupil_atlas', 'pupil')
-              this.moveEyeRight();
-              this.eyeState.RIGHT.enter();  // go to the right scene
-
-          }
-          }
-
-        },
-      RIGHT: {
-        name: 'right',
-        enter: () => {
-          //set currEyeState to be this state
-          this.currEyeState = this.eyeState.RIGHT;
-          
-          //do things that happen when you first enter this state
-        },
-        update: () => {
-        //do things u need to do in this state
-        //check for state switch condition
-          //if state switch condition, enter the state
-        },
-      },
-      FORWARD: {
-        name: 'forward',
-        enter: () => {
-          //set currEyeState to be this state
-          this.currEyeState = this.eyeState.FORWARD
-          //do things that happen when you first enter this state
-        },
-        update: () => {
-        //do things u need to do in this state
-        //check for state switch condition
-          //if state switch condition, enter the state
-        },
-      }
-    }
     //#region << PAUSE MENU STATE MACHINE EXAMPLE >>
     /*
     this.pauseState = { //kinda like an enum but the enum does things
@@ -176,6 +207,7 @@ class Play extends Phaser.Scene {
 
   update(){
     //player's location, cardinal direction, & image display
+    this.currEyeState.update();
   }
 
   moveEyeRight(){
@@ -188,7 +220,7 @@ class Play extends Phaser.Scene {
       targets: this.eye,
       x: 500,
       ease: 'Linear',
-      duration: 250,
+      duration: 500,
       repeat: 0,
       //yoyo: true,
       //hold: 1650,
@@ -214,7 +246,7 @@ class Play extends Phaser.Scene {
       targets: this.eye,
       x: -500,
       ease: 'Linear',
-      duration: 250,
+      duration: 500,
       repeat: 0,
       //yoyo: true,
       //hold: 1650,
