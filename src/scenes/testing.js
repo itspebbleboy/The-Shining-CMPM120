@@ -7,12 +7,12 @@ class testing extends Phaser.Scene{
     preload(){
         this.load.image('hallway', './assets/hotel/hallway.png');
         this.load.atlas('pupil_atlas', './assets/eye/pupil.png', './assets/eye/shining.json');
-
+  
     }
 
     create(){
         this.add.image(0,0,'hallway').setOrigin(0,0);
-
+        
         this.anims.create({
             key: 'death',
             frames: this.anims.generateFrameNames('pupil_atlas', { 
@@ -20,14 +20,16 @@ class testing extends Phaser.Scene{
                 start: 1, 
                 end: 4, 
             }),
-            frameRate: 10,
+            frameRate: 30,
             repeat: -1
         });
 
-        this.add.image(0,0,'pupil_atlas', 'pupil1').setOrigin(0,0);
+        //this.add.image(0,0,'pupil_atlas', 'pupil1').setOrigin(0,0);
+        this.add.sprite(0,0).play('death').setOrigin(0,0);
+       
     }
 
     update(){
-
+       
     }
 }
