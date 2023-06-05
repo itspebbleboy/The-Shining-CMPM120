@@ -66,7 +66,7 @@ class Play extends Phaser.Scene {
       imageDisplay: currImage,
     }
     //kinda like an enum but da enum do things
-    this.eyeState = { //in update you do a currEyeState.update();
+    this.eyeState = { //in main update() you do a currEyeState.update();
       NAMEOFSTATE1: {
         name: '',
         enter: () => {
