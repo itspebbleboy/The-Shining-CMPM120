@@ -16,7 +16,7 @@ class QTE extends Phaser.Scene {
   }
   preload() {
     this.dialogueList = [
-      "First dialogue",
+      "this is the First line of dialogue omg i'm writing it really long so that hopefully it'll wrap omg will it wrap?",
       "Second dialogue",
       "Third dialogue",
       // Add more dialogues as needed
@@ -27,7 +27,7 @@ class QTE extends Phaser.Scene {
 
   create() {
     this.textCrawlSpeed = 100; // Adjust the speed of the text crawl (time between each character)
-    this.add.image(screen.center.x,screen.center.y,'textBox').setOrigin(0,0);
+    this.textBox = this.add.image(screen.center.x,screen.center.y,'textBox').setOrigin(0.5,0);
     this.startNextDialogue();
   
     // Add event listener for the spacebar key during text crawl and QTE
@@ -105,14 +105,14 @@ class QTE extends Phaser.Scene {
     this.failureText = this.add.text(screen.topMid.x, screen.topMid.y, "You were too slow, you lost!", defaultQTEStyle);
     this.time.delayedCall(2000, () => {
       this.failureText.destroy();
-      
+      /*
       if (this.completedQTEs < this.qteCount) {
         // Start the next QTE
         this.startQTE();
       } else {
         // All QTEs completed, do something else
         console.log("All QTEs completed");
-      }
+      }*/
     });
   }
 
@@ -138,10 +138,21 @@ class QTE extends Phaser.Scene {
     }
   
     const dialogue = this.dialogueList[this.currentIndex];
+
+    const textBoxPaddingX = 50; // Padding in the X direction
+    const textBoxPaddingY = 50; // Padding in the Y direction
   
-    this.textCrawl = this.add.text(screen.botMid.x, screen.botMid.y - 20, "", defaultTextCrawlStyle);
-    this.textCrawl.setOrigin(0, 1);
-    this.textCrawl.setAlign("center");
+    // Calculate the position of the text box
+    const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
+    const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
+  
+    // Calculate the position of the text
+    const textX = textBoxX + textBoxPaddingX;
+    const textY = textBoxY + textBoxPaddingY;
+  
+    this.textCrawl = this.add.text(textX, textY, "", defaultTextCrawlStyle);
+    this.textCrawl.setOrigin(0, 0);
+    this.textCrawl.setWordWrapWidth(this.textBox.width - textBoxPaddingX * 2);
   
     this.currentTextIndex = 0;
     this.textCrawlActive = true; // Set the text crawl state to active
