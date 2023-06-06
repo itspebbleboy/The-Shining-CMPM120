@@ -23,11 +23,19 @@ class QTE extends Phaser.Scene {
     ];
 
     this.load.image('textBox', './assets/ui/textBox.png');
+    //qte images
+    this.load.image('QTE1', './assets/ui/QTE1.png');
+    this.load.image('QTE2', './assets/ui/QTE2.png');
+    this.load.image('QTE3', './assets/ui/QTE3.png');
+    this.load.image('QTE4', './assets/ui/QTE4.png');
+    this.load.image('QTE5', './assets/ui/QTE5.png');
+    this.qteSpriteNames = ['QTE1', 'QTE2', 'QTE3', 'QTE4', 'QTE5'];
+    this.qteSprites = this.add.group();
   }
 
   create() {
     this.textCrawlSpeed = 100; // Adjust the speed of the text crawl (time between each character)
-    this.textBox = this.add.image(screen.center.x,screen.center.y,'textBox').setOrigin(0.5,0);
+    this.textBox = this.add.image(screen.center.x,screen.center.y+400,'textBox').setOrigin(0.5,0);
     this.startNextDialogue();
   
     // Add event listener for the spacebar key during text crawl and QTE
@@ -60,20 +68,35 @@ class QTE extends Phaser.Scene {
   startQTE() {
     // Generate a new random QTE input option
     this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
-
+  
     // Display text
-    this.qteText = this.add.text(screen.topMid.x, screen.topMid.y, "Press " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle);
+    this.qteText = this.add.text(screen.center.x, screen.center.y, "Press " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
     this.qteInProgress = true; // Set the QTE in progress flag to true
     console.log("QTE started!");
-
+  
     // Set up the timer for the QTE
     this.qteTimer = this.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
     console.log("QTE timer started!");
-
+  
     // Update event listener for the new QTE input option
     this.input.keyboard.removeAllListeners(); // Remove all previous event listeners
     this.input.keyboard.on("keydown-" + this.currentQTEInputOption.toUpperCase(), this.handleQTEInput, this);
+  
+    // Calculate the duration for each sprite
+    const spriteDuration = this.qteTimerDuration / this.qteSpriteNames.length;
+  
+    // Create and show each QTE sprite
+    this.qteSpriteNames.forEach((spriteName, index) => {
+      const qteSprite = this.add.sprite(screen.center.x, screen.center.y, spriteName);
+      this.qteSprites.add(qteSprite);
+  
+      // Hide the sprite after the specified duration
+      this.time.delayedCall(spriteDuration * (index + 1), () => {
+        qteSprite.destroy();
+      });
+    });
   }
+  
 
   handleQTEInput(event) {
     // QTE input handling goes here
