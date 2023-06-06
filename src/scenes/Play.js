@@ -154,8 +154,8 @@ class Play extends Phaser.Scene {
 
     //#region just some shit for testing 
     this.add.image(0,0,'hallway').setOrigin(0,0);
-    this.eye = this.add.image(game.config.width / 2, game.config.height / 2, 'pupil_atlas', 'pupil1').setScale(0.5);
-    this.pupil = this.add.image(game.config.width / 2, game.config.height / 2, 'pupil_atlas', 'pupil_alone').setScale(0.5);
+    this.eye = this.add.image(screen.center.x, screen.center.y, 'pupil_atlas', 'pupil1').setScale(0.5);
+    this.pupil = this.add.image(screen.center.x, screen.center.y, 'pupil_atlas', 'pupil_alone').setScale(0.5);
 
     // Adjust the anchor point of the sprites to the center
     this.eye.setOrigin(0.5);
