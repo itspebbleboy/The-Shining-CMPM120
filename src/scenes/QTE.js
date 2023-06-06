@@ -16,13 +16,24 @@ class QTE extends Phaser.Scene {
   }
   preload() {
     this.dialogueList = [
-      "First dialogue",
+      "this is the First line of dialogue omg i'm writing it really long so that hopefully it'll wrap omg will it wrap?",
       "Second dialogue",
       "Third dialogue",
       // Add more dialogues as needed
     ];
     this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
     this.load.image('textBox', './assets/ui/textBox.png');
+    //qte images
+
+    this.load.image('deathText', './assets/ui/deathText.png');
+    this.load.image('restartText', './assets/ui/restartText.png');
+
+    this.load.image('QTE1', './assets/ui/QTE.png');
+    this.load.image('QTE2', './assets/ui/QTE.png');
+    this.load.image('QTE3', './assets/ui/QTE.png');
+    this.load.image('QTE4', './assets/ui/QTE.png');
+    this.load.image('QTE5', './assets/ui/QTE.png');
+
   }
 
   create() {
@@ -40,7 +51,7 @@ class QTE extends Phaser.Scene {
   });
 
     this.textCrawlSpeed = 100; // Adjust the speed of the text crawl (time between each character)
-    this.add.image(screen.center.x,screen.center.y,'textBox').setOrigin(0,0);
+    this.textBox = this.add.image(screen.center.x,screen.center.y+400,'textBox').setOrigin(0.5,0);
     this.startNextDialogue();
   
     // Add event listener for the spacebar key during text crawl and QTE
@@ -75,13 +86,22 @@ class QTE extends Phaser.Scene {
     this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
 
     // Display text
-    this.qteText = this.add.text(screen.topMid.x, screen.topMid.y, "Press " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle);
-    this.qteInProgress = true; // Set the QTE in progress flag to true
-    console.log("QTE started!");
+    const qteSprite = this.add.sprite(screen.center.x, screen.center.y, 'qteSpritesheet');
+    const numFrames = qteSprite.anims.currentAnim.frames.length;
+    const frameRate = numFrames / (this.qteTimerDuration / 1000); // Calculate the frame rate based on the number of frames and QTE duration
+    qteSprite.anims.play('qteAnimation', true).setFrameRate(frameRate);
+    this.qteSprites.add(qteSprite);
 
-    // Set up the timer for the QTE
-    this.qteTimer = this.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
-    console.log("QTE timer started!");
+    // Show the death text after the QTE duration
+    this.time.delayedCall(this.qteTimerDuration, () => {
+      this.deathText = this.add.image(screen.center.x, screen.center.y, 'deathText');
+    });
+
+    // Show the restart text after a delay
+    const restartDelay = this.qteTimerDuration + 1000; // Add a delay of 1 second after the QTE duration
+    this.time.delayedCall(restartDelay, () => {
+      this.restartText = this.add.image(screen.center.x, screen.center.y, 'restartText');
+    });
 
     // Update event listener for the new QTE input option
     this.input.keyboard.removeAllListeners(); // Remove all previous event listeners
@@ -106,6 +126,9 @@ class QTE extends Phaser.Scene {
         console.log("All QTEs completed");
       }
     }
+    if (this.completedQTEs === this.qteCount) {
+      this.completionText = this.add.text(screen.center.x, screen.center.y, 'All QTEs are completed!', { font: '24px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    }
   }
 
   handleQTEFailure() {
@@ -118,14 +141,14 @@ class QTE extends Phaser.Scene {
     this.failureText = this.add.text(screen.topMid.x, screen.topMid.y, "You were too slow, you lost!", defaultQTEStyle);
     this.time.delayedCall(2000, () => {
       this.failureText.destroy();
-      
+      /*
       if (this.completedQTEs < this.qteCount) {
         // Start the next QTE
         this.startQTE();
       } else {
         // All QTEs completed, do something else
         console.log("All QTEs completed");
-      }
+      }*/
     });
   }
 
@@ -151,10 +174,21 @@ class QTE extends Phaser.Scene {
     }
   
     const dialogue = this.dialogueList[this.currentIndex];
+
+    const textBoxPaddingX = 50; // Padding in the X direction
+    const textBoxPaddingY = 50; // Padding in the Y direction
   
-    this.textCrawl = this.add.text(screen.botMid.x, screen.botMid.y - 20, "", defaultTextCrawlStyle);
-    this.textCrawl.setOrigin(0, 1);
-    this.textCrawl.setAlign("center");
+    // Calculate the position of the text box
+    const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
+    const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
+  
+    // Calculate the position of the text
+    const textX = textBoxX + textBoxPaddingX;
+    const textY = textBoxY + textBoxPaddingY;
+  
+    this.textCrawl = this.add.text(textX, textY, "", defaultTextCrawlStyle);
+    this.textCrawl.setOrigin(0, 0);
+    this.textCrawl.setWordWrapWidth(this.textBox.width - textBoxPaddingX * 2);
   
     this.currentTextIndex = 0;
     this.textCrawlActive = true; // Set the text crawl state to active

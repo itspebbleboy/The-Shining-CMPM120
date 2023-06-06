@@ -92,10 +92,10 @@ let headerConfig = {
 // menu text configuration
 let defaultTextCrawlStyle = {
   fontFamily: 'Helvetica',
-  fontSize: '50px',
+  fontSize: '70px',
   color: color_pal.white,
   align: 'left',
-  padding: 5,
+  padding: 20,
   fixedWidth: 0,
 }
 
