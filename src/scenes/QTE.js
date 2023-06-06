@@ -22,12 +22,12 @@ class QTE extends Phaser.Scene {
       // Add more dialogues as needed
     ];
 
-    this.load.image('textBox', './assets/ui/textBox.png')
+    this.load.image('textBox', './assets/ui/textBox.png');
   }
 
   create() {
     this.textCrawlSpeed = 100; // Adjust the speed of the text crawl (time between each character)
-    this.add.image(screen.center.x,screen.center.y,)
+    this.add.image(screen.center.x,screen.center.y,'textBox').setOrigin(0,0);
     this.startNextDialogue();
   
     // Add event listener for the spacebar key during text crawl and QTE
