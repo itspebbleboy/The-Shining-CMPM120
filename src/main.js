@@ -1,6 +1,6 @@
 ﻿// Define the configuration object
 const config = {
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,
     parent: 'phaser-example',
     width: 2048,
     height: 2048,
@@ -10,7 +10,7 @@ const config = {
   // Create a new Phaser game
 const game = new Phaser.Game(config);
 
-let keyW, keyA, keyS, keyD, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER;
+let keyW, keyA, keyS, keyD, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER, keySPACE;
 
 let screen = {
   center: { 

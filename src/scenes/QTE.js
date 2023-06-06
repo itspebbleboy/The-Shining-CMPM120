@@ -21,7 +21,7 @@ class QTE extends Phaser.Scene {
       "Third dialogue",
       // Add more dialogues as needed
     ];
-
+    this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
     this.load.image('textBox', './assets/ui/textBox.png');
     //qte images
 
@@ -37,6 +37,19 @@ class QTE extends Phaser.Scene {
   }
 
   create() {
+
+    this.anims.create({
+      key: 'gameoverScreen',
+      frames: this.anims.generateFrameNames('shining_atlas', { 
+          prefix: "gameover",
+          start: 1, 
+          end: 5, 
+      }),
+      frameRate: 20,  // change as needed
+      //repeat: -1
+      
+  });
+
     this.textCrawlSpeed = 100; // Adjust the speed of the text crawl (time between each character)
     this.textBox = this.add.image(screen.center.x,screen.center.y+400,'textBox').setOrigin(0.5,0);
     this.startNextDialogue();
