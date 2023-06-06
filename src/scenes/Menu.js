@@ -4,7 +4,7 @@ class Menu extends Phaser.Scene {
     }
 
     preload(){
-        //#region << EXCESSIVE KEYS >>
+        //#region << EXCESSIVE AMOUNT OF KEYS >>
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
