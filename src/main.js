@@ -4,12 +4,11 @@ const config = {
     parent: 'phaser-example',
     width: 2048,
     height: 2048,
-    scene: [Play, testing]
     scene: [QTE, testing, Play]
   };
   
   // Create a new Phaser game
-  const game = new Phaser.Game(config);
+const game = new Phaser.Game(config);
 
   let keyW, keyA, keyS, keyD, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER;
 
@@ -110,3 +109,4 @@ let defaultQTEStyle = {
   fixedWidth: 0,
 }
 //#endregion
+
