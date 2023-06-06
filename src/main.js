@@ -4,13 +4,13 @@ const config = {
     parent: 'phaser-example',
     width: 2048,
     height: 2048,
-    scene: [QTE, testing, Play]
+    scene: [Menu, QTE, testing, Play]
   };
   
   // Create a new Phaser game
 const game = new Phaser.Game(config);
 
-let keyE, keyD, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER;
+let keyW, keyA, keyS, keyD, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER;
 
 let screen = {
   center: { 
@@ -86,7 +86,7 @@ let headerConfig = {
       left: 5,
       right: 5
   },
-  fixedWidth: 100
+  fixedWidth: 0
 }
 
 // menu text configuration
