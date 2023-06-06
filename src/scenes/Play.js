@@ -172,46 +172,7 @@ class Play extends Phaser.Scene {
       node: this.hotel.getNode(0),
       cardDirec: this.CD.NORTH,
       //imageDisplay: currImage,
-    }
-  
-
-    //#region << PAUSE MENU STATE MACHINE EXAMPLE >>
-    /*
-    this.pauseState = { //kinda like an enum but the enum does things
-      RESUMEBUT: {
-          name: 'resumeButton',
-          enter: () => {
-              this.currPauseState = this.pauseState.RESUMEBUT;
-              this.resText.setBackgroundColor(color_pal.grey);
-              //make button less setBackgroundColor
-              console.log('resume enter');
-              this.soundManager.play('sfx_select');
-          },
-          update: () => {
-              if(Phaser.Input.Keyboard.JustDown(keyENTER)){ //if enter is pressed, run resume
-                  console.log("pressed enter while resume");
-                  this.resText.setBackgroundColor(color_pal.black);
-                  //this.resumeScene(this.data.key);
-                  this.resumeScene(this.prevScene, this.input);
-                  //this.scene.resume("playScene");
-              }
-              if(Phaser.Input.Keyboard.JustDown(keyDOWN)){ //if down, change state to VOLSLIDER & enter
-                  //this.currPauseState=this.pauseState.VOLSLIDER;
-                  this.resText.setBackgroundColor(color_pal.black);
-                  this.pauseState.VOLSLIDER.enter();
-              }
-              if(Phaser.Input.Keyboard.JustDown(keyUP)){ //if down, enter RESTARTBUT & 
-                  //this.currPauseState=this.pauseState.VOLSLIDER;
-                  this.resText.setBackgroundColor(color_pal.black);
-                  this.pauseState.RESTARTBUT.enter();
-              }
-          },
-      },
-      */
-    //#endregion
-
-
-    
+    }    
   }
 
   update(){
