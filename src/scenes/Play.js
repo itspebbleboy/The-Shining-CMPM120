@@ -7,10 +7,10 @@ class Play extends Phaser.Scene {
     this.pupilDelta = 750;
     this.wholeEyeDuration = 300;
     this.CD ={ 
-      NORTH: 0,
-      WEST: 1,
-      SOUTH: 2,
-      EAST: 3,
+      NORTH: 'north',
+      WEST: 'west',
+      SOUTH: 'south',
+      EAST: 'east',
     }
 
     this.cooldownDuration = 200; // Cooldown duration in milliseconds (0.2 seconds)
@@ -56,6 +56,8 @@ class Play extends Phaser.Scene {
           if(this.space()){ //if space is pressed change the cardinal direction based on current position
             this.changeCardinalDirection(this.playerConfig.cardDirec, this.leftOrRight = 0);
             this.displayImage(this.playerConfig.cardDirec);
+            this.moveEyeRight();
+            this.eyeState.FORWARD.enter();
             // NEED TO ADD : change eye state & move back to middle & update state to forward
           }
         },
@@ -72,6 +74,8 @@ class Play extends Phaser.Scene {
           if(this.space()){//if space is pressed change the cardinal direction based on current position
             this.changeCardinalDirection(this.playerConfig.cardDirec, this.leftOrRight = 1);
             this.displayImage(this.playerConfig.cardDirec);
+            this.moveEyeLeft();
+            this.eyeState.FORWARD.enter();
             // NEED TO ADD : change eye state & move back to middle & update state to forward
           }
         },
@@ -110,7 +114,9 @@ class Play extends Phaser.Scene {
       [0,3,0,0,0,3,0],
     ]
     console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
-    this.hotel = new Graph(this, this.hotelMap);
+    this.hotel = new Graph();
+    this.hotel.buildGraph(this.hotelMap);
+    this.hotel.printGraph();
     //#endregion
 
     //#region <<SPACE BAR TIMER >>
@@ -133,7 +139,7 @@ class Play extends Phaser.Scene {
     */
     //#endregion
 
-    this.hotel.displayGraph(this, 100, 100, 100);
+    //this.hotel.displayGraph(this, 100, 100, 100);
 
     //#region << IMAGES FOR TESTING >>
     this.add.image(0,0,'hallway').setOrigin(0,0);
@@ -142,10 +148,13 @@ class Play extends Phaser.Scene {
 
     this.eye.setOrigin(0.5); // Adjust the anchor point of the sprites to the center
     this.pupil.setOrigin(0.5);
+
+    this.eye.setDepth(2);
+    this.pupil.setDepth(2);
     //#endregion
 
     this.playerConfig={
-      node: this.hotel.getNode(6), //set player's location
+      node: this.hotel.getNode(0,5), //set player's location
       cardDirec: this.CD.SOUTH, //cardinal direction
       //imageDisplay: currImage, //& image display
     }
@@ -231,7 +240,7 @@ class Play extends Phaser.Scene {
   
   //#region << INPUT READERS >>
   space() {//returns true if space bar
-    if (Phaser.Input.Keyboard.JustDown(keySPACE) /*&& this.spaceCooldownEvent.getElapsed() === 0*/) {
+    if (Phaser.Input.Keyboard.JustDown(keySPACE) && !this.stateCooldown/*&& this.spaceCooldownEvent.getElapsed() === 0*/) {
       //this.spaceCooldownEvent.reset({ delay: this.cooldownDuration });
       return true;
     }
@@ -258,6 +267,8 @@ class Play extends Phaser.Scene {
     if(this.currEyeState == this.eyeState.FORWARD && keySPACE.isDown) // if forward and the "SPACE" UPDATE PLAYER LOCATION
     {
       console.log("move forward");
+      this.movePlayer();
+      this.displayImage();
     }
 
     if(this.currEyeState == this.eyeState.LEFT && keyRIGHT.isDown) //if left & "->" go forward
@@ -278,26 +289,31 @@ class Play extends Phaser.Scene {
 
 
   //#region << IMAGE DISPLAY >>
-  displayImage(currDir){
-    this.currRoomType = this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.currCardDirection);
+  displayImage(){
+    this.currRoomType = this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
     if(this.currImage){
       this.prevImage = this.currImage; 
     }
     console.log("currRoomType: " + this.currRoomType);
     switch(this.currRoomType){
+      case null:
+        console.log("roomtype = null  :((((");
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
+        break;
       case 0: //EMPTY (door)
-        this.currImage = this.add.image(screen.center.x, screen,center.y, 'door');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
         break;
       case 1: //INTER
-        this.currImage = this.add.image(screen.center.x, screen,center.y, 'intersection');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
         break;
       case 2: //HALLWAY
-        this.currImage = this.add.image(screen.center.x, screen,center.y, 'hallway');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway');
         break;
       case 3: //DEAD_END
-        this.currImage = this.add.image(screen.center.x, screen,center.y, 'deadend');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
         break;
     }
+    this.currImage.setDepth(0);
     if(this.prevImage){
       this.prevImage.destroy();
     }
@@ -305,8 +321,8 @@ class Play extends Phaser.Scene {
   //#endregion
 
   //#region << PLAYER HELPER FUNCTIONS >>
-  movePlayer(currDir){
-    //this.playerConfig.node=this.playerConfig.currDir
+  movePlayer(){
+    this.playerConfig.node=this.hotel.getNeighborInDirection(this.playerConfig.node, this.playerConfig.cardDirec)
   }
   
   
