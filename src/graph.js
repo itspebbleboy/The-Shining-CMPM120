@@ -5,6 +5,7 @@ const RoomType = {
     DEAD_END: 3,
 };
 
+
 class Graph {
     constructor(scene, map) {
         this.nodes = [];
@@ -121,10 +122,7 @@ class Graph {
             // Create a Phaser text object to represent the node with index and room type
             const node = this.nodes[index];
             this.currText= ' [ '+ `${y/100}` + ','+ `${x/100}` + ' ' + ` ${node.roomType}` + ' ] ';
-            const text = scene.add.text(x, y, this.currText, {
-              fontSize: "10px",
-              color: "#ffffff",
-            });
+            const text = scene.add.text(x, y, this.currText, headerConfig);
       
             // Adjust the anchor to align the text properly
             text.setOrigin(0.5);

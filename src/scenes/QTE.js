@@ -53,7 +53,6 @@ class QTE extends Phaser.Scene {
         }
       }
     });
-
     this.input.keyboard.on("keydown-SHIFT", () => {
       this.fastForward = true;
     });
