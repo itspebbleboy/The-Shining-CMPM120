@@ -5,6 +5,7 @@ class Play extends Phaser.Scene {
   }
 
   preload(){
+
     //#region << DEFINE KEYS >>
     keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
@@ -18,6 +19,22 @@ class Play extends Phaser.Scene {
     keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     //#endregion
 
+    //load images
+    this.CD ={ 
+        NORTH: 0,
+        WEST: 1,
+        SOUTH: 2,
+        EAST: 3,
+    }
+    //set player's location
+    //cardinal direction
+    //& image display
+    this.playerConfig={
+      node: this.hotel.getNode(0),
+      cardDirec: this.CD.NORTH,
+      //imageDisplay: currImage,
+    }    
+
     //#region >> EYE STATE MACHINE >>
     //state machine for eye orientation
     //kinda like an enum but da enum do things
@@ -29,7 +46,27 @@ class Play extends Phaser.Scene {
           console.log("Entered Left");
           this.currEyeState = this.eyeState.LEFT; 
           //do things that happen when you first enter this state
-
+          // upon entering LEFT the cardinal direction must change 
+          // if N -> W
+          if(this.playerConfig.cardDirec == this.CD.NORTH){
+              console.log("I am now West");
+              this.playerConfig.cardDirec = this.CD.WEST;
+          }
+          // if W -> S
+          if(this.playerConfig.cardDirec == this.CD.WEST){
+            console.log("I am now south");
+            this.playerConfig.cardDirec = this.CD.SOUTH;
+          }
+          // if S -> E
+          if(this.playerConfig.cardDirec == this.CD.SOUTH){
+            console.log("I am now East");
+            this.playerConfig.cardDirec = this.CD.EAST;
+          }
+          // if E -> N
+          if(this.playerConfig.cardDirec == this.CD.EAST){
+            console.log("I am now North");
+            this.playerConfig.cardDirec = this.CD.NORTH;
+          }
 
         },
         update: () => {
@@ -39,11 +76,13 @@ class Play extends Phaser.Scene {
           if(keyRIGHT.isDown || keyD.isDown){
               console.log("pressed right while in left");
               // cause states are called in scenes we can assume that the eye will move in update before entering the right state
-              //this.add.image('pupil_atlas', 'pupil')
               this.moveEyeRight();
               this.eyeState.FORWARD.enter();  // go to the right scene
           }
-
+          // if space is hit IMAGE CHANGES but LOCATION REMAINS -> cardinal direction changes from entering LEFT
+          if(keySPACE.isDown){  
+              console.log("hi hi im flipping a new leaf woahhhhh");
+          }
         },
       },
       RIGHT: {
@@ -52,8 +91,28 @@ class Play extends Phaser.Scene {
           //set currEyeState to be this state
           console.log("Entered right");
           this.currEyeState = this.eyeState.RIGHT;
-          
           //do things that happen when you first enter this state
+          // upon entering RIGHT the cardinal direction must change
+          // if N -> E
+          if(this.playerConfig.cardDirec == this.CD.NORTH){
+            console.log("I am now East");
+            this.playerConfig.cardDirec = this.CD.EAST;
+          }
+          // if E -> S
+          if(this.playerConfig.cardDirec == this.CD.EAST){
+            console.log("I am now south");
+            this.playerConfig.cardDirec = this.CD.SOUTH;
+          }
+          // if S -> W
+          if(this.playerConfig.cardDirec == this.CD.SOUTH){
+            console.log("I am now West");
+            this.playerConfig.cardDirec = this.CD.WEST;
+          }
+          // if W -> N
+          if(this.playerConfig.cardDirec == this.CD.WEST){
+            console.log("I am now North");
+            this.playerConfig.cardDirec = this.CD.NORTH;
+          }
         },
         update: () => {
           //do things u need to do in this state
@@ -66,6 +125,7 @@ class Play extends Phaser.Scene {
             this.moveEyeLeft();
             this.eyeState.FORWARD.enter();  // go to the right scene
           }
+          // if space is hit IMAGE CHANGES but LOCATION REMAINS -> cardinal direction changes from entering RIGHT
         },
       },
       FORWARD: {
@@ -77,8 +137,8 @@ class Play extends Phaser.Scene {
           //do things that happen when you first enter this state
         },
         update: () => {
-        //do things u need to do in this state
-        //check for state switch condition
+          //do things u need to do in this state
+          //check for state switch condition
           //if state switch condition, enter the state
           if(keyRIGHT.isDown || keyD.isDown){
             console.log()
@@ -94,18 +154,14 @@ class Play extends Phaser.Scene {
             this.moveEyeLeft();
             this.eyeState.LEFT.enter();   // go to the left scene
           }
+          // if space is hit then move DIRECTIONALLY forward and IMAGE CHANGE -> cardinal direction remains the same
+
         }
       },
     }
     //#endregion
 
-    //load images
-    this.CD ={ 
-      NORTH: 0,
-      WEST: 1,
-      SOUTH: 2,
-      EAST: 3,
-    }
+
     //#region << HOTEL AND EYE >>
     // << EYE ELEMENTS >>
     this.load.atlas('pupil_atlas', './assets/eye/pupil.png', './assets/eye/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
@@ -164,15 +220,6 @@ class Play extends Phaser.Scene {
    
     //#endregion
 
-    //set player's location
-    //cardinal direction
-    //& image display
-    
-    this.playerConfig={
-      node: this.hotel.getNode(0),
-      cardDirec: this.CD.NORTH,
-      //imageDisplay: currImage,
-    }    
   }
 
   update(){
