@@ -12,6 +12,10 @@ class Play extends Phaser.Scene {
     keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     keyESC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     keyENTER = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     //#endregion
 
     //#region >> EYE STATE MACHINE >>
@@ -32,7 +36,7 @@ class Play extends Phaser.Scene {
           //do things u need to do in this state
           //check for state switch condition
           //if state switch condition, enter the state
-          if(Phaser.Input.Keyboard.JustDown(keyRight) || Phaser.Input.Keyboard.JustDown(keyD)){
+          if(keyRIGHT.isDown || keyD.isDown){
               console.log("pressed right while in left");
               // cause states are called in scenes we can assume that the eye will move in update before entering the right state
               //this.add.image('pupil_atlas', 'pupil')
@@ -55,7 +59,7 @@ class Play extends Phaser.Scene {
           //do things u need to do in this state
           //check for state switch condition
           //if state switch condition, enter the state
-          if(Phaser.Input.Keyboard.JustDown(keyLeft) || Phaser.Input.Keyboard.JustDown(keyA)){
+          if(keyLEFT.isDown || keyA.isDown){
             console.log("pressed left while in right");
             // cause states are called in scenes we can assume that the eye will move in update before entering the right state
             //this.add.image('pupil_atlas', 'pupil')
@@ -76,7 +80,8 @@ class Play extends Phaser.Scene {
         //do things u need to do in this state
         //check for state switch condition
           //if state switch condition, enter the state
-          if(Phaser.Input.Keyboard.JustDown(keyRight) || Phaser.Input.Keyboard.JustDown(keyD)){
+          if(keyRIGHT.isDown || keyD.isDown){
+            console.log()
             console.log("pressed right while in forward");
             // cause states are called in scenes we can assume that the eye will move in update before entering the right state
             //this.add.image('pupil_atlas', 'pupil')
@@ -84,7 +89,7 @@ class Play extends Phaser.Scene {
             this.eyeState.RIGHT.enter();  // go to the right scene
 
           }
-          if(Phaser.Input.Keyboard.JustDown(keyRight) || Phaser.Input.Keyboard.JustDown(keyA)){
+          if(keyLEFT.isDown || keyA.isDown){
             console.log("pressed left while in forward");
             this.moveEyeLeft();
             this.eyeState.LEFT.enter();   // go to the left scene
@@ -149,8 +154,12 @@ class Play extends Phaser.Scene {
 
     //#region just some shit for testing 
     this.add.image(0,0,'hallway').setOrigin(0,0);
-    this.eye = this.add.image(0,0,'pupil_atlas', 'pupil1').setOrigin(0,0); // load eye alone texture
-    this.pupil = this.add.image(0,0,'pupil_atlas', 'pupil_alone').setOrigin(0,0); // load in pupil alone
+    this.eye = this.add.image(game.config.width / 2, game.config.height / 2, 'pupil_atlas', 'pupil1').setScale(0.5);
+    this.pupil = this.add.image(game.config.width / 2, game.config.height / 2, 'pupil_atlas', 'pupil_alone').setScale(0.5);
+
+    // Adjust the anchor point of the sprites to the center
+    this.eye.setOrigin(0.5);
+    this.pupil.setOrigin(0.5);
 
    
     //#endregion
@@ -214,19 +223,26 @@ class Play extends Phaser.Scene {
     //moves eye right
     //from state left -> forward
     //or state forward -> right
-    console.log("in eye right");
+   // console.log("in eye right");
     let eyeRight = this.tweens.add({
-      //delay: 125,
       targets: this.eye,
-      x: 500,
+      x: this.eye.x+=600,
       ease: 'Linear',
-      duration: 500,
+      duration: 10,
       repeat: 0,
-      //yoyo: true,
-      //hold: 1650,
       paused: true
     });
+    let pupilRight = this.tweens.add({
+      delay:100,
+      targets: this.pupil,
+      x: this.pupil.x +=750,
+      ease:'Linear',
+      duration:10,
+      repeat: 0,
+      paused:true
+    });
     eyeRight.play();
+    pupilRight.play();
     //if(this.currEyeState == this.eyeState.LEFT){
 
     //}
@@ -240,34 +256,30 @@ class Play extends Phaser.Scene {
     //moves eye left
     //from state right -> forward
     //or state forward -> left
-    console.log("in eye left");
+    //console.log("in eye left");
     let eyeLeft = this.tweens.add({
-      //delay: 500,
       targets: this.eye,
-      x: -500,
+      x: this.eye.x-=600,
       ease: 'Linear',
-      duration: 500,
+      duration: 10,
       repeat: 0,
-      //yoyo: true,
-      //hold: 1650,
       paused: true
     });
+
+    let pupilLeft = this.tweens.add({
+      delay:100,
+      targets: this.pupil,
+      x: this.pupil.x-=750,
+      ease:'Linear',
+      duration:10,
+      repeat: 0,
+      paused:true
+    });
     eyeLeft.play();
+    pupilLeft.play();
 
   }
 
-  movePupilLeft(){
-    //moves pupil left
-    //from state right -> forward
-    //or state forward -> left
-
-  }
-
-  movePupilRight(){
-    // moves pupil to the left
-    // from state left ->forward
-    // or state forward ->right
-  }
   changeCardinalDirection(currCardDirection, leftOrRIght){
     //given the current cardinal direction & if the movement is towards the left or the right
     //change the player's curr cardinal direction to be facing left or right

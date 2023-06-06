@@ -10,4 +10,4 @@ const config = {
   // Create a new Phaser game
   const game = new Phaser.Game(config);
 
-  let keyE, keyD, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER;
+  let keyW, keyA, keyS, keyD, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER;
