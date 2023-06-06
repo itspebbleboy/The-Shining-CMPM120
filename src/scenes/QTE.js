@@ -24,13 +24,16 @@ class QTE extends Phaser.Scene {
 
     this.load.image('textBox', './assets/ui/textBox.png');
     //qte images
-    this.load.image('QTE1', './assets/ui/QTE1.png');
-    this.load.image('QTE2', './assets/ui/QTE2.png');
-    this.load.image('QTE3', './assets/ui/QTE3.png');
-    this.load.image('QTE4', './assets/ui/QTE4.png');
-    this.load.image('QTE5', './assets/ui/QTE5.png');
-    this.qteSpriteNames = ['QTE1', 'QTE2', 'QTE3', 'QTE4', 'QTE5'];
-    this.qteSprites = this.add.group();
+
+    this.load.image('deathText', './assets/ui/deathText.png');
+    this.load.image('restartText', './assets/ui/restartText.png');
+
+    this.load.image('QTE1', './assets/ui/QTE.png');
+    this.load.image('QTE2', './assets/ui/QTE.png');
+    this.load.image('QTE3', './assets/ui/QTE.png');
+    this.load.image('QTE4', './assets/ui/QTE.png');
+    this.load.image('QTE5', './assets/ui/QTE.png');
+
   }
 
   create() {
@@ -68,35 +71,29 @@ class QTE extends Phaser.Scene {
   startQTE() {
     // Generate a new random QTE input option
     this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
-  
+
     // Display text
-    this.qteText = this.add.text(screen.center.x, screen.center.y, "Press " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
-    this.qteInProgress = true; // Set the QTE in progress flag to true
-    console.log("QTE started!");
-  
-    // Set up the timer for the QTE
-    this.qteTimer = this.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
-    console.log("QTE timer started!");
-  
+    const qteSprite = this.add.sprite(screen.center.x, screen.center.y, 'qteSpritesheet');
+    const numFrames = qteSprite.anims.currentAnim.frames.length;
+    const frameRate = numFrames / (this.qteTimerDuration / 1000); // Calculate the frame rate based on the number of frames and QTE duration
+    qteSprite.anims.play('qteAnimation', true).setFrameRate(frameRate);
+    this.qteSprites.add(qteSprite);
+
+    // Show the death text after the QTE duration
+    this.time.delayedCall(this.qteTimerDuration, () => {
+      this.deathText = this.add.image(screen.center.x, screen.center.y, 'deathText');
+    });
+
+    // Show the restart text after a delay
+    const restartDelay = this.qteTimerDuration + 1000; // Add a delay of 1 second after the QTE duration
+    this.time.delayedCall(restartDelay, () => {
+      this.restartText = this.add.image(screen.center.x, screen.center.y, 'restartText');
+    });
+
     // Update event listener for the new QTE input option
     this.input.keyboard.removeAllListeners(); // Remove all previous event listeners
     this.input.keyboard.on("keydown-" + this.currentQTEInputOption.toUpperCase(), this.handleQTEInput, this);
-  
-    // Calculate the duration for each sprite
-    const spriteDuration = this.qteTimerDuration / this.qteSpriteNames.length;
-  
-    // Create and show each QTE sprite
-    this.qteSpriteNames.forEach((spriteName, index) => {
-      const qteSprite = this.add.sprite(screen.center.x, screen.center.y, spriteName);
-      this.qteSprites.add(qteSprite);
-  
-      // Hide the sprite after the specified duration
-      this.time.delayedCall(spriteDuration * (index + 1), () => {
-        qteSprite.destroy();
-      });
-    });
   }
-  
 
   handleQTEInput(event) {
     // QTE input handling goes here
@@ -115,6 +112,9 @@ class QTE extends Phaser.Scene {
         // All QTEs completed, do something else
         console.log("All QTEs completed");
       }
+    }
+    if (this.completedQTEs === this.qteCount) {
+      this.completionText = this.add.text(screen.center.x, screen.center.y, 'All QTEs are completed!', { font: '24px Arial', fill: '#ffffff' }).setOrigin(0.5);
     }
   }
 
