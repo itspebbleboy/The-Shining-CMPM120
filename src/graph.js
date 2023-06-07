@@ -98,40 +98,44 @@ class Graph {
       }
     }
     printGraphAsMatrix(node) {
-        let matrix = "";
-      
-        for (let row = 0; row < this.numRows; row++) {
-          let rowValues = "";
-      
-          for (let col = 0; col < this.numCols; col++) {
-            const index = [row, col].toString();
-            const currentNode = this.nodes.get(index);
-      
-            if (currentNode === node) {
-              rowValues += "[0] ";
-            } else {
-              const roomType = currentNode.roomType;
-              let nodeRepresentation = "";
-      
-              if (roomType === RoomType.EMPTY) {
-                nodeRepresentation = "[ ]";
-              } else if (roomType === RoomType.INTER) {
-                nodeRepresentation = "[I]";
-              } else if (roomType === RoomType.HALLWAY) {
-                nodeRepresentation = "[H]";
-              } else if (roomType === RoomType.DEAD_END) {
-                nodeRepresentation = "[D]";
-              }
-      
-              rowValues += nodeRepresentation + " ";
+      let matrix = "";
+    
+      for (let row = 0; row < this.numRows; row++) {
+        let rowValues = "";
+    
+        for (let col = 0; col < this.numCols; col++) {
+          const index = [row, col].toString();
+          const currentNode = this.nodes.get(index);
+    
+          if (currentNode === node) {
+            rowValues += "[0] ";
+          } else {
+            const roomType = currentNode.roomType;
+            let nodeRepresentation = "";
+    
+            if (roomType === RoomType.EMPTY) {
+              nodeRepresentation = "[ ]";
+            } else if (roomType === RoomType.INTER) {
+              nodeRepresentation = "[I]";
+            } else if (
+              roomType >= RoomType.HALLWAY_0 &&
+              roomType <= RoomType.HALLWAY_9
+            ) {
+              nodeRepresentation = "[H]";
+            } else if (roomType === RoomType.DEAD_END) {
+              nodeRepresentation = "[D]";
             }
+    
+            rowValues += nodeRepresentation + " ";
           }
-      
-          matrix += rowValues.trim() + "\n";
         }
-      
-        console.log(matrix);
+    
+        matrix += rowValues.trim() + "\n";
+      }
+    
+      console.log(matrix);
     }
+    
       
     //#endregion
 

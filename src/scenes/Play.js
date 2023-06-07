@@ -369,12 +369,21 @@ class Play extends Phaser.Scene {
       case 1: //INTER
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
         break;
-      case 2: //HALLWAY
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway');
-        break;
-      case 3: //DEAD_END
+      case 2: //DEAD_END
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
         break;
+      case 3: //HALLWAY
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway');
+        break;
+      default:
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway');
+        
+
+
+
+
+
+              
     }
     this.currImage.setDepth(0);
     if(this.prevImage){
