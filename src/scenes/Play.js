@@ -16,6 +16,7 @@ class Play extends Phaser.Scene {
     this.cooldownDuration = 200; // Cooldown duration in milliseconds (0.2 seconds)
     this.lastSpacePressTime = 0; // Timestamp of the last space key press
     this.queue = [];
+    this.compassGrid = [];
     //#endregion
   }
 
@@ -271,6 +272,7 @@ class Play extends Phaser.Scene {
       cardDirec: this.CD.SOUTH, //cardinal direction
       //imageDisplay: currImage, //& image display
     }
+    this.createCompassGrid(this.playerConfig.cardDirec);
     this.movePlayer();
     this.displayImage(this.playerConfig.cardDirec);
   }
@@ -533,10 +535,95 @@ class Play extends Phaser.Scene {
     this.squareList = [];
     this.background.destroy();
   }
-  generateNeighborSquares() {
-    this.minimapSize = 64;
-    
+  createCompassGrid(facingDirection, availableDirections) {
+    const gridSize = 3;
+    const gridAlpha = 0.5;
+  
+    const centerX = game.config.width / 2;
+    const centerY = game.config.height / 2 - 800;
+  
+    const gridX = centerX - gridSize * 32;
+    const gridY = centerY - gridSize * 32;
+  
+    // Create the compass grid
+    for (let row = 0; row < gridSize; row++) {
+      this.compassGrid[row] = [];
+      for (let col = 0; col < gridSize; col++) {
+        const offsetX = col * 64;
+        const offsetY = row * 64;
+  
+        const imageX = gridX + offsetX;
+        const imageY = gridY + offsetY;
+  
+        if (row === 1 && col === 1) {
+          // Center square
+          this.compassGrid[row][col] = this.add.image(imageX, imageY, 'blue').setDepth(3).setAlpha(1);
+        } else {
+          this.compassGrid[row][col] = this.add.image(imageX, imageY, 'blue').setDepth(3).setAlpha(0);
+        }
+      }
+    }
+  
+    //return this.compassGrid;
   }
+  
+  updateCompassGrid(facingDirection, availableDirections) {
+    const gridSize = 3;
+    const gridAlpha = 0.5;
+  
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        const image = this.compassGrid[row][col];
+  
+        if (row === 1 && col === 1) {
+          // Center square
+          image.setAlpha(1);
+        } else {
+          const direction = this.getDirectionFromGridOffset(facingDirection, row - 1, col - 1);
+  
+          if (availableDirections.includes(direction)) {
+            // Available direction
+            image.setAlpha(gridAlpha);
+          } else {
+            // Unavailable direction
+            image.setAlpha(0);
+          }
+        }
+      }
+    }
+  }
+  
+  getDirectionFromGridOffset(facingDirection, rowOffset, colOffset) {
+    const directionMapping = {
+      [this.CD.NORTH]: {
+        rowOffset: -1,
+        colOffset: 0,
+      },
+      [this.CD.WEST]: {
+        rowOffset: 0,
+        colOffset: -1,
+      },
+      [this.CD.SOUTH]: {
+        rowOffset: 1,
+        colOffset: 0,
+      },
+      [this.CD.EAST]: {
+        rowOffset: 0,
+        colOffset: 1,
+      },
+    };
+  
+    for (const direction in directionMapping) {
+      const { rowOffset: expectedRowOffset, colOffset: expectedColOffset } = directionMapping[direction];
+  
+      if (rowOffset === expectedRowOffset && colOffset === expectedColOffset) {
+        return direction;
+      }
+    }
+  
+    return null;
+  }
+  
   
   
   
@@ -562,7 +649,7 @@ class Play extends Phaser.Scene {
       this.queue.shift();
     }
     this.hotel.visitIncrementor(this.playerConfig.node);
-    this.generateNeighborSquares();
+    this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
   }
   
   
@@ -612,6 +699,7 @@ class Play extends Phaser.Scene {
           this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
+    this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
   }
   //#endregion
  
