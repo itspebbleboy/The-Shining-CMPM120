@@ -3,8 +3,8 @@ class Play extends Phaser.Scene {
     super("playScene");
     //#region << CLASS PROPERTIES >>
     this.stateCooldown = false; // Cooldown state
-    this.eyeDelta = 700;
-    this.pupilDelta = 800;
+    this.eyeDelta = 575;
+    this.pupilDelta = 750;
     this.wholeEyeDuration = 300;
     this.CD ={ 
       NORTH: 'north',
