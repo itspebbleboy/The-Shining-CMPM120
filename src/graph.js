@@ -12,7 +12,7 @@ const RoomType = {
     HALLWAY_7: 10,
     HALLWAY_8: 11,
     HALLWAY_9: 12,
-  };
+};
   
 class Graph {
     constructor() {
