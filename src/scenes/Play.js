@@ -119,13 +119,13 @@ class Play extends Phaser.Scene {
     
     //#region << THE HOTEL MAP >>
     this.hotelMap = [
-      [0,0,0,0,0,3,0],
-      [0,0,0,3,0,2,0],
-      [0,3,0,2,0,2,0],
-      [3,1,2,1,2,1,3],
-      [0,2,0,0,0,2,0],
-      [3,1,2,2,2,1,3],
-      [0,3,0,0,0,3,0],
+      [0,0,0,0,0,2,0],
+      [0,0,0,2,0,4,0],
+      [0,2,0,8,0,5,0],
+      [2,1,7,1,6,1,3],
+      [0,9,0,0,0,12,0],
+      [2,1,9,10,4,1,5],
+      [0,2,0,0,0,6,0],
     ]
     console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
     this.hotel = new Graph();
@@ -372,18 +372,12 @@ class Play extends Phaser.Scene {
       case 2: //DEAD_END
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
         break;
-      case 3: //HALLWAY
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway');
-        break;
       default:
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway');
-        
-
-
-
-
-
-              
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway'+this.currRoomType-3);
+        console.log(this.currRoomType);
+        console.log(this.currRoomType-3);
+        console.log('hallway'+(this.currRoomType-3).toString());
+        break;
     }
     this.currImage.setDepth(0);
     if(this.prevImage){
