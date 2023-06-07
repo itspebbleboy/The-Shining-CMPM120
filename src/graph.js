@@ -71,6 +71,7 @@ class Graph {
             }
           }
         }
+
       }
 
 
@@ -85,7 +86,7 @@ class Graph {
             neighbors += `${direction}: ${node.neighbors[direction].getIndex()}, `;
           }
         }
-        console.log(`${index}: ${neighbors}`);
+        //console.log(`${index}: ${neighbors}`);
       }
     }
     printGraphAsMatrix(node) {
@@ -107,11 +108,11 @@ class Graph {
               if (roomType === RoomType.EMPTY) {
                 nodeRepresentation = "[ ]";
               } else if (roomType === RoomType.INTER) {
-                nodeRepresentation = "[I]";
+                nodeRepresentation = "[ ]";
               } else if (roomType === RoomType.HALLWAY) {
-                nodeRepresentation = "[H]";
+                nodeRepresentation = "[ ]";
               } else if (roomType === RoomType.DEAD_END) {
-                nodeRepresentation = "[D]";
+                nodeRepresentation = "[ ]";
               }
       
               rowValues += nodeRepresentation + " ";
