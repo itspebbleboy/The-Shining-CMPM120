@@ -1,24 +1,20 @@
 class QTE extends Phaser.Scene {
   constructor() {
     super("qteScene");
+    // QTE properties
     this.qteInProgress = false;
-    this.dialogueList = [
-      "This is the first line of dialogue. I'm writing it really long so that hopefully it'll wrap. Will it wrap?",
-      "Second dialogue",
-      "Third dialogue",
-      // Add more dialogues as needed
-    ];
-    this.currentTextIndex = 0;
-    this.fastForward = false;
-    this.currentIndex = 0;
-    this.textCrawlActive = false;
-    this.qteInputOptions = ['a', 'g', 'i', 'k', 'm', 'b', 'r', 'p'];
-    this.currentQTEInputOption = null;
-    this.qteCount = 3;
-    this.completedQTEs = 0;
-    this.qteTimer = null;
-    this.qteTimerDuration = 5000;
-    this.textCrawlSpeed = 100;
+    this.dialogueList = []; // Array of dialogue lines
+    this.currentTextIndex = 0; // Index of the current character being displayed in the dialogue
+    this.fastForward = false; // Flag to enable fast forward
+    this.currentIndex = 0; // Index of the current dialogue in the dialogue list
+    this.textCrawlActive = false; // Flag to indicate if text crawl is active
+    this.qteInputOptions = []; // Array of QTE input options
+    this.currentQTEInputOption = null; // Current QTE input option
+    this.qteCount = 0; // Number of QTEs to complete
+    this.completedQTEs = 0; // Number of completed QTEs
+    this.qteTimer = null; // Timer for QTE duration
+    this.qteTimerDuration = 5000; // Duration of QTE timer in milliseconds
+    this.textCrawlSpeed = 100; // Speed of text crawl in milliseconds
   }
 
   preload() {
@@ -40,12 +36,13 @@ class QTE extends Phaser.Scene {
     this.textBox = this.add.image(screen.center.x, screen.center.y + 400, 'textBox').setOrigin(0.5, 0);
     this.startNextDialogue();
 
-    this.input.keyboard.on("keydown-SPACE", () => {
-      if (!this.textCrawlActive) {
-        if (this.currentIndex === this.dialogueList.length - 1) {
+    
+    this.input.keyboard.on("keydown-SPACE", () => {// Event listeners for key presses
+      if (!this.textCrawlActive) {// Check if text crawl is not active
+        if (this.currentIndex === this.dialogueList.length - 1) { //if it's the last dialogue in the list destroy text crawl and start QTE
           this.textCrawl.destroy();
           this.startQTE();
-        } else {
+        } else {// Move to the next dialogue
           this.currentIndex++;
           this.textCrawl.destroy();
           this.startNextDialogue();
@@ -65,8 +62,10 @@ class QTE extends Phaser.Scene {
   calculateFrameRate(numFrames, duration) {
     return Math.floor(numFrames / (duration / 1000));
   }
-
+  
+  //#region <<QTE HANDLING>>
   startQTE() {
+    // Start a new QTE
     this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
     this.qteText = this.add.text(screen.center.x, screen.center.y, "Press " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
     this.qteInProgress = true;
@@ -79,6 +78,7 @@ class QTE extends Phaser.Scene {
   }
 
   handleQTEInput(event) {
+    // Handle QTE input
     if (this.qteInProgress && event.key === this.currentQTEInputOption) {
       console.log("QTE input handled!");
       this.qteInProgress = false;
@@ -105,7 +105,9 @@ class QTE extends Phaser.Scene {
       this.failureText.destroy();
     });
   }
+  //#endregion
 
+  //#region << TEXT HANDLING >>
   addCharacter(dialogue) {
     this.currentTextIndex++;
     this.textCrawl.text = dialogue.substring(0, this.currentTextIndex);
@@ -140,4 +142,5 @@ class QTE extends Phaser.Scene {
     this.textCrawlActive = true;
     this.addCharacter(dialogue);
   }
+  //#endregion
 }
