@@ -3,8 +3,8 @@ class Play extends Phaser.Scene {
     super("playScene");
     //#region << CLASS PROPERTIES >>
     this.stateCooldown = false; // Cooldown state
-    this.eyeDelta = 600;
-    this.pupilDelta = 750;
+    this.eyeDelta = 700;
+    this.pupilDelta = 800;
     this.wholeEyeDuration = 300;
     this.CD ={ 
       NORTH: 'north',
@@ -12,9 +12,10 @@ class Play extends Phaser.Scene {
       SOUTH: 'south',
       EAST: 'east',
     }
-
+    this.minimapActive = false; // Flag to indicate if minimap is active or not
     this.cooldownDuration = 200; // Cooldown duration in milliseconds (0.2 seconds)
     this.lastSpacePressTime = 0; // Timestamp of the last space key press
+    this.queue = [];
     //#endregion
   }
 
@@ -32,16 +33,19 @@ class Play extends Phaser.Scene {
     keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     //#endregion
 
     //#region << LOADING HOTEL AND EYE IMAGES >>
     // << EYE ELEMENTS >>
     this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
-    // << HOTEL AREAS >> 
+    // << HOTEL ELEMENTS >> 
     this.load.image('deadend', './assets/hotel/deadend.png');
     this.load.image('door', './assets/hotel/door.png');
     this.load.image('hallway', './assets/hotel/hallway.png');
     this.load.image('intersection', './assets/hotel/intersection.png');
+    // << MAP ELEMENTS >>
+
     //#endregion
 
     //#region >> EYE STATE MACHINE >>
@@ -140,8 +144,8 @@ class Play extends Phaser.Scene {
 
     //#region << IMAGES FOR TESTING >>
     this.add.image(0,0,'hallway').setOrigin(0,0);
-    this.eye = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil1').setScale(0.5);
-    this.pupil = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil_alone').setScale(0.5);
+    this.eye = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil1').setScale(.75);
+    this.pupil = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil_alone').setScale(.75);
 
     this.eye.setOrigin(0.5); // Adjust the anchor point of the sprites to the center
     this.pupil.setOrigin(0.5);
@@ -174,8 +178,25 @@ class Play extends Phaser.Scene {
   }
 
   update(){
+
+    if (Phaser.Input.Keyboard.JustDown(keyM)) {
+      this.minimapActive = !this.minimapActive; // Toggle the minimap state
+      if (this.minimapActive) {
+        this.drawMinimap(); // Draw the minimap
+      } else {
+        this.minimapGraphics.clear(); // Clear the minimap graphics
+      }
+    }
+
+    // If the minimap is active, prevent other inputs from affecting the scene
+    if (this.minimapActive) {
+      return;
+    }
+
+
     this.currEyeState.update();
     this.readInput();
+    
   }
 
   //#region << HELPER FUNCTIONS FOR THE EYE >>
@@ -350,10 +371,72 @@ class Play extends Phaser.Scene {
   }
   //#endregion
 
+  //#region << MINI MAP >>
+  drawMinimap() {
+    const minimapSize = 100; // Size of each square in the minimap
+    const alphaStep = 0.1; // Step for decrementing alpha
+  
+    // Clear the minimap container
+    this.minimapContainer.removeAll(true);
+  
+    // Create the black background image
+    const background = this.add.image(0, 0, 'blackBackground');
+    background.setDisplaySize(this.hotel.numCols * minimapSize, this.hotel.numRows * minimapSize);
+    background.setOrigin(0);
+    this.minimapContainer.add(background);
+  
+    // Iterate over the queue nodes
+    this.queue.forEach((node, index) => {
+      const { row, col } = node.index;
+      const x = col * minimapSize;
+      const y = row * minimapSize;
+      const alpha = 1 - (this.queue.length - index - 1) * alphaStep;
+  
+      // Create an image with the appropriate alpha
+      const image = this.add.image(x, y, 'blueSquare');
+      image.setDisplaySize(minimapSize, minimapSize);
+      image.setAlpha(alpha);
+  
+      // Add the image to the minimap container
+      this.minimapContainer.add(image);
+    });
+  
+    // Iterate over the hotel nodes
+    this.hotel.nodes.forEach((node) => {
+      if (!this.queue.includes(node)) {
+        const { row, col } = node.index;
+        const x = col * minimapSize;
+        const y = row * minimapSize;
+  
+        // Create an empty image with alpha 0
+        const image = this.add.image(x, y, 'emptySquare');
+        image.setDisplaySize(minimapSize, minimapSize);
+        image.setAlpha(0);
+  
+        // Add the image to the minimap container
+        this.minimapContainer.add(image);
+      }
+    });
+  }
+
+  destroyMinimap() {
+    // Destroy all images in the minimap container
+    this.minimapContainer.removeAll(true);
+  }  
+  
+  //#endregion
+
   //#region << PLAYER HELPER FUNCTIONS >>
   movePlayer(){
     this.playerConfig.node=this.hotel.getNeighborInDirection(this.playerConfig.node, this.playerConfig.cardDirec)
     this.hotel.printGraphAsMatrix(this.playerConfig.node);
+    // Add the newly moved node to the back of the queue
+    this.queue.push(this.playerConfig.node);
+    // Check if the queue has reached its maximum length
+    if (this.queue.length > 10) {
+      // Remove the front element of the queue
+      this.queue.shift();
+    }
   }
   
   

@@ -101,7 +101,20 @@ class Graph {
             if (currentNode === node) {
               rowValues += "[0] ";
             } else {
-              rowValues += "[ ] ";
+              const roomType = currentNode.roomType;
+              let nodeRepresentation = "";
+      
+              if (roomType === RoomType.EMPTY) {
+                nodeRepresentation = "[ ]";
+              } else if (roomType === RoomType.INTER) {
+                nodeRepresentation = "[I]";
+              } else if (roomType === RoomType.HALLWAY) {
+                nodeRepresentation = "[H]";
+              } else if (roomType === RoomType.DEAD_END) {
+                nodeRepresentation = "[D]";
+              }
+      
+              rowValues += nodeRepresentation + " ";
             }
           }
       
@@ -110,6 +123,7 @@ class Graph {
       
         console.log(matrix);
     }
+      
     //#endregion
 
     //#region << GET METHODS >>
