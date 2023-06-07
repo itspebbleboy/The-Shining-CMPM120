@@ -148,7 +148,8 @@ class Play extends Phaser.Scene {
 
     this.eye.setDepth(2);
     this.pupil.setDepth(2);
-
+    //#endregion
+    //#region << ANIMS >>
     this.anims.create({
       key: 'blink182',
       frames: this.anims.generateFrameNames('shining_atlas', { 
@@ -162,7 +163,6 @@ class Play extends Phaser.Scene {
       yoyo:true
 
     });
-
     //#endregion
 
     this.playerConfig={
@@ -186,14 +186,14 @@ class Play extends Phaser.Scene {
       return; // Exit if currently in cooldown
     }
     this.stateCooldown = true;  // Set the cooldown state to true
-    this.eye.setVisible(false);
-    this.pupil.setVisible(false);
+    this.eye.setVisible(false); // hide the current eye
+    this.pupil.setVisible(false); // hide the current pupil
     this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
-    
+
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
-      this.eye.setVisible(true);
-      this.pupil.setVisible(true);
-      this.stateCooldown = false;
+      this.eye.setVisible(true);  // show eye
+      this.pupil.setVisible(true); // show pupil
+      this.stateCooldown = false; // set cooldown to false
     }, [], this);
    
   }
