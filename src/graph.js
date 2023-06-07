@@ -12,6 +12,8 @@ const RoomType = {
     HALLWAY_7: 10,
     HALLWAY_8: 11,
     HALLWAY_9: 12,
+    SPECIAL_HALLWAY: 13,
+    SPECIAL_DOOR: 14,
 };
   
 class Graph {
@@ -19,6 +21,8 @@ class Graph {
       this.nodes = new Map();
       this.numRows = 0;
       this.numCols = 0;
+      this.visitedNodes = new Set();
+      this.visitCounter = 0;
     }
     //#region << GRAPH CONSTRUCTION >>
     addVertex(row, col, rType) {
@@ -155,7 +159,7 @@ class Graph {
         const neighbor = node.neighbors[direction];
         return neighbor;
     }
-
+    
     //#endregion
     
     //#region << AI SHIT >>
@@ -189,31 +193,58 @@ class Graph {
     
         return -1; // Indicates that there is no path between the start and end nodes
     }
+
+    visitIncrementor(node) {
+      const nodeIndex = node.getIndex();
+  
+      if (!this.visitedNodes.has(nodeIndex)) {
+        this.visitedNodes.add(nodeIndex);
+        this.visitCounter++;
+      }
+    }
     //#endregion
 
 }
   
 class Node {
-    constructor(row, col, rType) {
-      this.index = [row, col];
-      this.value = this.index.toString();
-      this.roomType = rType;
-      this.neighbors = {
-        north: null,
-        south: null,
-        east: null,
-        west: null,
-      };
-    }
-  
-    setNeighbor(direction, node) {
-      this.neighbors[direction] = node;
-    }
-  
-    getIndex() {
-      return this.index.toString();
-    }
+  constructor(row, col, rType) {
+    this.index = [row, col];
+    this.value = this.index.toString();
+    this.roomType = rType;
+    this.neighbors = {
+      north: null,
+      south: null,
+      east: null,
+      west: null,
+    };
   }
+  
+  setNeighbor(direction, node) {
+    this.neighbors[direction] = node;
+  }
+  
+  getIndex() {
+    return this.index.toString();
+  }
+  availableDirections() {
+    const directions = [];
+
+    if (this.neighbors.north && this.neighbors.north.roomType !== RoomType.EMPTY) {
+      directions.push('north');
+    }
+    if (this.neighbors.south && this.neighbors.south.roomType !== RoomType.EMPTY) {
+      directions.push('south');
+    }
+    if (this.neighbors.east && this.neighbors.east.roomType !== RoomType.EMPTY) {
+      directions.push('east');
+    }
+    if (this.neighbors.west && this.neighbors.west.roomType !== RoomType.EMPTY) {
+      directions.push('west');
+    }
+
+    return directions;
+  }
+}
   
 function getDirection(row1, col1, row2, col2) {
     if (row2 < row1) {
