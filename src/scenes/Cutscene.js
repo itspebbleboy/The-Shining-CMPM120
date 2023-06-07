@@ -22,7 +22,7 @@ class Cutscene extends Phaser.Scene {
     }
 
     create(){
-
+        // based on dialouge update which scene is showed basically is the plan -> maybe make like a function or some shit?
     }
 
     update(){

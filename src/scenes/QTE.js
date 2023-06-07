@@ -23,10 +23,25 @@ class QTE extends Phaser.Scene {
 
   preload() {
     this.load.image('textBox', './assets/ui/textBox.png');
+    this.load.image('youDied', './assets/ui/youDiedText.png');
+    this.load.image('restart', './assets/ui/spaceRestartTest.png');
+    this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');
   }
 
   create() {
     this.textBox = this.add.image(screen.center.x, screen.center.y + 400, 'textBox').setOrigin(0.5, 0);
+
+    this.anims.create({
+        key: 'gameoverScreen',
+        frames: this.anims.generateFrameNames('shining_atlas',{
+          prefix: 'gameover',
+          start:1,
+          end: 5,
+        }),
+        frameRate: 10,
+        paused: true
+      });
+    
     this.startNextDialogue();
 
     this.input.keyboard.on("keydown-SPACE", () => {
@@ -82,13 +97,16 @@ class QTE extends Phaser.Scene {
 
   handleQTEFailure() {
     console.log("QTE failure!");
-
+    this.add.sprite(screen.center.x,screen.center.y).play('gameoverScreen'); // play game over screen
     this.qteInProgress = false;
     this.qteText.destroy();
 
-    this.failureText = this.add.text(screen.topMid.x, screen.topMid.y, "You were too slow, you lost!", defaultQTEStyle);
+    this.failureText1 = this.add.image(screen.center.x-20, screen.center.y-20, "youDied");
+    this.failureText2 = this.add.image(screen.center.x, screen.center.y, "restart");
     this.time.delayedCall(2000, () => {
-      this.failureText.destroy();
+      this.failureText1.destroy();
+      this.failureText2.destroy();
+      this.scene.start("menuScene");
     });
   }
   //#endregion
