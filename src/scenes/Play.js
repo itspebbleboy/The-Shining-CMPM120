@@ -184,14 +184,14 @@ class Play extends Phaser.Scene {
     //#region << THE HEDGE MAZE MAP >>
     /*
     this.hedgeMap = [
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,2,8,1,7,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -270,11 +270,14 @@ class Play extends Phaser.Scene {
       cardDirec: this.CD.SOUTH, //cardinal direction
       //imageDisplay: currImage, //& image display
     }
+    this.movePlayer();
     this.displayImage(this.playerConfig.cardDirec);
   }
 
   update(){
-
+    this.enemyRatio = Math.ceil((this.time.now/100)/this.hotel.visitCounter);
+    //IF REACHES ABOVE 80 DO ANIMATION
+    //IF ABOVE 90 DIE
     if (Phaser.Input.Keyboard.JustDown(keyM)) {
       this.minimapActive = !this.minimapActive; // Toggle the minimap state
       if (this.minimapActive) {
@@ -291,7 +294,6 @@ class Play extends Phaser.Scene {
 
     this.currEyeState.update();
     this.readInput();
-    
   }
 
   //#region << HELPER FUNCTIONS FOR THE EYE >>
@@ -451,11 +453,15 @@ class Play extends Phaser.Scene {
       case 1: //INTER
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
         break;
-      case 2: //HALLWAY
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway');
-        break;
-      case 3: //DEAD_END
+      case 2: //DEAD_END
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
+        break;
+      default:
+        this.currHallwayImageString = 'hallway'+((this.currRoomType-3).toString());
+        this.currImage = this.add.image(screen.center.x, screen.center.y, this.currHallwayImageString);
+        console.log(this.currHallwayImageString);
+        console.log(this.currRoomType-3);
+        console.log('hallway'+(this.currRoomType-3).toString());
         break;
     }
     this.currImage.setDepth(0);
@@ -526,6 +532,14 @@ class Play extends Phaser.Scene {
     this.squareList = [];
     this.background.destroy();
   }
+  generateNeighborSquares() {
+    this.minimapSize = 64;
+    
+  }
+  
+  
+  
+  
 
 
   createBackground(){
@@ -542,10 +556,12 @@ class Play extends Phaser.Scene {
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
     // Check if the queue has reached its maximum length
-    if (this.queue.length > 20) {
+    if (this.queue.length > 10) {
       // Remove the front element of the queue
       this.queue.shift();
     }
+    this.hotel.visitIncrementor(this.playerConfig.node);
+    this.generateNeighborSquares();
   }
   
   

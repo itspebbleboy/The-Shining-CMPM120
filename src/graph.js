@@ -1,15 +1,28 @@
 const RoomType = {
     EMPTY: 0,
     INTER: 1,
-    HALLWAY: 2,
-    DEAD_END: 3,
-  };
+    DEAD_END: 2,
+    HALLWAY_0: 3,
+    HALLWAY_1: 4,
+    HALLWAY_2: 5,
+    HALLWAY_3: 6,
+    HALLWAY_4: 7,
+    HALLWAY_5: 8,
+    HALLWAY_6: 9,
+    HALLWAY_7: 10,
+    HALLWAY_8: 11,
+    HALLWAY_9: 12,
+    SPECIAL_HALLWAY: 13,
+    SPECIAL_DOOR: 14,
+};
   
 class Graph {
     constructor() {
       this.nodes = new Map();
       this.numRows = 0;
       this.numCols = 0;
+      this.visitedNodes = new Set();
+      this.visitCounter = 0;
     }
     //#region << GRAPH CONSTRUCTION >>
     addVertex(row, col, rType) {
@@ -90,40 +103,44 @@ class Graph {
       }
     }
     printGraphAsMatrix(node) {
-        let matrix = "";
-      
-        for (let row = 0; row < this.numRows; row++) {
-          let rowValues = "";
-      
-          for (let col = 0; col < this.numCols; col++) {
-            const index = [row, col].toString();
-            const currentNode = this.nodes.get(index);
-      
-            if (currentNode === node) {
-              rowValues += "[0] ";
-            } else {
-              const roomType = currentNode.roomType;
-              let nodeRepresentation = "";
-      
-              if (roomType === RoomType.EMPTY) {
-                nodeRepresentation = "[ ]";
-              } else if (roomType === RoomType.INTER) {
-                nodeRepresentation = "[ ]";
-              } else if (roomType === RoomType.HALLWAY) {
-                nodeRepresentation = "[ ]";
-              } else if (roomType === RoomType.DEAD_END) {
-                nodeRepresentation = "[ ]";
-              }
-      
-              rowValues += nodeRepresentation + " ";
+      let matrix = "";
+    
+      for (let row = 0; row < this.numRows; row++) {
+        let rowValues = "";
+    
+        for (let col = 0; col < this.numCols; col++) {
+          const index = [row, col].toString();
+          const currentNode = this.nodes.get(index);
+    
+          if (currentNode === node) {
+            rowValues += "[0] ";
+          } else {
+            const roomType = currentNode.roomType;
+            let nodeRepresentation = "";
+    
+            if (roomType === RoomType.EMPTY) {
+              nodeRepresentation = "[ ]";
+            } else if (roomType === RoomType.INTER) {
+              nodeRepresentation = "[I]";
+            } else if (
+              roomType >= RoomType.HALLWAY_0 &&
+              roomType <= RoomType.HALLWAY_9
+            ) {
+              nodeRepresentation = "[H]";
+            } else if (roomType === RoomType.DEAD_END) {
+              nodeRepresentation = "[D]";
             }
+    
+            rowValues += nodeRepresentation + " ";
           }
-      
-          matrix += rowValues.trim() + "\n";
         }
-      
-        console.log(matrix);
+    
+        matrix += rowValues.trim() + "\n";
+      }
+    
+      console.log(matrix);
     }
+    
       
     //#endregion
 
@@ -143,7 +160,7 @@ class Graph {
         const neighbor = node.neighbors[direction];
         return neighbor;
     }
-
+    
     //#endregion
     
     //#region << AI SHIT >>
@@ -177,31 +194,58 @@ class Graph {
     
         return -1; // Indicates that there is no path between the start and end nodes
     }
+
+    visitIncrementor(node) {
+      const nodeIndex = node.getIndex();
+  
+      if (!this.visitedNodes.has(nodeIndex)) {
+        this.visitedNodes.add(nodeIndex);
+        this.visitCounter++;
+      }
+    }
     //#endregion
 
 }
   
 class Node {
-    constructor(row, col, rType) {
-      this.index = [row, col];
-      this.value = this.index.toString();
-      this.roomType = rType;
-      this.neighbors = {
-        north: null,
-        south: null,
-        east: null,
-        west: null,
-      };
-    }
-  
-    setNeighbor(direction, node) {
-      this.neighbors[direction] = node;
-    }
-  
-    getIndex() {
-      return this.index.toString();
-    }
+  constructor(row, col, rType) {
+    this.index = [row, col];
+    this.value = this.index.toString();
+    this.roomType = rType;
+    this.neighbors = {
+      north: null,
+      south: null,
+      east: null,
+      west: null,
+    };
   }
+  
+  setNeighbor(direction, node) {
+    this.neighbors[direction] = node;
+  }
+  
+  getIndex() {
+    return this.index.toString();
+  }
+  availableDirections() {
+    const directions = [];
+
+    if (this.neighbors.north && this.neighbors.north.roomType !== RoomType.EMPTY) {
+      directions.push('north');
+    }
+    if (this.neighbors.south && this.neighbors.south.roomType !== RoomType.EMPTY) {
+      directions.push('south');
+    }
+    if (this.neighbors.east && this.neighbors.east.roomType !== RoomType.EMPTY) {
+      directions.push('east');
+    }
+    if (this.neighbors.west && this.neighbors.west.roomType !== RoomType.EMPTY) {
+      directions.push('west');
+    }
+
+    return directions;
+  }
+}
   
 function getDirection(row1, col1, row2, col2) {
     if (row2 < row1) {
