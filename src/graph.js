@@ -1,8 +1,17 @@
 const RoomType = {
     EMPTY: 0,
     INTER: 1,
-    HALLWAY: 2,
-    DEAD_END: 3,
+    DEAD_END: 2,
+    HALLWAY_0: 3,
+    HALLWAY_1: 4,
+    HALLWAY_2: 5,
+    HALLWAY_3: 6,
+    HALLWAY_4: 7,
+    HALLWAY_5: 8,
+    HALLWAY_6: 9,
+    HALLWAY_7: 10,
+    HALLWAY_8: 11,
+    HALLWAY_9: 12,
   };
   
 class Graph {
