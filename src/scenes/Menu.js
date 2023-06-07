@@ -17,9 +17,11 @@ class Menu extends Phaser.Scene {
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         //#endregion
+        this.load.image('brownBackground', './assets/ui/brownBackground.png');
     }
 
     create(){
+        this.add.image(screen.center.x, screen.center.y, 'brownBackground');
         this.add.text(screen.center.x, screen.center.y, 'THE SHINING BY:\n Tatiana Lucero and Athena Patronas', headerConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +250, 'press <-- for QTE Practice', headerConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +350, 'press --> for Hotel Exploration', headerConfig).setOrigin(0.5);
