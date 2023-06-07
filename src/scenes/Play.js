@@ -44,17 +44,23 @@ class Play extends Phaser.Scene {
     this.load.image('door', './assets/hotel/door.png');
     //#region << HALLWAY VAR >>
     this.load.image('hallway0', './assets/hotel/hallway.png');
-    this.load.image('hallway1', './assets/hotel/hallway.png');
-    this.load.image('hallway2', './assets/hotel/hallway.png');
-    this.load.image('hallway3', './assets/hotel/hallway.png');
-    this.load.image('hallway4', './assets/hotel/hallway.png');
-    this.load.image('hallway5', './assets/hotel/hallway.png');
-    this.load.image('hallway6', './assets/hotel/hallway.png');
-    this.load.image('hallway7', './assets/hotel/hallway.png');
-    this.load.image('hallway8', './assets/hotel/hallway.png');
-    this.load.image('hallway9', './assets/hotel/hallway.png');
+    this.load.image('hallway1', './assets/hotel/hallway1.png');
+    this.load.image('hallway2', './assets/hotel/hallway2.png');
+    this.load.image('hallway3', './assets/hotel/hallway3.png');
+    this.load.image('hallway4', './assets/hotel/hallway4.png');
+    this.load.image('hallway5', './assets/hotel/hallway5.png');
+    this.load.image('hallway6', './assets/hotel/hallway6.png');
+    this.load.image('hallway7', './assets/hotel/hallway7.png');
+    this.load.image('hallway8', './assets/hotel/hallway8.png');
+    this.load.image('hallway9', './assets/hotel/hallway9.png');
     //#endregion
     this.load.image('intersection', './assets/hotel/intersection.png');
+    //#endregion
+    //#region << HEDGE ELEMENTS >>
+    //this.load.image('hedgeHallway0', './assets/hotel/hallway.png');
+    //this.load.image('hedgeHallway0', './assets/hotel/hallway.png');
+    //this.load.image('hedgeHallway1', './assets/hotel/hallway.png');
+    //this.load.image('hedgeHallway2', './assets/hotel/hallway.png');
     // << MAP ELEMENTS >>
     this.load.image('brownBackground', './assets/ui/brownBackground.png');
     this.load.image('blue', './assets/ui/blueMap.png');
