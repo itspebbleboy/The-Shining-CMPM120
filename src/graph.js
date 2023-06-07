@@ -84,6 +84,7 @@ class Graph {
             }
           }
         }
+
       }
 
 
@@ -98,7 +99,7 @@ class Graph {
             neighbors += `${direction}: ${node.neighbors[direction].getIndex()}, `;
           }
         }
-        console.log(`${index}: ${neighbors}`);
+        //console.log(`${index}: ${neighbors}`);
       }
     }
     printGraphAsMatrix(node) {
