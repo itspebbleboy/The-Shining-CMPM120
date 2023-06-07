@@ -524,7 +524,21 @@ class Play extends Phaser.Scene {
     });
   }
   
-  
+  drawMap(){
+    for (let row = 0; row < this.numRows; row++) {
+      let rowValues = "";
+
+      for (let col = 0; col < this.numCols; col++) {
+        const index = [row, col].toString();
+        const currentNode = this.hotel.nodes.get(index);
+        if(currentNode.isVal){
+          
+        }
+      }
+    }
+
+  }
+
   destroyMinimap(){
     this.squareList.forEach((square) => {
       square.destroy();
@@ -534,6 +548,9 @@ class Play extends Phaser.Scene {
     this.squareList = [];
     this.background.destroy();
   }
+
+
+
   createCompassGrid(facingDirection, availableDirections) {
     const gridSize = 3;
     const gridAlpha = 0.5;

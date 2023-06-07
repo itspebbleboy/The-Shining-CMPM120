@@ -152,7 +152,8 @@ class Graph {
     getNode(row, col) {
         const index = [row, col].toString();
         return this.nodes.get(index) || null;
-      }
+    }
+
     getNeighborRoomType(node, direction) {
       const neighbor = node.neighbors[direction];
       if (neighbor) {
@@ -248,6 +249,10 @@ class Node {
     }
 
     return directions;
+  }
+
+  isVal() {
+    return this.roomType !== RoomType.EMPTY;
   }
 }
   
