@@ -13,7 +13,7 @@ class QTE extends Phaser.Scene {
     this.qteCount = 5; // Number of QTEs to complete
     this.completedQTEs = 0; // Number of completed QTEs
     this.qteTimer = null; // Timer for QTE duration
-    this.qteTimerDuration = 5000; // Duration of QTE timer = 5 seconds
+    this.qteTimerDuration = 1000; // Duration of QTE timer = 5 seconds
     this.textCrawlSpeed = 100; // Speed of text crawl in milliseconds
     this.dialogueList = [
       "this is my dialogue one",
@@ -96,8 +96,7 @@ class QTE extends Phaser.Scene {
       this.gameover5.setVisible(true);
     },[], this)
   }
-
-  handleQTEInput(event) {
+  destroyQTEAnim(){
     //#region << IM SORRY FOR MONSTROSITY >>
     // destroys future timers upon a successful QTE and also sets the game over textures to invisible
     this.gameover1.setVisible(false);
@@ -111,7 +110,10 @@ class QTE extends Phaser.Scene {
     this.time4.destroy();
     this.time5.destroy();
     //#endregion
-    
+  }
+  handleQTEInput(event) {
+
+    this.destroyQTEAnim();
     if (this.qteInProgress && event.key === this.currentQTEInputOption) {
       console.log("QTE input handled!");
       this.qteInProgress = false;
@@ -123,10 +125,14 @@ class QTE extends Phaser.Scene {
         this.startQTE();
       } else {
         console.log("All QTEs completed");
+        this.handleQTESuccess();
       }
     }
   }
-
+  handleQTESuccess() {
+    console.log("All QTEs completed");
+    this.add.text(screen.center.x, screen.center.y, "All QTEs complete!", defaultQTEStyle).setOrigin(0.5, 0.5);
+  }
   handleQTEFailure() {
     console.log("QTE failure!");
     this.qteInProgress = false;

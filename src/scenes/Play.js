@@ -251,8 +251,7 @@ class Play extends Phaser.Scene {
       yoyo:true,
 
     });
-
-    this.anims.create({
+    this.heartBeat = this.anims.create({
       key: 'heartbeatEffect',
       frames: this.anims.generateFrameNames('shining_atlas',{
         prefix: 'heartbeat',
@@ -265,7 +264,6 @@ class Play extends Phaser.Scene {
     });
     
     //#endregion
-
     this.playerConfig={
       node: this.hotel.getNode(29,19), //set player's location
       cardDirec: this.CD.SOUTH, //cardinal direction
@@ -280,6 +278,10 @@ class Play extends Phaser.Scene {
     this.enemyRatio = Math.ceil((this.time.now/100)/this.hotel.visitCounter);
     //IF REACHES ABOVE 80 DO ANIMATION
     //IF ABOVE 90 DIE
+    if(this.enemyRatio>80 && !this.heartBeat.hasStarted){
+      this.heartBeat = this.add.sprite(this.eye.x,this.eye.y).play('heartbeatEffect').setScale(0.5); // play blink
+      console.log(this.enemyRatio);
+    }
     if (Phaser.Input.Keyboard.JustDown(keyM)) {
       this.minimapActive = !this.minimapActive; // Toggle the minimap state
       if (this.minimapActive) {
@@ -310,7 +312,7 @@ class Play extends Phaser.Scene {
     this.pupil.setVisible(false); // hide the current pupil
 
     this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
-    this.add.sprite(this.eye.x,this.eye.y).play('heartbeatEffect').setScale(0.5); // play blink
+    
     
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
       this.eye.setVisible(true);  // show eye
@@ -643,7 +645,7 @@ class Play extends Phaser.Scene {
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
     // Check if the queue has reached its maximum length
-    if (this.queue.length > 10) {
+    if (this.queue.length > 20) {
       // Remove the front element of the queue
       this.queue.shift();
     }
