@@ -264,7 +264,7 @@ class Play extends Phaser.Scene {
       this.moveEyeRight(); //update sprite
       this.eyeState.RIGHT.enter(); // update state
     }
-    if(this.currEyeState == this.eyeState.FORWARD && keySPACE.isDown) // if forward and the "SPACE" UPDATE PLAYER LOCATION
+    if(this.currEyeState == this.eyeState.FORWARD && keySPACE.isDown && this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec)) // if forward and the "SPACE" UPDATE PLAYER LOCATION
     {
       console.log("move forward");
       this.movePlayer();
@@ -286,7 +286,6 @@ class Play extends Phaser.Scene {
     }
   }
   //#endregion
-
 
   //#region << IMAGE DISPLAY >>
   displayImage(){
@@ -323,6 +322,7 @@ class Play extends Phaser.Scene {
   //#region << PLAYER HELPER FUNCTIONS >>
   movePlayer(){
     this.playerConfig.node=this.hotel.getNeighborInDirection(this.playerConfig.node, this.playerConfig.cardDirec)
+    this.hotel.printGraphAsMatrix(this.playerConfig.node);
   }
   
   
