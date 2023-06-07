@@ -460,6 +460,10 @@ class Play extends Phaser.Scene {
       case 2: //DEAD_END
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
         break;
+      case 13:
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
+      case 14:
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
       default:
         this.currHallwayImageString = 'hallway'+((this.currRoomType-3).toString());
         this.currImage = this.add.image(screen.center.x, screen.center.y, this.currHallwayImageString);
@@ -481,12 +485,8 @@ class Play extends Phaser.Scene {
     this.minimapSize = 64; // Size of each square in the minimap
     const alphaStep = 1 / this.queue.length; // Step for decrementing alpha
   
-    console.log("Entering drawMinimap");
-  
     // Create the background image
-    this.createBackground();
-    console.log("Added background image");
-  
+    this.createBackground();  
     // Create a new queue without duplicates
     const newQueue = [];
     const visitedNodes = new Set();
@@ -521,8 +521,6 @@ class Play extends Phaser.Scene {
       image.setAlpha(alpha);
   
       this.squareList.push(image);
-  
-      console.log(`Added blue image at (${x}, ${y}) with alpha ${alpha}`);
     });
   }
   
