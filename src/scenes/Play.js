@@ -43,7 +43,7 @@ class Play extends Phaser.Scene {
     this.load.image('deadend', './assets/hotel/deadend.png');
     this.load.image('door', './assets/hotel/door.png');
     //#region << HALLWAY VAR >>
-    this.load.image('hallway0', './assets/hotel/hallway.png');
+    this.load.image('hallway0', './assets/hotel/hallway0.png');
     this.load.image('hallway1', './assets/hotel/hallway1.png');
     this.load.image('hallway2', './assets/hotel/hallway2.png');
     this.load.image('hallway3', './assets/hotel/hallway3.png');
@@ -126,7 +126,7 @@ class Play extends Phaser.Scene {
     //#region << THE HOTEL MAP >>
     this.hotelMap = [
       [0,0,0,0,0,2,0],
-      [0,0,0,2,0,4,0],
+      [0,0,0,2,0,3,0],
       [0,2,0,8,0,5,0],
       [2,1,7,1,6,1,3],
       [0,9,0,0,0,12,0],
@@ -379,8 +379,9 @@ class Play extends Phaser.Scene {
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
         break;
       default:
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway'+this.currRoomType-3);
-        console.log(this.currRoomType);
+        this.currHallwayImageString = 'hallway'+((this.currRoomType-3).toString());
+        this.currImage = this.add.image(screen.center.x, screen.center.y, this.currHallwayImageString);
+        console.log(this.currHallwayImageString);
         console.log(this.currRoomType-3);
         console.log('hallway'+(this.currRoomType-3).toString());
         break;
@@ -469,7 +470,7 @@ class Play extends Phaser.Scene {
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
     // Check if the queue has reached its maximum length
-    if (this.queue.length > 20) {
+    if (this.queue.length > 10) {
       // Remove the front element of the queue
       this.queue.shift();
     }
