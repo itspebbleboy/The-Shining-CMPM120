@@ -90,9 +90,6 @@ class Play extends Phaser.Scene {
         },
         update: () => {
           // check input for switches
-          if(this.space()){
-            //update player location!
-          }
         }
       },
     }
@@ -151,6 +148,21 @@ class Play extends Phaser.Scene {
 
     this.eye.setDepth(2);
     this.pupil.setDepth(2);
+
+    this.anims.create({
+      key: 'blink182',
+      frames: this.anims.generateFrameNames('shining_atlas', { 
+          prefix: "pupil",
+          start: 2, 
+          end: 4, 
+      }),
+      showOnStart: true,
+      hideOnComplete: true,
+      frameRate: 20,
+      yoyo:true
+
+    });
+
     //#endregion
 
     this.playerConfig={
@@ -167,6 +179,24 @@ class Play extends Phaser.Scene {
   }
 
   //#region << HELPER FUNCTIONS FOR THE EYE >>
+
+  //EYE JJIGGG I FALL I WIGGLE WIGGLE FO SHORE 
+  moveEyeForward(){
+    if(this.stateCooldown){
+      return; // Exit if currently in cooldown
+    }
+    this.stateCooldown = true;  // Set the cooldown state to true
+    this.eye.setVisible(false);
+    this.pupil.setVisible(false);
+    this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
+    
+    this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
+      this.eye.setVisible(true);
+      this.pupil.setVisible(true);
+      this.stateCooldown = false;
+    }, [], this);
+   
+  }
   moveEyeRight(){//moves eye right
     if (this.stateCooldown) {
       return; // Exit if currently in cooldown
@@ -235,7 +265,6 @@ class Play extends Phaser.Scene {
     });
     eyeLeft.play();
   }
-
   //#endregion
   
   //#region << INPUT READERS >>
@@ -269,6 +298,8 @@ class Play extends Phaser.Scene {
       console.log("move forward");
       this.movePlayer();
       this.displayImage();
+      //MOVE EYE FORWARD FYUNCTION TRHAT DOES JIGGLE ANIMATION CALL GO HEREREJIEWRJUBHIKRUHJHUIJALR
+      this.moveEyeForward();
     }
 
     if(this.currEyeState == this.eyeState.LEFT && keyRIGHT.isDown) //if left & "->" go forward
