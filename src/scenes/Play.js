@@ -45,7 +45,8 @@ class Play extends Phaser.Scene {
     this.load.image('hallway', './assets/hotel/hallway.png');
     this.load.image('intersection', './assets/hotel/intersection.png');
     // << MAP ELEMENTS >>
-
+    this.load.image('brownBackground', './assets/ui/brownBackground.png');
+    this.load.image('blue', './assets/ui/blueMap.png');
     //#endregion
 
     //#region >> EYE STATE MACHINE >>
@@ -100,6 +101,7 @@ class Play extends Phaser.Scene {
     //#endregion
 
     this.eyeState.FORWARD.enter();
+    
   }
 
   create(){    
@@ -129,6 +131,8 @@ class Play extends Phaser.Scene {
       loop: false,
     });
     //#endregion
+
+
     //#region << THE HEDGE MAZE MAP >>
     /*
     this.hedgeMap = [
@@ -153,6 +157,7 @@ class Play extends Phaser.Scene {
     this.eye.setDepth(2);
     this.pupil.setDepth(2);
     //#endregion
+
     //#region << ANIMS >>
     this.anims.create({
       key: 'blink182',
@@ -184,7 +189,7 @@ class Play extends Phaser.Scene {
       if (this.minimapActive) {
         this.drawMinimap(); // Draw the minimap
       } else {
-        this.minimapGraphics.clear(); // Clear the minimap graphics
+        this.destroyMinimap();
       }
     }
 
@@ -192,7 +197,6 @@ class Play extends Phaser.Scene {
     if (this.minimapActive) {
       return;
     }
-
 
     this.currEyeState.update();
     this.readInput();
@@ -316,7 +320,6 @@ class Play extends Phaser.Scene {
     }
     if(this.currEyeState == this.eyeState.FORWARD && keySPACE.isDown && this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec)) // if forward and the "SPACE" UPDATE PLAYER LOCATION
     {
-      console.log("move forward");
       this.movePlayer();
       this.displayImage();
       //MOVE EYE FORWARD FYUNCTION TRHAT DOES JIGGLE ANIMATION CALL GO HEREREJIEWRJUBHIKRUHJHUIJALR
@@ -325,14 +328,12 @@ class Play extends Phaser.Scene {
 
     if(this.currEyeState == this.eyeState.LEFT && keyRIGHT.isDown) //if left & "->" go forward
     {
-      console.log("in left pressed right go forward");
       this.moveEyeRight(); //update sprite
       this.eyeState.FORWARD.enter(); //update state
     }
     
     if(this.currEyeState == this.eyeState.RIGHT && keyLEFT.isDown) //if right & "<-" go forward
     {
-      console.log("in right pressed left go forward");
       this.moveEyeLeft(); //update sprite
       this.eyeState.FORWARD.enter(); //update state
     }
@@ -373,57 +374,72 @@ class Play extends Phaser.Scene {
 
   //#region << MINI MAP >>
   drawMinimap() {
-    const minimapSize = 100; // Size of each square in the minimap
-    const alphaStep = 0.1; // Step for decrementing alpha
+    this.squareList = [];
+    this.minimapSize = 64; // Size of each square in the minimap
+    const alphaStep = 1 / this.queue.length; // Step for decrementing alpha
   
-    // Clear the minimap container
-    this.minimapContainer.removeAll(true);
+    console.log("Entering drawMinimap");
   
-    // Create the black background image
-    const background = this.add.image(0, 0, 'blackBackground');
-    background.setDisplaySize(this.hotel.numCols * minimapSize, this.hotel.numRows * minimapSize);
-    background.setOrigin(0);
-    this.minimapContainer.add(background);
+    // Create the background image
+    this.createBackground();
+    console.log("Added background image");
+  
+    // Create a new queue without duplicates
+    const newQueue = [];
+    const visitedNodes = new Set();
   
     // Iterate over the queue nodes
-    this.queue.forEach((node, index) => {
-      const { row, col } = node.index;
-      const x = col * minimapSize;
-      const y = row * minimapSize;
-      const alpha = 1 - (this.queue.length - index - 1) * alphaStep;
+    for (let i = this.queue.length - 1; i >= 0; i--) {
+      const node = this.queue[i];
+      const nodeKey = `${node.index[0]},${node.index[1]}`;
+  
+      // Check if the node has already been visited
+      if (!visitedNodes.has(nodeKey)) {
+        visitedNodes.add(nodeKey);
+        newQueue.unshift(node);
+      }
+    }
+  
+    // Iterate over the new queue nodes
+    newQueue.forEach((node, index) => {
+      const row = node.index[0];
+      const col = node.index[1];
+      console.log(`Node index: row=${row}, col=${col}`);
+  
+      const x = col * this.minimapSize;
+      const y = row * this.minimapSize;
+      console.log(`Image position: x=${x}, y=${y}`);
+      const alpha = 1 - index * alphaStep;
   
       // Create an image with the appropriate alpha
-      const image = this.add.image(x, y, 'blueSquare');
-      image.setDisplaySize(minimapSize, minimapSize);
+      const image = this.add.image(x, y, 'blue').setDepth(5);
+      image.setOrigin(0, 0);
+      image.setDisplaySize(this.minimapSize, this.minimapSize);
       image.setAlpha(alpha);
   
-      // Add the image to the minimap container
-      this.minimapContainer.add(image);
-    });
+      this.squareList.push(image);
   
-    // Iterate over the hotel nodes
-    this.hotel.nodes.forEach((node) => {
-      if (!this.queue.includes(node)) {
-        const { row, col } = node.index;
-        const x = col * minimapSize;
-        const y = row * minimapSize;
-  
-        // Create an empty image with alpha 0
-        const image = this.add.image(x, y, 'emptySquare');
-        image.setDisplaySize(minimapSize, minimapSize);
-        image.setAlpha(0);
-  
-        // Add the image to the minimap container
-        this.minimapContainer.add(image);
-      }
+      console.log(`Added blue image at (${x}, ${y}) with alpha ${alpha}`);
     });
   }
-
-  destroyMinimap() {
-    // Destroy all images in the minimap container
-    this.minimapContainer.removeAll(true);
-  }  
   
+  
+  destroyMinimap(){
+    this.squareList.forEach((square) => {
+      square.destroy();
+    });
+  
+    // Clear the squareList array
+    this.squareList = [];
+    this.background.destroy();
+  }
+
+
+  createBackground(){
+    this.background = this.add.image(screen.center.x,screen.center.y, 'brownBackground').setDepth(3);
+    this.background.setVisible(true);
+    this.background.setOrigin(0.5,0.5);
+  }
   //#endregion
 
   //#region << PLAYER HELPER FUNCTIONS >>
@@ -433,7 +449,7 @@ class Play extends Phaser.Scene {
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
     // Check if the queue has reached its maximum length
-    if (this.queue.length > 10) {
+    if (this.queue.length > 20) {
       // Remove the front element of the queue
       this.queue.shift();
     }
@@ -445,44 +461,44 @@ class Play extends Phaser.Scene {
     if(leftOrRight == 1){ //GOING RIGHT
         // if N -> E
         if(currCardDirection == this.CD.NORTH){
-            console.log("I am now East");
+            console.log("EAST");
             this.playerConfig.cardDirec = this.CD.EAST;
         }
         // if E -> S
         if(currCardDirection == this.CD.EAST){
-            console.log("I am now south");
+            console.log("SOUTH");
             this.playerConfig.cardDirec = this.CD.SOUTH;
         }
         // if S -> W
         if(currCardDirection == this.CD.SOUTH){
-            console.log("I am now West");
+            console.log("WEST");
             this.playerConfig.cardDirec = this.CD.WEST;
         }
         // if W -> N
         if(currCardDirection == this.CD.WEST){
-            console.log("I am now North");
+            console.log("NORTH");
             this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
     if(leftOrRight == 0){ //GOING LEFT
         // if N -> W
         if(currCardDirection == this.CD.NORTH){
-            console.log("I am now West");
+            console.log("WEST");
             this.playerConfig.cardDirec = this.CD.WEST;
         }
         // if W -> S
         if(currCardDirection == this.CD.WEST){
-          console.log("I am now south");
+          console.log("SOUTH");
           this.playerConfig.cardDirec = this.CD.SOUTH;
         }
         // if S -> E
         if(currCardDirection == this.CD.SOUTH){
-          console.log("I am now East");
+          console.log("EAST");
           this.playerConfig.cardDirec = this.CD.EAST;
         }
         // if E -> N
         if(currCardDirection == this.CD.EAST){
-          console.log("I am now North");
+          console.log("NORTH");
           this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
