@@ -39,10 +39,21 @@ class Play extends Phaser.Scene {
     //#region << LOADING HOTEL AND EYE IMAGES >>
     // << EYE ELEMENTS >>
     this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
-    // << HOTEL ELEMENTS >> 
+    //#region << HOTEL ELEMENTS >> 
     this.load.image('deadend', './assets/hotel/deadend.png');
     this.load.image('door', './assets/hotel/door.png');
-    this.load.image('hallway', './assets/hotel/hallway.png');
+    //#region << HALLWAY VAR >>
+    this.load.image('hallway0', './assets/hotel/hallway.png');
+    this.load.image('hallway1', './assets/hotel/hallway.png');
+    this.load.image('hallway2', './assets/hotel/hallway.png');
+    this.load.image('hallway3', './assets/hotel/hallway.png');
+    this.load.image('hallway4', './assets/hotel/hallway.png');
+    this.load.image('hallway5', './assets/hotel/hallway.png');
+    this.load.image('hallway6', './assets/hotel/hallway.png');
+    this.load.image('hallway7', './assets/hotel/hallway.png');
+    this.load.image('hallway8', './assets/hotel/hallway.png');
+    this.load.image('hallway9', './assets/hotel/hallway.png');
+    //#endregion
     this.load.image('intersection', './assets/hotel/intersection.png');
     // << MAP ELEMENTS >>
     this.load.image('brownBackground', './assets/ui/brownBackground.png');
