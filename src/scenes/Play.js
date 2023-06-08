@@ -662,12 +662,16 @@ class Play extends Phaser.Scene {
     SPECIAL_HALLWAY: 16,
     SPECIAL_DOOR: 17,
     */
+    /*
     if(this.currRoomType==null || this.currRoomType==0) { this.currImage = this.add.image(screen.center.x, screen.center.y, 'door'); }
     if(this.currRoomType==1) { this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection'); }
     if(this.currRoomType > 1 && this.currRoomType < 6){
+      if(this.playerConfig.node.roomType==RoomType.INTER){ //if ur looking at a dead end from an intersection
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
+      }
       
     }
-
+    */
     this.currImage.setDepth(0);
     if(this.prevImage){
       this.prevImage.destroy();
@@ -1085,7 +1089,6 @@ class Play extends Phaser.Scene {
   }
   //#endregion
  
-
   //#region << TEXT GRAPPLERS >>  
   createBlinkingText(x, y, textString, duration, style) {
     const text = this.add.text(x, y, textString, style);
