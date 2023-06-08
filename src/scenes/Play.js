@@ -20,6 +20,12 @@ class Play extends Phaser.Scene {
     this.inCooldown = false;
     this.squareListMap = [];
     this.squareListMiniMap = [];
+    this.jackAnimTimerDuration = 10*1000;
+    this.jackAnimDifference = 10*1000;
+    this.deathDifferenceDuration= 5*1000;
+    this.currentDeathAnimation = null;
+    this.memoryQueue = [];
+    this.visitedNodes = new Set();
     //#endregion
   }
 
@@ -342,21 +348,26 @@ class Play extends Phaser.Scene {
       cardDirec: this.CD.NORTH, //cardinal direction
       //imageDisplay: currImage, //& image display
     }
+    // Add delayed calls to the list
+    this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
+      // PLAY ANIMATION
+      console.log("playing anim 1");
+    }, [], this);
+    this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
+      // PLAY ANIMATION
+      console.log("playing anim 2");
+    }, [], this);
+    this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
+      console.log("playing death");
+      // YOU DIED SCREEN
+    }, [], this);
+
     this.createCompassGrid(this.playerConfig.cardDirec);
     this.movePlayer();
     this.displayImage(this.playerConfig.cardDirec);
   }
 
   update(){
-    this.enemyRatio = Math.ceil((this.time.now/100)/this.hotel.visitCounter);
-    //IF REACHES ABOVE 80 DO ANIMATION
-    //IF ABOVE 90 DIE
-    if(this.enemyRatio>80 && !this.heartBeat.hasStarted){
-      this.heartBeat = this.add.sprite(this.eye.x,this.eye.y).play('heartbeatEffect').setScale(0.5); // play blink
-      //console.log(this.enemyRatio);
-    }
-    //console.log("this.inCooldown: " +this.inCooldown);
-    //console.log(this.currentGameState);
     this.currentGameState.update();
 
     if (this.mapsActive) {// If the maps are active, prevent other inputs from affecting the scene
@@ -751,10 +762,9 @@ class Play extends Phaser.Scene {
       // Remove the front element of the queue
       this.queue.shift();
     }
-    this.hotel.visitIncrementor(this.playerConfig.node);
+    this.visitIncrementor(this.playerConfig.node);
     this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
   }
-  
   
   changeCardinalDirection(currCardDirection, leftOrRight){
     //given the current cardinal direction & if the movement changes player's curr cardinal direction
@@ -803,6 +813,45 @@ class Play extends Phaser.Scene {
         }
     }
     this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
+  }
+
+  visitIncrementor(node) {
+    const nodeIndex = node.getIndex();
+  
+    if (this.memoryQueue.includes(nodeIndex)) {
+      return; // Skip adding to visitedNodes and incrementing visitCounter
+    }
+    
+    if (!this.visitedNodes.has(nodeIndex)) {
+      this.visitedNodes.add(nodeIndex);
+      this.memoryQueue.push(nodeIndex); 
+    }
+    if (this.memoryQueue.length > 5) {
+      this.memoryQueue.shift(); // Remove the oldest element from the queue
+    }
+    this.visitCounter++;
+    this.restartAllDelayedCalls();
+    //reset all delayed calls
+  }
+
+  restartAllDelayedCalls() {
+    this.jackAnim0Timer.remove();
+    this.jackAnim1Timer.remove();
+    this.deathAnimTimer.remove();
+    
+    this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, () => {
+      // PLAY ANIMATION
+      console.log("playing anim 1");
+    }, [], this);
+    this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, () => {
+      // PLAY ANIMATION
+      console.log("playing anim 2");
+    }, [], this);
+    this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, () => {
+      console.log("playing death");
+      // YOU DIED SCREEN
+    }, [], this);
+    console.log("resetting anim timers");
   }
   //#endregion
  

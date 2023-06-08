@@ -199,23 +199,6 @@ class Graph {
     
         return -1; // Indicates that there is no path between the start and end nodes
     }
-
-    visitIncrementor(node) {
-      const nodeIndex = node.getIndex();
-    
-      if (this.memoryQueue.includes(nodeIndex)) {
-        return; // Skip adding to visitedNodes and incrementing visitCounter
-      }
-    
-      if (!this.visitedNodes.has(nodeIndex)) {
-        this.visitedNodes.add(nodeIndex);
-        this.visitCounter++;
-        this.memoryQueue.push(nodeIndex);
-        if (this.memoryQueue.length > 5) {
-          this.memoryQueue.shift(); // Remove the oldest element from the queue
-        }
-      }
-    }
     //#endregion
 
 }
