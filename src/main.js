@@ -65,6 +65,7 @@ let depth = {
   miniMapSquares: 5,
   mapBackground: 6,
   mapSquares: 7,
+  deathAnims: 8,
 }
 
 //#endregion

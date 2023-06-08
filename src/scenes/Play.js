@@ -20,7 +20,7 @@ class Play extends Phaser.Scene {
     this.inCooldown = false;
     this.squareListMap = [];
     this.squareListMiniMap = [];
-    this.jackAnimTimerDuration = 10*1000;
+    this.jackAnimTimerDuration = 30*1000;
     this.jackAnimDifference = 10*1000;
     this.deathDifferenceDuration= 5*1000;
     this.currentDeathAnimation = null;
@@ -335,13 +335,12 @@ class Play extends Phaser.Scene {
           end: 4, 
       }),
       showOnStart: true,
-      hideOnComplete: true,
       frameRate: 20,
       yoyo:true,
     });
 
     // DEATH ANIMATIONS / JACK IS NEAR
-    this.anims.create({
+    this.heartbeat1= this.anims.create({
       key: 'heartbeat1',
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
@@ -349,11 +348,11 @@ class Play extends Phaser.Scene {
         end: 2
       }),
       yoyo: true,
-      frameRate: 20,
+      frameRate: 3,
       repeat: -1
     });
 
-    this.anims.create({
+    this.heartbeat2= this.anims.create({
       key: 'heartbeat2',
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
@@ -361,18 +360,19 @@ class Play extends Phaser.Scene {
         end: 4
       }),
       yoyo: true,
-      frameRate: 20,
+      frameRate: 3,
       repeat: -1
     });
 
-    this.anims.create({
+    this.heartbeat3= this.anims.create({
       key: 'heartbeat3',
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
-        start: 4,
+        start: 2,
         end: 6
       }),
-      frameRate: 20,
+      frameRate: 1.5,
+      repeat: -1,
     });
 
     //#endregion
@@ -385,17 +385,6 @@ class Play extends Phaser.Scene {
       //imageDisplay: currImage, //& image display
     }
     // Add delayed calls to the list
-    this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
-      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1'); // play blink
-      console.log("playing anim 1");
-    }, [], this);
-    this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
-      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2');
-      console.log("playing anim 2");
-    }, [], this);
-    this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
-      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3');
-    }, [], this);
 
     this.createCompassGrid(this.playerConfig.cardDirec);
     this.movePlayer();
@@ -410,6 +399,8 @@ class Play extends Phaser.Scene {
     }
     this.currEyeState.update();
     this.readInput();
+
+    //console.log("heartbeat1 repeat:" + this.heartbeat1.repeat + ", heatbeat1 hideOnComplete: " + this.heartbeat1.hideOnComplete);
   }
 
   //#region << HELPER FUNCTIONS FOR THE EYE >>
@@ -869,20 +860,38 @@ class Play extends Phaser.Scene {
   }
 
   restartAllDelayedCalls() {
-    this.jackAnim0Timer.remove();
-    this.jackAnim1Timer.remove();
-    this.deathAnimTimer.remove();
-    
+    if(this.jackAnim0Timer) { this.jackAnim0Timer.remove(); }
+    if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
+    if(this.deathAnimTimer) { this.deathAnimTimer.remove(); }
+
+    if(this.heartBeat1) {
+      this.heartBeat1.stop();
+      this.heartBeat1.visible = false;
+    }if(this.heartBeat2){
+      this.heartBeat2.stop();
+      this.heartBeat2.visible = false;
+    }if(this.heartBeat3){
+      this.heartBeat3.stop();
+      this.heartBeat3.visible = false;
+    }
     this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
-      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1'); // play blink
+      this.heartbeat1.repeat=-1;
+      this.heartbeat1.hideOnComplete = false;
+      this.heartBeat1 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1').setDepth(depth.deathAnims); // play blink
+
       console.log("playing anim 1");
     }, [], this);
     this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
-      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2');
+      this.heartbeat2.repeat=-1;
+      this.heartbeat2.hideOnComplete = false;
+      this.heartBeat2 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2').setDepth(depth.deathAnims);
       console.log("playing anim 2");
     }, [], this);
     this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
-      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3');
+      this.heartbeat3.repeat=-1;
+      this.heartbeat3.hideOnComplete = false;
+      this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
+
     }, [], this);
   }
   //#endregion
