@@ -40,11 +40,14 @@ class Play extends Phaser.Scene {
     keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     //#endregion
 
-    //#region << LOADING HOTEL AND EYE IMAGES >>
+    //#region << LOADING HOTEL, HEDGE, AND EYE IMAGES >>
     // << EYE ELEMENTS >>
     this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
     //#region << HOTEL ELEMENTS >> 
-    this.load.image('deadend', './assets/hotel/deadend.png');
+    this.load.image('deadend0', './assets/hotel/deadend0.png');
+    this.load.image('deadend1', './assets/hotel/deadend1.png');
+    this.load.image('deadend2', './assets/hotel/deadend2.png');
+    this.load.image('deadend3', './assets/hotel/deadend3.png');
     this.load.image('door', './assets/hotel/door.png');
     this.load.image('roomDoor','./assets/hotel/roomDoor.png');
     this.load.image('intersection', './assets/hotel/intersection.png');
@@ -63,7 +66,9 @@ class Play extends Phaser.Scene {
     //#endregion
     //#endregion
     //#region << HEDGE ELEMENTS >>
-    this.load.image('hedgeDeadEnd', './assets/hedge/hedgeDeadEnd');
+    this.load.image('hedgeDeadEnd0', './assets/hedge/hedgeDeadEnd0');
+    this.load.image('hedgeDeadEnd1','./assets/hedge/hedgeDeadEnd1');
+    this.load.image('hedgeDeadEnd2','./assets/hedge/hedgeDeadEnd2');
     this.load.image('hedgeEnd', './assets/hedge/hedgeEnd');
     this.load.image('hedgeIntersection', './assets/hedge/hedgeIntersection');
     this.load.image('hedgeWall', './assets/hedge/hedgeWall');
@@ -329,18 +334,7 @@ class Play extends Phaser.Scene {
       yoyo:true,
 
     });
-    this.heartBeat = this.anims.create({
-      key: 'heartbeatEffect',
-      frames: this.anims.generateFrameNames('shining_atlas',{
-        prefix: 'heartbeat',
-        start:1,
-        end: 3,
-      }),
-      hideOnComplete: true,
-      frameRate: 20,
-      paused: true
-    });
-    
+
     //#endregion
     
     this.playerConfig={
@@ -384,7 +378,6 @@ class Play extends Phaser.Scene {
     this.pupil.setVisible(false); // hide the current pupil
 
     this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
-    
     
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
       this.eye.setVisible(true);  // show eye
@@ -529,7 +522,7 @@ class Play extends Phaser.Scene {
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
         break;
       case 2: //DEAD_END
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend0');
         break;
       case 13:
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
