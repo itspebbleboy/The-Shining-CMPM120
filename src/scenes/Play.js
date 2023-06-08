@@ -12,10 +12,20 @@ class Play extends Phaser.Scene {
       SOUTH: 'south',
       EAST: 'east',
     }
-    this.minimapActive = false; // Flag to indicate if minimap is active or not
-    this.cooldownDuration = 200; // Cooldown duration in milliseconds (0.2 seconds)
+    this.mapsActive = false; // Flag to indicate if minimap is active or not
+    this.cooldownDuration = 300; // Cooldown duration in milliseconds (0.2 seconds)
     this.lastSpacePressTime = 0; // Timestamp of the last space key press
     this.queue = [];
+    this.compassGrid = [];
+    this.inCooldown = false;
+    this.squareListMap = [];
+    this.squareListMiniMap = [];
+    this.jackAnimTimerDuration = 10*1000;
+    this.jackAnimDifference = 10*1000;
+    this.deathDifferenceDuration= 5*1000;
+    this.currentDeathAnimation = null;
+    this.memoryQueue = [];
+    this.visitedNodes = new Set();
     //#endregion
   }
 
@@ -75,6 +85,8 @@ class Play extends Phaser.Scene {
     // << MAP ELEMENTS >>
     this.load.image('brownBackground', './assets/ui/brownBackground.png');
     this.load.image('blue', './assets/ui/blueMap.png');
+    this.load.image('tan', './assets/ui/tanSmall.png');
+    this.load.image('tanBackground', './assets/ui/tanBackground.png');
     //#endregion
 
     //#region >> EYE STATE MACHINE >>
@@ -127,9 +139,93 @@ class Play extends Phaser.Scene {
       },
     }
     //#endregion
-
     this.eyeState.FORWARD.enter();
     
+    //#region << GAME VIEW STATE MACHINE >> 
+    this.upAndDownArrowCoolDown = this.time.addEvent({
+      delay: this.cooldownDuration,
+      callback: this.onSpaceCooldownComplete,
+      callbackScope: this,
+      loop: false,
+      onComplete: this.inCooldown = false,
+    });
+
+    this.gameState = {
+      ROOMS: {
+        name: 'room',
+        enter: () => {
+          this.currentGameState = this.gameState.ROOMS;
+          this.destroyMiniMap();
+          this.destroyBackground();
+          this.mapsActive = false;
+          this.upAndDownArrowCoolDown = this.time.addEvent({
+            delay: this.cooldownDuration,
+            callback: this.onSpaceCooldownComplete,
+            callbackScope: this,
+            loop: false,
+            onComplete: this.inCooldown = false,
+          });
+          console.log("ENTERED ROOMS STATE");
+        },
+        update: () => {
+          //console.log("this.inCooldown: " +this.inCooldown);
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown) {
+            this.gameState.MINIMAP.enter();
+          }
+          //if up arrow enter MINIMAP state
+        },
+      },
+      MINIMAP: {
+        name: 'miniMap',
+        enter: () => {
+          this.currentGameState = this.gameState.MINIMAP;
+          this.drawMinimap();
+          this.destroyMap();
+          this.mapsActive = true;
+          this.inCooldown = true;
+          this.upAndDownArrowCoolDown = this.time.addEvent({
+            delay: this.cooldownDuration,
+            callback: this.onSpaceCooldownComplete,
+            callbackScope: this,
+            loop: false,
+          });
+          console.log("ENTERED MINIMAP STATE");
+        },
+        update: () => {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown) {
+            this.gameState.MAP.enter();
+          } else if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown) {
+            this.gameState.ROOMS.enter();
+          }
+        },
+      },
+      MAP: {
+        name: 'map',
+        enter: () => {
+          this.currentGameState = this.gameState.MAP;
+          this.drawMap();
+          this.destroyMiniMap();
+          this.inCooldown = true;
+          this.upAndDownArrowCoolDown = this.time.addEvent({
+            delay: this.cooldownDuration,
+            callback: this.onSpaceCooldownComplete,
+            callbackScope: this,
+            loop: false,
+            onComplete: this.inCooldown = false,
+          });
+          console.log("ENTERED MAP STATE");
+        },
+        update: () => {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown) {
+            this.gameState.MINIMAP.enter();
+          }
+        },
+      }
+    };
+    
+    this.gameState.ROOMS.enter();
+    //#endregion 
+    //this.upAndDownArrowCoolDown = null;
   }
 
   create(){    
@@ -138,7 +234,7 @@ class Play extends Phaser.Scene {
     this.hotelMap = [
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //0
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //1
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0], //2
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0], //2
       [0,0,0,0,0,0,0,0,0,0,0,0,0,13,14,0,0,0,0,1,9,8,1,2,0,0,0,0,0,0,0,0], //3
       [0,0,0,0,0,0,0,0,0,2,0,0,0,3,0,0,0,0,0,6,0,0,5,0,0,0,0,0,0,0,0,0], //4
       [0,0,0,0,0,0,0,0,2,1,5,9,8,1,4,5,3,7,5,1,2,0,9,0,0,0,0,0,0,0,0,0], //5
@@ -166,25 +262,14 @@ class Play extends Phaser.Scene {
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,12,0,0,0,0,0,0,0,0],//27
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,8,0,0,0,0,0,0,0,0],//28
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,6,0,0,0,0,0,0,0,0], //29
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,7,9,1,0,0,0,0,0,0,0,0], //30
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //31   
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,3,7,9,1,0,0,0,0,0,0,0,0], //30
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0], //31   
     ]
-    console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
+    //console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
     this.hotel = new Graph();
     this.hotel.buildGraph(this.hotelMap);
     this.hotel.printGraph();
     //#endregion
-
-    //#region <<SPACE BAR TIMER >>
-    // Create a Phaser Time Event for the space key cooldown
-    this.spaceCooldownEvent = this.time.addEvent({
-      delay: this.cooldownDuration,
-      callback: this.onSpaceCooldownComplete,
-      callbackScope: this,
-      loop: false,
-    });
-    //#endregion
-
 
     //#region << THE HEDGE MAZE MAP >>
     /*
@@ -237,8 +322,8 @@ class Play extends Phaser.Scene {
     this.eye.setOrigin(0.5); // Adjust the anchor point of the sprites to the center
     this.pupil.setOrigin(0.5);
 
-    this.eye.setDepth(2);
-    this.pupil.setDepth(2);
+    this.eye.setDepth(depth.eye);
+    this.pupil.setDepth(depth.eye);
     //#endregion
 
     //#region << ANIMS >>
@@ -253,7 +338,6 @@ class Play extends Phaser.Scene {
       hideOnComplete: true,
       frameRate: 20,
       yoyo:true,
-
     });
 
     // DEATH ANIMATIONS / JACK IS NEAR
@@ -265,7 +349,8 @@ class Play extends Phaser.Scene {
         end: 2
       }),
       yoyo: true,
-      frameRate: 20
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
@@ -276,7 +361,8 @@ class Play extends Phaser.Scene {
         end: 4
       }),
       yoyo: true,
-      frameRate: 20
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
@@ -286,38 +372,42 @@ class Play extends Phaser.Scene {
         start: 4,
         end: 8
       }),
-      frameRate: 20
+      frameRate: 20,
     });
 
     //#endregion
 
+    //#endregion
+    
     this.playerConfig={
-      node: this.hotel.getNode(29,19), //set player's location
-      cardDirec: this.CD.SOUTH, //cardinal direction
+      node: this.hotel.getNode(31,19), //set player's location
+      cardDirec: this.CD.NORTH, //cardinal direction
       //imageDisplay: currImage, //& image display
     }
+    // Add delayed calls to the list
+    this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1'); // play blink
+      console.log("playing anim 1");
+    }, [], this);
+    this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2');
+      console.log("playing anim 2");
+    }, [], this);
+    this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3');
+    }, [], this);
+
+    this.createCompassGrid(this.playerConfig.cardDirec);
     this.movePlayer();
     this.displayImage(this.playerConfig.cardDirec);
   }
 
   update(){
-    this.enemyRatio = Math.ceil((this.time.now/100)/this.hotel.visitCounter);
-    //IF REACHES ABOVE 80 DO ANIMATION
-    //IF ABOVE 90 DIE
-    if (Phaser.Input.Keyboard.JustDown(keyM)) {
-      this.minimapActive = !this.minimapActive; // Toggle the minimap state
-      if (this.minimapActive) {
-        this.drawMinimap(); // Draw the minimap
-      } else {
-        this.destroyMinimap();
-      }
-    }
+    this.currentGameState.update();
 
-    // If the minimap is active, prevent other inputs from affecting the scene
-    if (this.minimapActive) {
+    if (this.mapsActive) {// If the maps are active, prevent other inputs from affecting the scene
       return;
     }
-
     this.currEyeState.update();
     this.readInput();
   }
@@ -334,7 +424,6 @@ class Play extends Phaser.Scene {
     this.pupil.setVisible(false); // hide the current pupil
 
     this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
-  
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
       this.eye.setVisible(true);  // show eye
       this.pupil.setVisible(true); // show pupil
@@ -415,7 +504,6 @@ class Play extends Phaser.Scene {
   //#region << INPUT READERS >>
   space() {//returns true if space bar
     if (Phaser.Input.Keyboard.JustDown(keySPACE) && !this.stateCooldown/*&& this.spaceCooldownEvent.getElapsed() === 0*/) {
-      //this.spaceCooldownEvent.reset({ delay: this.cooldownDuration });
       return true;
     }
     return false;
@@ -481,6 +569,12 @@ class Play extends Phaser.Scene {
       case 2: //DEAD_END
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend0');
         break;
+      case 13:
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
+        break;
+      case 14:
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'roomDoor');
+        break;
       default:
         this.currHallwayImageString = 'hallway'+((this.currRoomType-3).toString());
         this.currImage = this.add.image(screen.center.x, screen.center.y, this.currHallwayImageString);
@@ -496,18 +590,14 @@ class Play extends Phaser.Scene {
   }
   //#endregion
 
-  //#region << MINI MAP >>
+  //#region << MAPS >>
   drawMinimap() {
-    this.squareList = [];
+    this.squareListMiniMap = [];
     this.minimapSize = 64; // Size of each square in the minimap
     const alphaStep = 1 / this.queue.length; // Step for decrementing alpha
   
-    console.log("Entering drawMinimap");
-  
     // Create the background image
-    this.createBackground();
-    console.log("Added background image");
-  
+    this.createBackground('tanBackground');  
     // Create a new queue without duplicates
     const newQueue = [];
     const visitedNodes = new Set();
@@ -536,37 +626,163 @@ class Play extends Phaser.Scene {
       const alpha = 1 - index * alphaStep;
   
       // Create an image with the appropriate alpha
-      const image = this.add.image(x, y, 'blue').setDepth(5);
+      const image = this.add.image(x, y, 'blue').setDepth(depth.miniMapSquares);
       image.setOrigin(0, 0);
       image.setDisplaySize(this.minimapSize, this.minimapSize);
       image.setAlpha(alpha);
   
-      this.squareList.push(image);
-  
-      console.log(`Added blue image at (${x}, ${y}) with alpha ${alpha}`);
+      this.squareListMiniMap.push(image);
     });
   }
   
-  
-  destroyMinimap(){
-    this.squareList.forEach((square) => {
-      square.destroy();
-    });
-  
-    // Clear the squareList array
-    this.squareList = [];
-    this.background.destroy();
+  drawMap(){
+    this.squareListMap = [];
+    this.minimapSize = 64; // Size of each square in the minimap
+    this.createBackground('brownBackground');
+    for (let row = 0; row < this.hotel.numRows; row++) {
+      for (let col = 0; col < this.hotel.numCols; col++) {
+        const index = [row, col].toString();
+        const currentNode = this.hotel.nodes.get(index);
+        if(currentNode.isVal()){
+          const x = col * this.minimapSize;
+          const y = row * this.minimapSize;
+          //console.log(`Image position: x=${x}, y=${y}`);
+          const image = this.add.image(x, y, 'tan').setDepth(5);
+          image.setOrigin(0, 0);
+          image.setDisplaySize(this.minimapSize, this.minimapSize);
+          this.squareListMap.push(image);
+          //image.setAlpha(alpha);
+          //calculate where node should be
+          //add square image at coordinates
+          //add image to array
+        }
+      }
+    }
   }
-  generateNeighborSquares() {
-    this.minimapSize = 64;
-    
-  }
-  
-  createBackground(){
-    this.background = this.add.image(screen.center.x,screen.center.y, 'brownBackground').setDepth(3);
+  createBackground(color){
+    if(this.background){ this.background.destroy(); }
+    this.background = this.add.image(screen.center.x,screen.center.y, color).setDepth(depth.miniMapBackground);
     this.background.setVisible(true);
     this.background.setOrigin(0.5,0.5);
+    console.log("creating background: " +color);
   }
+  destroyMiniMap() {
+    if (this.squareListMiniMap.length === 0) {
+      return;
+    }
+    this.squareListMiniMap.forEach((square) => {
+      square.destroy();
+    });
+    this.squareListMiniMap = [];
+    //this.destroyBackground();
+    console.log("destroyed minimap background");
+  }
+  
+  destroyMap() {
+    if (this.squareListMap.length === 0) {
+      return;
+    }
+    this.squareListMap.forEach((square) => {
+      square.destroy();
+    });
+    this.squareListMap = [];
+    //this.destroyBackground();
+    console.log("destroyed map background");
+  }
+
+  destroyBackground(){
+    if(this.background){ this.background.destroy(); }
+  }
+  createCompassGrid(facingDirection, availableDirections) {
+    const gridSize = 3;
+    const gridAlpha = 0.5;
+  
+    const centerX = game.config.width / 2;
+    const centerY = game.config.height / 2 - 800;
+  
+    const gridX = centerX - gridSize * 32;
+    const gridY = centerY - gridSize * 32;
+  
+    // Create the compass grid
+    for (let row = 0; row < gridSize; row++) {
+      this.compassGrid[row] = [];
+      for (let col = 0; col < gridSize; col++) {
+        const offsetX = col * 64;
+        const offsetY = row * 64;
+  
+        const imageX = gridX + offsetX;
+        const imageY = gridY + offsetY;
+  
+        if (row === 1 && col === 1) {
+          // Center square
+          this.compassGrid[row][col] = this.add.image(imageX, imageY, 'blue').setDepth(3).setAlpha(1);
+        } else {
+          this.compassGrid[row][col] = this.add.image(imageX, imageY, 'blue').setDepth(3).setAlpha(0);
+        }
+      }
+    }
+  
+    //return this.compassGrid;
+  }
+  
+  updateCompassGrid(facingDirection, availableDirections) {
+    const gridSize = 3;
+    const gridAlpha = 0.5;
+  
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        const image = this.compassGrid[row][col];
+  
+        if (row === 1 && col === 1) {
+          // Center square
+          image.setAlpha(1);
+        } else {
+          const direction = this.getDirectionFromGridOffset(facingDirection, row - 1, col - 1);
+  
+          if (availableDirections.includes(direction)) {
+            // Available direction
+            image.setAlpha(gridAlpha);
+          } else {
+            // Unavailable direction
+            image.setAlpha(0);
+          }
+        }
+      }
+    }
+  }
+  
+  getDirectionFromGridOffset(facingDirection, rowOffset, colOffset) {
+    const directionMapping = {
+      [this.CD.NORTH]: {
+        rowOffset: -1,
+        colOffset: 0,
+      },
+      [this.CD.WEST]: {
+        rowOffset: 0,
+        colOffset: -1,
+      },
+      [this.CD.SOUTH]: {
+        rowOffset: 1,
+        colOffset: 0,
+      },
+      [this.CD.EAST]: {
+        rowOffset: 0,
+        colOffset: 1,
+      },
+    };
+  
+    for (const direction in directionMapping) {
+      const { rowOffset: expectedRowOffset, colOffset: expectedColOffset } = directionMapping[direction];
+  
+      if (rowOffset === expectedRowOffset && colOffset === expectedColOffset) {
+        return direction;
+      }
+    }
+  
+    return null;
+  }
+
+
   //#endregion
 
   //#region << PLAYER HELPER FUNCTIONS >>
@@ -576,14 +792,13 @@ class Play extends Phaser.Scene {
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
     // Check if the queue has reached its maximum length
-    if (this.queue.length > 10) {
+    if (this.queue.length > 20) {
       // Remove the front element of the queue
       this.queue.shift();
     }
-    this.hotel.visitIncrementor(this.playerConfig.node);
-    this.generateNeighborSquares();
+    this.visitIncrementor(this.playerConfig.node);
+    this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
   }
-  
   
   changeCardinalDirection(currCardDirection, leftOrRight){
     //given the current cardinal direction & if the movement changes player's curr cardinal direction
@@ -631,6 +846,44 @@ class Play extends Phaser.Scene {
           this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
+    this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
+  }
+
+  visitIncrementor(node) {
+    const nodeIndex = node.getIndex();
+  
+    if (this.memoryQueue.includes(nodeIndex)) {
+      return; // Skip adding to visitedNodes and incrementing visitCounter
+    }
+    
+    if (!this.visitedNodes.has(nodeIndex)) {
+      this.visitedNodes.add(nodeIndex);
+      this.memoryQueue.push(nodeIndex); 
+    }
+    if (this.memoryQueue.length > 5) {
+      this.memoryQueue.shift(); // Remove the oldest element from the queue
+    }
+    this.visitCounter++;
+    this.restartAllDelayedCalls();
+    //reset all delayed calls
+  }
+
+  restartAllDelayedCalls() {
+    this.jackAnim0Timer.remove();
+    this.jackAnim1Timer.remove();
+    this.deathAnimTimer.remove();
+    
+    this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1'); // play blink
+      console.log("playing anim 1");
+    }, [], this);
+    this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2');
+      console.log("playing anim 2");
+    }, [], this);
+    this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3');
+    }, [], this);
   }
   //#endregion
  

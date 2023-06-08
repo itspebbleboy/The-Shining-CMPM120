@@ -104,20 +104,20 @@ class Graph {
     }
     printGraphAsMatrix(node) {
       let matrix = "";
-    
+  
       for (let row = 0; row < this.numRows; row++) {
         let rowValues = "";
-    
+  
         for (let col = 0; col < this.numCols; col++) {
           const index = [row, col].toString();
           const currentNode = this.nodes.get(index);
-    
+  
           if (currentNode === node) {
             rowValues += "[0] ";
           } else {
             const roomType = currentNode.roomType;
             let nodeRepresentation = "";
-    
+  
             if (roomType === RoomType.EMPTY) {
               nodeRepresentation = "[ ]";
             } else if (roomType === RoomType.INTER) {
@@ -129,15 +129,19 @@ class Graph {
               nodeRepresentation = "[H]";
             } else if (roomType === RoomType.DEAD_END) {
               nodeRepresentation = "[D]";
+            } else if (roomType === RoomType.SPECIAL_HALLWAY) {
+              nodeRepresentation = "[S]";
+            } else if (roomType === RoomType.SPECIAL_DOOR) {
+              nodeRepresentation = "[D]";
             }
-    
+  
             rowValues += nodeRepresentation + " ";
           }
         }
-    
+  
         matrix += rowValues.trim() + "\n";
       }
-    
+  
       console.log(matrix);
     }
     
@@ -148,7 +152,8 @@ class Graph {
     getNode(row, col) {
         const index = [row, col].toString();
         return this.nodes.get(index) || null;
-      }
+    }
+
     getNeighborRoomType(node, direction) {
       const neighbor = node.neighbors[direction];
       if (neighbor) {
@@ -194,15 +199,6 @@ class Graph {
     
         return -1; // Indicates that there is no path between the start and end nodes
     }
-
-    visitIncrementor(node) {
-      const nodeIndex = node.getIndex();
-  
-      if (!this.visitedNodes.has(nodeIndex)) {
-        this.visitedNodes.add(nodeIndex);
-        this.visitCounter++;
-      }
-    }
     //#endregion
 
 }
@@ -244,6 +240,10 @@ class Node {
     }
 
     return directions;
+  }
+
+  isVal() {
+    return this.roomType !== RoomType.EMPTY;
   }
 }
   
