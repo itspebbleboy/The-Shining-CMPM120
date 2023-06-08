@@ -587,10 +587,10 @@ class Play extends Phaser.Scene {
   drawMinimap() {
     this.squareListMiniMap = [];
     this.minimapSize = 64; // Size of each square in the minimap
-    const alphaStep = 1 / this.queue.length; // Step for decrementing alpha
+    const alphaStep = 1 / (this.queue.length - 1); // Step for decrementing alpha
   
     // Create the background image
-    this.createBackground('tanBackground');  
+    this.createBackground('tanBackground');
     // Create a new queue without duplicates
     const newQueue = [];
     const visitedNodes = new Set();
@@ -608,25 +608,29 @@ class Play extends Phaser.Scene {
     }
   
     // Iterate over the new queue nodes
-    newQueue.forEach((node, index) => {
+    for (let i = newQueue.length - 1; i >= 0; i--) {
+      const node = newQueue[i];
+      const index = newQueue.length - 1 - i;
       const row = node.index[0];
       const col = node.index[1];
       console.log(`Node index: row=${row}, col=${col}`);
-  
+    
       const x = col * this.minimapSize;
       const y = row * this.minimapSize;
       console.log(`Image position: x=${x}, y=${y}`);
       const alpha = 1 - index * alphaStep;
-  
+    
       // Create an image with the appropriate alpha
       const image = this.add.image(x, y, 'blue').setDepth(depth.miniMapSquares);
       image.setOrigin(0, 0);
       image.setDisplaySize(this.minimapSize, this.minimapSize);
       image.setAlpha(alpha);
-  
+    
       this.squareListMiniMap.push(image);
-    });
+    }
+    
   }
+  
   
   drawMap(){
     this.squareListMap = [];
