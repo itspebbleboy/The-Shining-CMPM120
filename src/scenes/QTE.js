@@ -33,11 +33,19 @@ class QTE extends Phaser.Scene {
   create() {
     //#region << LOADING IN TEXTBOX AND GAME OVER >>
     this.textBox = this.add.image(screen.center.x, screen.center.y + 400, 'textBox').setOrigin(0.5, 0);
-    this.gameover1 = this.add.image(screen.center.x,screen.center.y, 'shining_atlas', 'gameover1').setVisible(false);
-    this.gameover2 = this.add.image(screen.center.x,screen.center.y, 'shining_atlas', 'gameover2').setVisible(false);
-    this.gameover3 = this.add.image(screen.center.x,screen.center.y, 'shining_atlas', 'gameover3').setVisible(false);
-    this.gameover4 = this.add.image(screen.center.x,screen.center.y, 'shining_atlas', 'gameover4').setVisible(false);
-    this.gameover5 = this.add.image(screen.center.x,screen.center.y, 'shining_atlas', 'gameover5').setVisible(false);
+  
+    // << QTE ANIMATION >>
+    this.gameover = this.anims.create({
+      key: 'qte',
+      frames: this.anims.generateFrameNames('shining_atlas', {
+        prefix: 'jack',
+        start: 1,
+        end: 8
+      }),
+      frameRate: 1.5,
+      repeat: -1,
+    });
+
     //#endregion
     this.startNextDialogue();
 
@@ -73,47 +81,11 @@ class QTE extends Phaser.Scene {
     this.qteTimer = this.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
     console.log("QTE timer started!");
 
-    this.timeRunningOut();
     this.input.keyboard.removeAllListeners();
     this.input.keyboard.on("keydown-" + this.currentQTEInputOption.toUpperCase(), this.handleQTEInput, this);
   }
   
-  // creates a bunch of fucking timers at specific points and sets the game over screen relevent to visible
-  timeRunningOut(){
-    this.time1 = this.time.delayedCall(this.qteTimerDuration*0.4, ()=>{
-      this.gameover1.setVisible(true);
-    },[], this)
-    this.time2 = this.time.delayedCall(this.qteTimerDuration*0.6, ()=>{
-      this.gameover2.setVisible(true);
-    },[], this)
-    this.time3 = this.time.delayedCall(this.qteTimerDuration*0.75, ()=>{
-      this.gameover3.setVisible(true);
-    },[], this)
-    this.time4 = this.time.delayedCall(this.qteTimerDuration*0.9, ()=>{
-      this.gameover4.setVisible(true);
-    },[], this)
-    this.time5 = this.time.delayedCall(this.qteTimerDuration, ()=>{
-      this.gameover5.setVisible(true);
-    },[], this)
-  }
-  destroyQTEAnim(){
-    //#region << IM SORRY FOR MONSTROSITY >>
-    // destroys future timers upon a successful QTE and also sets the game over textures to invisible
-    this.gameover1.setVisible(false);
-    this.gameover2.setVisible(false);
-    this.gameover3.setVisible(false);
-    this.gameover4.setVisible(false);
-    this.gameover5.setVisible(false);
-    this.time1.destroy();
-    this.time2.destroy();
-    this.time3.destroy();
-    this.time4.destroy();
-    this.time5.destroy();
-    //#endregion
-  }
   handleQTEInput(event) {
-
-    this.destroyQTEAnim();
     if (this.qteInProgress && event.key === this.currentQTEInputOption) {
       console.log("QTE input handled!");
       this.qteInProgress = false;
