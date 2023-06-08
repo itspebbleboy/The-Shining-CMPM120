@@ -255,7 +255,7 @@ class Play extends Phaser.Scene {
       yoyo:true,
 
     });
-
+    /*
     this.anims.create({
       key: 'heartbeatEffect',
       frames: this.anims.generateFrameNames('shining_atlas',{
@@ -267,7 +267,7 @@ class Play extends Phaser.Scene {
       frameRate: 20,
       paused: true
     });
-    
+    */
     //#endregion
 
     this.playerConfig={
@@ -313,7 +313,7 @@ class Play extends Phaser.Scene {
     this.pupil.setVisible(false); // hide the current pupil
 
     this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
-    this.add.sprite(this.eye.x,this.eye.y).play('heartbeatEffect').setScale(0.5); // play blink
+    //this.add.sprite(this.eye.x,this.eye.y).play('heartbeatEffect').setScale(0.5); // play blink
     
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
       this.eye.setVisible(true);  // show eye
@@ -459,7 +459,7 @@ class Play extends Phaser.Scene {
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
         break;
       case 2: //DEAD_END
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend0');
         break;
       default:
         this.currHallwayImageString = 'hallway'+((this.currRoomType-3).toString());
