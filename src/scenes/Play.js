@@ -26,7 +26,25 @@ class Play extends Phaser.Scene {
     this.currentDeathAnimation = null;
     this.memoryQueue = [];
     this.visitedNodes = new Set();
+
+    this.textCrawlActive = false;
+    this.textCrawlSpeed = 75;
+    this.currentTextIndex = 0; // Index of the current character being displayed in the dialogue
+    this.fastForward = false; // Flag to enable fast forward
+    this.currentIndex = 0; // Index of the current dialogue in the dialogue list
+    this.dialogueList = [
+      "you can look using the left and right arrow keys",
+      "to go towards the direction you’re looking in, press space",
+      "The hallways in this hotel seem to change all the time but your memory of where you’ve been and the layout of the floor might serve you correctly if you press the up arrow key.",
+      "now press it again,",
+      "time isn’t paused when you’re recalling the layout of the hotel, so be cautious,",
+      "when it’s a matter of life and death, there is no time to stall.",
+      "he might have already found a way to escape so make sure you don’t frequent around an area for too long.",
+      "enough with the tutorial.",
+    ]
+
     //#endregion
+
   }
 
   preload(){
@@ -87,6 +105,9 @@ class Play extends Phaser.Scene {
     this.load.image('blue', './assets/ui/blueMap.png');
     this.load.image('tan', './assets/ui/tanSmall.png');
     this.load.image('tanBackground', './assets/ui/tanBackground.png');
+
+    // << OTHER >> 
+    this.load.image('textBox', './assets/ui/textBox.png');
     //#endregion
 
     //#region >> EYE STATE MACHINE >>
@@ -378,8 +399,9 @@ class Play extends Phaser.Scene {
 
     //#endregion
 
-    //#endregion
-    
+    this.textBox = this.add.image(screen.center.x, screen.center.y + 400, 'textBox').setOrigin(0.5, 0);
+    this.textBox.setDepth(depth.textBox);
+
     this.playerConfig={
       node: this.hotel.getNode(31,19), //set player's location
       cardDirec: this.CD.NORTH, //cardinal direction
@@ -390,6 +412,33 @@ class Play extends Phaser.Scene {
     this.createCompassGrid(this.playerConfig.cardDirec);
     this.movePlayer();
     this.displayImage(this.playerConfig.cardDirec);
+    
+    this.input.keyboard.on("keydown-SHIFT", () => {
+      if (!this.textCrawlActive) {
+        if (this.currentIndex === this.dialogueList.length - 1) {
+          this.textCrawl.destroy();
+          this.textBox.destroy();
+        } else {
+          this.currentIndex++;
+          this.textCrawl.destroy();
+          this.startNextDialogue();
+          console.log("Proceeding to next dialogue");
+        }
+      }
+    });
+    
+    this.input.keyboard.on("keydown-SHIFT", () => {
+      this.fastForward = true;
+    });
+
+    this.input.keyboard.on("keyup-SHIFT", () => {
+      this.fastForward = false;
+    });
+
+    this.startNextDialogue();
+
+
+
   }
 
   update(){
@@ -902,4 +951,42 @@ class Play extends Phaser.Scene {
   }
   //#endregion
  
+
+  //#region << TEXT GRAPPLERS >>
+  addCharacter(dialogue) {
+    this.currentTextIndex++;
+    this.textCrawl.text = dialogue.substring(0, this.currentTextIndex);
+
+    if (this.currentTextIndex < dialogue.length) {
+      const delay = this.fastForward ? 0 : this.textCrawlSpeed;
+      this.time.delayedCall(delay, () => this.addCharacter(dialogue));
+    } else {
+      this.textCrawlActive = false;
+      console.log("Setting textCrawlActive false");
+    }
+  }
+
+  startNextDialogue() {
+    if (this.currentIndex >= this.dialogueList.length) {
+      return;
+    }
+    const dialogue = this.dialogueList[this.currentIndex];
+    const textBoxPaddingX = 50;
+    const textBoxPaddingY = 50;
+    const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
+    const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
+    const textX = textBoxX + textBoxPaddingX;
+    const textY = textBoxY + textBoxPaddingY;
+
+    this.textCrawl = this.add.text(textX, textY, "", defaultTextCrawlStyle);
+    this.textCrawl.setOrigin(0, 0);
+    this.textCrawl.setWordWrapWidth(this.textBox.width - textBoxPaddingX * 2);
+    this.textCrawl.setDepth(depth.textBox+1);
+
+    this.currentTextIndex = 0;
+    this.textCrawlActive = true;
+    this.addCharacter(dialogue);
+  }
+  
+  //#endregion
 }

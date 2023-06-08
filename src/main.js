@@ -66,6 +66,7 @@ let depth = {
   mapBackground: 6,
   mapSquares: 7,
   deathAnims: 8,
+  textBox: 9,
 }
 
 //#endregion
@@ -108,7 +109,7 @@ let headerConfig = {
 // menu text configuration
 let defaultTextCrawlStyle = {
   fontFamily: 'Helvetica',
-  fontSize: '70px',
+  fontSize: '55px',
   color: color_pal.white,
   align: 'left',
   padding: 20,
