@@ -12,11 +12,14 @@ class Play extends Phaser.Scene {
       SOUTH: 'south',
       EAST: 'east',
     }
-    this.minimapActive = false; // Flag to indicate if minimap is active or not
-    this.cooldownDuration = 200; // Cooldown duration in milliseconds (0.2 seconds)
+    this.mapsActive = false; // Flag to indicate if minimap is active or not
+    this.cooldownDuration = 300; // Cooldown duration in milliseconds (0.2 seconds)
     this.lastSpacePressTime = 0; // Timestamp of the last space key press
     this.queue = [];
     this.compassGrid = [];
+    this.inCooldown = false;
+    this.squareListMap = [];
+    this.squareListMiniMap = [];
     //#endregion
   }
 
@@ -71,6 +74,8 @@ class Play extends Phaser.Scene {
     // << MAP ELEMENTS >>
     this.load.image('brownBackground', './assets/ui/brownBackground.png');
     this.load.image('blue', './assets/ui/blueMap.png');
+    this.load.image('tan', './assets/ui/tanSmall.png');
+    this.load.image('tanBackground', './assets/ui/tanBackground.png');
     //#endregion
 
     //#region >> EYE STATE MACHINE >>
@@ -123,9 +128,93 @@ class Play extends Phaser.Scene {
       },
     }
     //#endregion
-
     this.eyeState.FORWARD.enter();
     
+    //#region << GAME VIEW STATE MACHINE >> 
+    this.upAndDownArrowCoolDown = this.time.addEvent({
+      delay: this.cooldownDuration,
+      callback: this.onSpaceCooldownComplete,
+      callbackScope: this,
+      loop: false,
+      onComplete: this.inCooldown = false,
+    });
+
+    this.gameState = {
+      ROOMS: {
+        name: 'room',
+        enter: () => {
+          this.currentGameState = this.gameState.ROOMS;
+          this.destroyMiniMap();
+          this.destroyBackground();
+          this.mapsActive = false;
+          this.upAndDownArrowCoolDown = this.time.addEvent({
+            delay: this.cooldownDuration,
+            callback: this.onSpaceCooldownComplete,
+            callbackScope: this,
+            loop: false,
+            onComplete: this.inCooldown = false,
+          });
+          console.log("ENTERED ROOMS STATE");
+        },
+        update: () => {
+          //console.log("this.inCooldown: " +this.inCooldown);
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown) {
+            this.gameState.MINIMAP.enter();
+          }
+          //if up arrow enter MINIMAP state
+        },
+      },
+      MINIMAP: {
+        name: 'miniMap',
+        enter: () => {
+          this.currentGameState = this.gameState.MINIMAP;
+          this.drawMinimap();
+          this.destroyMap();
+          this.mapsActive = true;
+          this.inCooldown = true;
+          this.upAndDownArrowCoolDown = this.time.addEvent({
+            delay: this.cooldownDuration,
+            callback: this.onSpaceCooldownComplete,
+            callbackScope: this,
+            loop: false,
+          });
+          console.log("ENTERED MINIMAP STATE");
+        },
+        update: () => {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown) {
+            this.gameState.MAP.enter();
+          } else if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown) {
+            this.gameState.ROOMS.enter();
+          }
+        },
+      },
+      MAP: {
+        name: 'map',
+        enter: () => {
+          this.currentGameState = this.gameState.MAP;
+          this.drawMap();
+          this.destroyMiniMap();
+          this.inCooldown = true;
+          this.upAndDownArrowCoolDown = this.time.addEvent({
+            delay: this.cooldownDuration,
+            callback: this.onSpaceCooldownComplete,
+            callbackScope: this,
+            loop: false,
+            onComplete: this.inCooldown = false,
+          });
+          console.log("ENTERED MAP STATE");
+        },
+        update: () => {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown) {
+            this.gameState.MINIMAP.enter();
+          }
+        },
+      }
+    };
+    
+    this.gameState.ROOMS.enter();
+    //#endregion 
+    //this.upAndDownArrowCoolDown = null;
   }
 
   create(){    
@@ -134,7 +223,7 @@ class Play extends Phaser.Scene {
     this.hotelMap = [
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //0
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //1
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0], //2
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0], //2
       [0,0,0,0,0,0,0,0,0,0,0,0,0,13,14,0,0,0,0,1,9,8,1,2,0,0,0,0,0,0,0,0], //3
       [0,0,0,0,0,0,0,0,0,2,0,0,0,3,0,0,0,0,0,6,0,0,5,0,0,0,0,0,0,0,0,0], //4
       [0,0,0,0,0,0,0,0,2,1,5,9,8,1,4,5,3,7,5,1,2,0,9,0,0,0,0,0,0,0,0,0], //5
@@ -162,25 +251,14 @@ class Play extends Phaser.Scene {
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,12,0,0,0,0,0,0,0,0],//27
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,8,0,0,0,0,0,0,0,0],//28
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,6,0,0,0,0,0,0,0,0], //29
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,7,9,1,0,0,0,0,0,0,0,0], //30
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //31   
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,3,7,9,1,0,0,0,0,0,0,0,0], //30
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0], //31   
     ]
-    console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
+    //console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
     this.hotel = new Graph();
     this.hotel.buildGraph(this.hotelMap);
     this.hotel.printGraph();
     //#endregion
-
-    //#region <<SPACE BAR TIMER >>
-    // Create a Phaser Time Event for the space key cooldown
-    this.spaceCooldownEvent = this.time.addEvent({
-      delay: this.cooldownDuration,
-      callback: this.onSpaceCooldownComplete,
-      callbackScope: this,
-      loop: false,
-    });
-    //#endregion
-
 
     //#region << THE HEDGE MAZE MAP >>
     /*
@@ -233,8 +311,8 @@ class Play extends Phaser.Scene {
     this.eye.setOrigin(0.5); // Adjust the anchor point of the sprites to the center
     this.pupil.setOrigin(0.5);
 
-    this.eye.setDepth(2);
-    this.pupil.setDepth(2);
+    this.eye.setDepth(depth.eye);
+    this.pupil.setDepth(depth.eye);
     //#endregion
 
     //#region << ANIMS >>
@@ -264,9 +342,10 @@ class Play extends Phaser.Scene {
     });
     
     //#endregion
+    
     this.playerConfig={
-      node: this.hotel.getNode(29,19), //set player's location
-      cardDirec: this.CD.SOUTH, //cardinal direction
+      node: this.hotel.getNode(31,19), //set player's location
+      cardDirec: this.CD.NORTH, //cardinal direction
       //imageDisplay: currImage, //& image display
     }
     this.createCompassGrid(this.playerConfig.cardDirec);
@@ -280,22 +359,15 @@ class Play extends Phaser.Scene {
     //IF ABOVE 90 DIE
     if(this.enemyRatio>80 && !this.heartBeat.hasStarted){
       this.heartBeat = this.add.sprite(this.eye.x,this.eye.y).play('heartbeatEffect').setScale(0.5); // play blink
-      console.log(this.enemyRatio);
+      //console.log(this.enemyRatio);
     }
-    if (Phaser.Input.Keyboard.JustDown(keyM)) {
-      this.minimapActive = !this.minimapActive; // Toggle the minimap state
-      if (this.minimapActive) {
-        this.drawMap(); // Draw the minimap
-      } else {
-        this.destroyMap();
-      }
-    }
+    //console.log("this.inCooldown: " +this.inCooldown);
+    //console.log(this.currentGameState);
+    this.currentGameState.update();
 
-    // If the minimap is active, prevent other inputs from affecting the scene
-    if (this.minimapActive) {
+    if (this.mapsActive) {// If the maps are active, prevent other inputs from affecting the scene
       return;
     }
-
     this.currEyeState.update();
     this.readInput();
   }
@@ -394,7 +466,6 @@ class Play extends Phaser.Scene {
   //#region << INPUT READERS >>
   space() {//returns true if space bar
     if (Phaser.Input.Keyboard.JustDown(keySPACE) && !this.stateCooldown/*&& this.spaceCooldownEvent.getElapsed() === 0*/) {
-      //this.spaceCooldownEvent.reset({ delay: this.cooldownDuration });
       return true;
     }
     return false;
@@ -462,8 +533,10 @@ class Play extends Phaser.Scene {
         break;
       case 13:
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
+        break;
       case 14:
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'roomDoor');
+        break;
       default:
         this.currHallwayImageString = 'hallway'+((this.currRoomType-3).toString());
         this.currImage = this.add.image(screen.center.x, screen.center.y, this.currHallwayImageString);
@@ -479,14 +552,14 @@ class Play extends Phaser.Scene {
   }
   //#endregion
 
-  //#region << MINI MAP >>
+  //#region << MAPS >>
   drawMinimap() {
     this.squareListMiniMap = [];
     this.minimapSize = 64; // Size of each square in the minimap
     const alphaStep = 1 / this.queue.length; // Step for decrementing alpha
   
     // Create the background image
-    this.createBackground();  
+    this.createBackground('tanBackground');  
     // Create a new queue without duplicates
     const newQueue = [];
     const visitedNodes = new Set();
@@ -515,7 +588,7 @@ class Play extends Phaser.Scene {
       const alpha = 1 - index * alphaStep;
   
       // Create an image with the appropriate alpha
-      const image = this.add.image(x, y, 'blue').setDepth(5);
+      const image = this.add.image(x, y, 'blue').setDepth(depth.miniMapSquares);
       image.setOrigin(0, 0);
       image.setDisplaySize(this.minimapSize, this.minimapSize);
       image.setAlpha(alpha);
@@ -527,7 +600,7 @@ class Play extends Phaser.Scene {
   drawMap(){
     this.squareListMap = [];
     this.minimapSize = 64; // Size of each square in the minimap
-    this.add.image()
+    this.createBackground('brownBackground');
     for (let row = 0; row < this.hotel.numRows; row++) {
       for (let col = 0; col < this.hotel.numCols; col++) {
         const index = [row, col].toString();
@@ -535,8 +608,8 @@ class Play extends Phaser.Scene {
         if(currentNode.isVal()){
           const x = col * this.minimapSize;
           const y = row * this.minimapSize;
-          console.log(`Image position: x=${x}, y=${y}`);
-          const image = this.add.image(x, y, 'blue').setDepth(5);
+          //console.log(`Image position: x=${x}, y=${y}`);
+          const image = this.add.image(x, y, 'tan').setDepth(5);
           image.setOrigin(0, 0);
           image.setDisplaySize(this.minimapSize, this.minimapSize);
           this.squareListMap.push(image);
@@ -548,23 +621,40 @@ class Play extends Phaser.Scene {
       }
     }
   }
-
-  destroyMinimap(){
+  createBackground(color){
+    if(this.background){ this.background.destroy(); }
+    this.background = this.add.image(screen.center.x,screen.center.y, color).setDepth(depth.miniMapBackground);
+    this.background.setVisible(true);
+    this.background.setOrigin(0.5,0.5);
+    console.log("creating background: " +color);
+  }
+  destroyMiniMap() {
+    if (this.squareListMiniMap.length === 0) {
+      return;
+    }
     this.squareListMiniMap.forEach((square) => {
       square.destroy();
     });
-  
-    // Clear the squareList array
     this.squareListMiniMap = [];
-    this.background.destroy();
+    //this.destroyBackground();
+    console.log("destroyed minimap background");
   }
-
-  destroyMap(){
+  
+  destroyMap() {
+    if (this.squareListMap.length === 0) {
+      return;
+    }
     this.squareListMap.forEach((square) => {
       square.destroy();
     });
+    this.squareListMap = [];
+    //this.destroyBackground();
+    console.log("destroyed map background");
   }
 
+  destroyBackground(){
+    if(this.background){ this.background.destroy(); }
+  }
   createCompassGrid(facingDirection, availableDirections) {
     const gridSize = 3;
     const gridAlpha = 0.5;
@@ -653,18 +743,8 @@ class Play extends Phaser.Scene {
   
     return null;
   }
-  
-  
-  
-  
-  
 
 
-  createBackground(){
-    this.background = this.add.image(screen.center.x,screen.center.y, 'brownBackground').setDepth(3);
-    this.background.setVisible(true);
-    this.background.setOrigin(0.5,0.5);
-  }
   //#endregion
 
   //#region << PLAYER HELPER FUNCTIONS >>

@@ -12,6 +12,7 @@ const game = new Phaser.Game(config);
 
 let keyW, keyA, keyS, keyD, keyM, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER, keySPACE;
 
+//#region << SCREEN >>
 let screen = {
   center: { 
     x: game.config.width/2, 
@@ -53,6 +54,20 @@ let screen = {
     y: game.config.height/2
   },
 }
+//#endregion
+
+//#region << DEPTH >>
+let depth = {
+  rooms: 0,
+  eye: 2,
+  redEye: 3,
+  miniMapBackground: 4,
+  miniMapSquares: 5,
+  mapBackground: 6,
+  mapSquares: 7,
+}
+
+//#endregion
 
 let color_pal = {
   red: "#eb2646",
