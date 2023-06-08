@@ -369,8 +369,8 @@ class Play extends Phaser.Scene {
       key: 'heartbeat3',
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
-        start: 2,
-        end: 6
+        start: 4,
+        end: 8
       }),
       frameRate: 1.5,
       repeat: -1,
