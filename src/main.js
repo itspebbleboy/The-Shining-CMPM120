@@ -72,16 +72,13 @@ let depth = {
 //#endregion
 
 let color_pal = {
-  red: "#eb2646",
-  orange: "#d45404",
-  yellow: "#f9c22b",
-  green: "#62C25B",
-  teal: "#0eaf9b",
-  blue: "#4C86A8", 
-  purple: "#a884f3",
-  pink: "#F6518A",
+  red: "#b04640",
+  brown: "#211309",
+  tan: "#d9b691",
+  green: "#667556",
+  uiBlue: "#0b9efa",
+  lightBlue: "#4e7d9a", 
   white: "#FFFFFF",
-  grey: "#3e3546",
   black: "#101119",
   toInt: function(colorName) {
     return parseInt(this[colorName].replace("#", "0x"));
@@ -108,21 +105,32 @@ let headerConfig = {
 
 // menu text configuration
 let defaultTextCrawlStyle = {
-  fontFamily: 'Helvetica',
-  fontSize: '55px',
+  fontFamily: 'Tremendous',
+  fontSize: '69px',
   color: color_pal.white,
   align: 'left',
   padding: 20,
   fixedWidth: 0,
 }
-
+let defaultHeaderStyle = {
+  fontFamily: 'Tremendous',
+  fontSize: screen.width/10,
+  color: color_pal.white,
+  align: 'center',
+  padding: 5,
+  fixedWidth: 0,
+  depth: depth.deathAnims,
+  backgroundColor: color_pal.red,
+  fontStyle: 'bold',
+}
 let defaultQTEStyle = {
-  fontFamily: 'Helvetica',
+  fontFamily: 'Tremendous',
   fontSize: screen.width/25,
   color: color_pal.white,
   align: 'center',
   padding: 5,
   fixedWidth: 0,
+  backgroundColor: color_pal.red,
 }
 //#endregion
 

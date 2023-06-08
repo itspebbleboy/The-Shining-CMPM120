@@ -20,8 +20,8 @@ class Play extends Phaser.Scene {
     this.inCooldown = false;
     this.squareListMap = [];
     this.squareListMiniMap = [];
-    this.jackAnimTimerDuration = 30*1000;
-    this.jackAnimDifference = 10*1000;
+    this.jackAnimTimerDuration = 20*1000;
+    this.jackAnimDifference = 5*1000;
     this.deathDifferenceDuration= 5*1000;
     this.currentDeathAnimation = null;
     this.memoryQueue = [];
@@ -430,6 +430,7 @@ class Play extends Phaser.Scene {
     this.input.keyboard.on("keydown-SHIFT", () => {
       if (!this.textCrawlActive) {
         if (this.currentIndex === this.dialogueList.length - 1) {
+          this.createBlinkingText(screen.center.x, screen.center.y, 'FIND YOUR SON', 3000 , defaultHeaderStyle);
           this.textCrawl.destroy();
           this.textBox.destroy();
         } else {
@@ -944,7 +945,7 @@ class Play extends Phaser.Scene {
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
     // Check if the queue has reached its maximum length
-    if (this.queue.length > 20) {
+    if (this.queue.length > 10) {
       // Remove the front element of the queue
       this.queue.shift();
     }
@@ -1012,7 +1013,7 @@ class Play extends Phaser.Scene {
       this.visitedNodes.add(nodeIndex);
       this.memoryQueue.push(nodeIndex); 
     }
-    if (this.memoryQueue.length > 5) {
+    if (this.memoryQueue.length > 10) {
       this.memoryQueue.shift(); // Remove the oldest element from the queue
     }
     this.visitCounter++;
@@ -1058,7 +1059,47 @@ class Play extends Phaser.Scene {
   //#endregion
  
 
-  //#region << TEXT GRAPPLERS >>
+  //#region << TEXT GRAPPLERS >>  
+  createBlinkingText(x, y, textString, duration, style) {
+    const text = this.add.text(x, y, textString, style);
+    text.setOrigin(0.5);
+    text.setDepth(depth.deathAnims);
+  
+    const blinkDuration = 500; // Duration of each blink in milliseconds
+    const visiblePauseDuration = 200; // Duration to keep the text visible between blinks
+    const repeatCount = Math.floor(duration / (blinkDuration + visiblePauseDuration)); // Calculate the number of repeats
+  
+    let currentRepeat = 0; // Counter for the current repeat
+  
+    const blinkAnimation = () => {
+      currentRepeat++;
+  
+      // Set the alpha to 0 after the visible pause duration
+      this.time.delayedCall(visiblePauseDuration, () => {
+        text.alpha = 0;
+      });
+  
+      // Set the alpha to 1 after the blink duration
+      this.time.delayedCall(visiblePauseDuration + blinkDuration, () => {
+        text.alpha = 1;
+      });
+  
+      // Repeat the blink animation until the desired number of repeats is reached
+      if (currentRepeat < repeatCount) {
+        this.time.delayedCall(visiblePauseDuration + blinkDuration * 2, blinkAnimation);
+      } else {
+        // Destroy the text object when the blinking is complete
+        this.time.delayedCall(visiblePauseDuration + blinkDuration * 2, () => {
+          text.destroy();
+        });
+      }
+    };
+  
+    // Start the blinking animation
+    blinkAnimation();
+  }
+
+
   addCharacter(dialogue) {
     this.currentTextIndex++;
     this.textCrawl.text = dialogue.substring(0, this.currentTextIndex);
