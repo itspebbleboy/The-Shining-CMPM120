@@ -284,7 +284,7 @@ class Play extends Phaser.Scene {
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
         start: 4,
-        end: 6
+        end: 8
       }),
       frameRate: 20
     });
