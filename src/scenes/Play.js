@@ -408,12 +408,13 @@ class Play extends Phaser.Scene {
         end: 8
       }),
       frameRate: 1.5,
-      repeat: -1,
+      repeat: 0,
+      hideOnComplete: false,
     });
 
     //#endregion
 
-    this.textBox = this.add.image(screen.center.x, screen.center.y + 400, 'textBox').setOrigin(0.5, 0);
+    this.textBox = this.add.image(screen.center.x, screen.center.y + 200, 'textBox').setOrigin(0.5, 0);
     this.textBox.setDepth(depth.textBox);
 
     this.playerConfig={
@@ -1118,8 +1119,8 @@ class Play extends Phaser.Scene {
       return;
     }
     const dialogue = this.dialogueList[this.currentIndex];
-    const textBoxPaddingX = 50;
-    const textBoxPaddingY = 50;
+    const textBoxPaddingX = 100;
+    const textBoxPaddingY = 100;
     const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
     const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
     const textX = textBoxX + textBoxPaddingX;
