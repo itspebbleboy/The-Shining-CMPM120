@@ -338,7 +338,6 @@ class Play extends Phaser.Scene {
       hideOnComplete: true,
       frameRate: 20,
       yoyo:true,
-
     });
 
     // DEATH ANIMATIONS / JACK IS NEAR
@@ -350,7 +349,8 @@ class Play extends Phaser.Scene {
         end: 2
       }),
       yoyo: true,
-      frameRate: 20
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
@@ -361,7 +361,8 @@ class Play extends Phaser.Scene {
         end: 4
       }),
       yoyo: true,
-      frameRate: 20
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
@@ -371,7 +372,7 @@ class Play extends Phaser.Scene {
         start: 4,
         end: 6
       }),
-      frameRate: 20
+      frameRate: 20,
     });
 
     //#endregion
@@ -385,16 +386,15 @@ class Play extends Phaser.Scene {
     }
     // Add delayed calls to the list
     this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
-      // PLAY ANIMATION
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1'); // play blink
       console.log("playing anim 1");
     }, [], this);
     this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
-      // PLAY ANIMATION
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2');
       console.log("playing anim 2");
     }, [], this);
     this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
-      console.log("playing death");
-      // YOU DIED SCREEN
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3');
     }, [], this);
 
     this.createCompassGrid(this.playerConfig.cardDirec);
@@ -873,19 +873,17 @@ class Play extends Phaser.Scene {
     this.jackAnim1Timer.remove();
     this.deathAnimTimer.remove();
     
-    this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, () => {
-      // PLAY ANIMATION
+    this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1'); // play blink
       console.log("playing anim 1");
     }, [], this);
-    this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, () => {
-      // PLAY ANIMATION
+    this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2');
       console.log("playing anim 2");
     }, [], this);
-    this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, () => {
-      console.log("playing death");
-      // YOU DIED SCREEN
+    this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
+      this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3');
     }, [], this);
-    console.log("resetting anim timers");
   }
   //#endregion
  
