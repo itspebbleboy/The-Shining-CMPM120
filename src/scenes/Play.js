@@ -81,6 +81,7 @@ class Play extends Phaser.Scene {
     this.load.image('hallInter2', './assets/hotel/hallwayIntersection2.png');
     this.load.image('hallInter3', './assets/hotel/hallwayIntersection3.png');
     this.load.image('hallInter4', './assets/hotel/hallwayIntersection4.png');
+    this.load.image('deadendInter', './assets/hotel/hallwayIntersection5.png');
     //#region << HALLWAY VAR >>
     this.load.image('hallwayRoomDoor','./assets/hotel/hallwayRoomDoor.png');
     this.load.image('hallway0', './assets/hotel/hallway0.png');
