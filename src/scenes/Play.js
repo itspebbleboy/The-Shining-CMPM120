@@ -337,6 +337,7 @@ class Play extends Phaser.Scene {
       showOnStart: true,
       frameRate: 20,
       yoyo:true,
+      hideOnComplete: true,
     });
 
     // DEATH ANIMATIONS / JACK IS NEAR
@@ -414,8 +415,9 @@ class Play extends Phaser.Scene {
     this.eye.setVisible(false); // hide the current eye
     this.pupil.setVisible(false); // hide the current pupil
 
-    this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
+    this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.75); // play blink
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
+      console.log("eye lul");
       this.eye.setVisible(true);  // show eye
       this.pupil.setVisible(true); // show pupil
       this.stateCooldown = false; // set cooldown to false
