@@ -341,6 +341,41 @@ class Play extends Phaser.Scene {
 
     });
 
+    // DEATH ANIMATIONS / JACK IS NEAR
+    this.anims.create({
+      key: 'heartbeat1',
+      frames: this.anims.generateFrameNames('shining_atlas', {
+        prefix: 'jack',
+        start: 1,
+        end: 2
+      }),
+      yoyo: true,
+      frameRate: 20
+    });
+
+    this.anims.create({
+      key: 'heartbeat2',
+      frames: this.anims.generateFrameNames('shining_atlas', {
+        prefix: 'jack',
+        start: 3,
+        end: 4
+      }),
+      yoyo: true,
+      frameRate: 20
+    });
+
+    this.anims.create({
+      key: 'heartbeat3',
+      frames: this.anims.generateFrameNames('shining_atlas', {
+        prefix: 'jack',
+        start: 4,
+        end: 6
+      }),
+      frameRate: 20
+    });
+
+    //#endregion
+
     //#endregion
     
     this.playerConfig={
@@ -389,7 +424,6 @@ class Play extends Phaser.Scene {
     this.pupil.setVisible(false); // hide the current pupil
 
     this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.5); // play blink
-    
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
       this.eye.setVisible(true);  // show eye
       this.pupil.setVisible(true); // show pupil
