@@ -75,6 +75,12 @@ class Play extends Phaser.Scene {
     this.load.image('door', './assets/hotel/door.png');
     this.load.image('roomDoor','./assets/hotel/roomDoor.png');
     this.load.image('intersection', './assets/hotel/intersection.png');
+    //#region << INTERSECTION VAR >>
+    this.load.image('hallInter0', './assets/hotel/hallwayIntersection0.png');
+    this.load.image('hallInter1', './assets/hotel/hallwayIntersection1.png');
+    this.load.image('hallInter2', './assets/hotel/hallwayIntersection2.png');
+    this.load.image('hallInter3', './assets/hotel/hallwayIntersection3.png');
+    this.load.image('hallInter4', './assets/hotel/hallwayIntersection4.png');
     //#region << HALLWAY VAR >>
     this.load.image('hallwayRoomDoor','./assets/hotel/hallwayRoomDoor.png');
     this.load.image('hallway0', './assets/hotel/hallway0.png');
@@ -105,9 +111,14 @@ class Play extends Phaser.Scene {
     this.load.image('blue', './assets/ui/blueMap.png');
     this.load.image('tan', './assets/ui/tanSmall.png');
     this.load.image('tanBackground', './assets/ui/tanBackground.png');
-
-    // << OTHER >> 
-    this.load.image('textBox', './assets/ui/textBox.png');
+    this.load.image('rightArrow', './assets/ui/rightArrow.png');
+    this.load.image('rightArrow', './assets/ui/rightArrow.png');
+    this.load.image('leftArrow', './assets/ui/leftArrow.png');
+    this.load.image('spaceButton', './assets/ui/spaceButton.png');
+    this.load.image('forward', './assets/ui/forward.png');
+    this.load.image('forwardx2', './assets/ui/forwardx2.png');
+    this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
+    this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
     //#endregion
 
     //#region >> EYE STATE MACHINE >>
