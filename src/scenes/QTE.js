@@ -19,6 +19,11 @@ class QTE extends Phaser.Scene {
       "this is my dialogue one",
       "this is dialogue two",
     ]
+
+    this.destroyQTEAnim = () => {
+      // destroys future timers upon a successful QTE and also sets the game over textures to invisible
+
+    }
     //#endregion
   }
 
@@ -39,66 +44,25 @@ class QTE extends Phaser.Scene {
     this.gameover4 = this.add.image(screen.center.x,screen.center.y, 'shining_atlas', 'gameover4').setVisible(false);
     this.gameover5 = this.add.image(screen.center.x,screen.center.y, 'shining_atlas', 'gameover5').setVisible(false);
     //#endregion
-    this.startNextDialogue();
 
-    this.input.keyboard.on("keydown-SPACE", () => {
-      if (!this.textCrawlActive) {
-        if (this.currentIndex === this.dialogueList.length - 1) {
-          this.textCrawl.destroy();
-          this.startQTE();
-        } else {
-          this.currentIndex++;
-          this.textCrawl.destroy();
-          this.startNextDialogue();
-          console.log("Proceeding to next dialogue");
-        }
-      }
-    });
-
-    this.input.keyboard.on("keydown-SHIFT", () => {
-      this.fastForward = true;
-    });
-
-    this.input.keyboard.on("keyup-SHIFT", () => {
-      this.fastForward = false;
-    });
+      this.iterateThroughDialogue(this.dialogueList);
   }
 
   //#region <<QTE HANDLING>>
-  startQTE() {
-    this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
-    this.qteText = this.add.text(screen.center.x, screen.center.y, "Press " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
-    this.qteInProgress = true;
-    console.log("QTE started!");
-    this.qteTimer = this.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
-    console.log("QTE timer started!");
-
-    this.timeRunningOut();
-    this.input.keyboard.removeAllListeners();
-    this.input.keyboard.on("keydown-" + this.currentQTEInputOption.toUpperCase(), this.handleQTEInput, this);
+  startQTE(qteCount) {
+      this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
+      this.qteText = this.add.text(screen.center.x, screen.center.y, "Press" + " " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
+      this.qteInProgress = true;
+      console.log("QTE started!");
+      this.qteTimer = this.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
+      console.log("QTE timer started!");
+    
+      this.timeRunningOut();
+      this.input.keyboard.removeAllListeners();
+      this.input.keyboard.on("keydown-" + this.currentQTEInputOption.toUpperCase(), this.handleQTEInput, [qteCount], this);
   }
   
-  // creates a bunch of fucking timers at specific points and sets the game over screen relevent to visible
-  timeRunningOut(){
-    this.time1 = this.time.delayedCall(this.qteTimerDuration*0.4, ()=>{
-      this.gameover1.setVisible(true);
-    },[], this)
-    this.time2 = this.time.delayedCall(this.qteTimerDuration*0.6, ()=>{
-      this.gameover2.setVisible(true);
-    },[], this)
-    this.time3 = this.time.delayedCall(this.qteTimerDuration*0.75, ()=>{
-      this.gameover3.setVisible(true);
-    },[], this)
-    this.time4 = this.time.delayedCall(this.qteTimerDuration*0.9, ()=>{
-      this.gameover4.setVisible(true);
-    },[], this)
-    this.time5 = this.time.delayedCall(this.qteTimerDuration, ()=>{
-      this.gameover5.setVisible(true);
-    },[], this)
-  }
-  destroyQTEAnim(){
-    //#region << IM SORRY FOR MONSTROSITY >>
-    // destroys future timers upon a successful QTE and also sets the game over textures to invisible
+  handleQTEInput(event, qteCount) {
     this.gameover1.setVisible(false);
     this.gameover2.setVisible(false);
     this.gameover3.setVisible(false);
@@ -109,25 +73,20 @@ class QTE extends Phaser.Scene {
     this.time3.destroy();
     this.time4.destroy();
     this.time5.destroy();
-    //#endregion
-  }
-  handleQTEInput(event) {
-
-    this.destroyQTEAnim();
-    if (this.qteInProgress && event.key === this.currentQTEInputOption) {
-      console.log("QTE input handled!");
-      this.qteInProgress = false;
-      this.qteTimer.remove();
-      this.qteText.destroy();
-      this.completedQTEs++;
-  
-      if (this.completedQTEs < this.qteCount) {
-        this.startQTE();
-      } else {
-        console.log("All QTEs completed");
-        this.handleQTESuccess();
+      if (this.qteInProgress && event.key === this.currentQTEInputOption) {
+        console.log("QTE input handled!");
+        this.qteInProgress = false;
+        this.qteTimer.remove();
+        this.qteText.destroy();
+        qteCount--;
+    
+        if (qteCount !=0) {
+          this.startQTE(qteCount);
+        } else {
+          console.log("All QTEs completed");
+          this.handleQTESuccess();
+        }
       }
-    }
   }
   handleQTESuccess() {
     console.log("All QTEs completed");
@@ -154,40 +113,105 @@ class QTE extends Phaser.Scene {
   }
   //#endregion
 
-  //#region << TEXT HANDLING >>
-  addCharacter(dialogue) {
-    this.currentTextIndex++;
-    this.textCrawl.text = dialogue.substring(0, this.currentTextIndex);
-
-    if (this.currentTextIndex < dialogue.length) {
-      const delay = this.fastForward ? 0 : this.textCrawlSpeed;
-      this.time.delayedCall(delay, () => this.addCharacter(dialogue));
-    } else {
-      this.textCrawlActive = false;
-      console.log("Setting textCrawlActive false");
-    }
+  //#region << ANIMATION HANDLING >>
+  // creates a bunch of fucking timers at specific points and sets the game over screen relevent to visible
+  timeRunningOut(){
+      this.time1 = this.time.delayedCall(this.qteTimerDuration*0.4, ()=>{
+          this.gameover1.setVisible(true);
+      },[], this)
+      this.time2 = this.time.delayedCall(this.qteTimerDuration*0.6, ()=>{
+          this.gameover2.setVisible(true);
+      },[], this)
+      this.time3 = this.time.delayedCall(this.qteTimerDuration*0.75, ()=>{
+          this.gameover3.setVisible(true);
+      },[], this)
+      this.time4 = this.time.delayedCall(this.qteTimerDuration*0.9, ()=>{
+          this.gameover4.setVisible(true);
+      },[], this)
+      this.time5 = this.time.delayedCall(this.qteTimerDuration, ()=>{
+          this.gameover5.setVisible(true);
+      },[], this)
   }
 
-  startNextDialogue() {
-    if (this.currentIndex >= this.dialogueList.length) {
-      return;
+  //#endregion
+
+  //#region << TEXT HANDLING >>    
+iterateThroughDialogue(dialogueList) {
+  let currentIndex = 0;
+  let shiftKeyDownHandler;
+  let shiftKeyUpHandler;
+  let textCrawl;
+
+  shiftKeyDownHandler = () => {
+    console.log("shiftKeyDownHandler")
+    if (!this.textCrawlActive) {
+      if (currentIndex === dialogueList.length - 1) {
+        this.input.keyboard.off("keydown-SHIFT", shiftKeyDownHandler);
+        this.input.keyboard.off("keyup-SHIFT", shiftKeyUpHandler);
+        if (textCrawl) {
+          textCrawl.destroy();
+        }
+        this.startQTE();
+        this.fastForward = false;
+      } else {
+        currentIndex++;
+        if (textCrawl) {
+          textCrawl.destroy();
+        }
+        this.startNextDialogue(dialogueList[currentIndex], (createdTextCrawl) => {
+          textCrawl = createdTextCrawl;
+        });
+        console.log("Proceeding to next dialogue");
+      }
+    }else{
+      this.fastForward = true;
     }
+  };
 
-    const dialogue = this.dialogueList[this.currentIndex];
-    const textBoxPaddingX = 50;
-    const textBoxPaddingY = 50;
-    const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
-    const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
-    const textX = textBoxX + textBoxPaddingX;
-    const textY = textBoxY + textBoxPaddingY;
+  shiftKeyUpHandler = () => {
+    this.fastForward = false;
+    console.log("shiftKeyUpHandler");
+  };
 
-    this.textCrawl = this.add.text(textX, textY, "", defaultTextCrawlStyle);
-    this.textCrawl.setOrigin(0, 0);
-    this.textCrawl.setWordWrapWidth(this.textBox.width - textBoxPaddingX * 2);
+  this.input.keyboard.on("keydown-SHIFT", shiftKeyDownHandler);
+  this.input.keyboard.on("keyup-SHIFT", shiftKeyUpHandler);
 
-    this.currentTextIndex = 0;
-    this.textCrawlActive = true;
-    this.addCharacter(dialogue);
+  this.startNextDialogue(dialogueList[currentIndex], (createdTextCrawl) => {
+    textCrawl = createdTextCrawl;
+  });
+}
+
+startNextDialogue(dialogue, callback) {
+  const textBoxPaddingX = 50;
+  const textBoxPaddingY = 50;
+  const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
+  const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
+  const textX = textBoxX + textBoxPaddingX;
+  const textY = textBoxY + textBoxPaddingY;
+
+  const textCrawl = this.add.text(textX, textY, "", defaultTextCrawlStyle);
+  textCrawl.setOrigin(0, 0);
+  textCrawl.setWordWrapWidth(this.textBox.width - textBoxPaddingX * 2);
+
+  this.currentTextIndex = 0;
+  this.textCrawlActive = true;
+  callback(textCrawl);
+  this.addCharacter(dialogue, textCrawl);
+}
+
+addCharacter(dialogue, textCrawl) {
+  this.currentTextIndex++;
+  textCrawl.text = dialogue.substring(0, this.currentTextIndex);
+
+  if (this.currentTextIndex < dialogue.length && !this.fastForward) {
+    const delay = (this.fastForward)? 10 : this.textCrawlSpeed;
+    this.time.delayedCall(delay, () => this.addCharacter(dialogue, textCrawl));
+  } else {
+    this.textCrawlActive = false;
+    textCrawl.text = dialogue; // Set the full dialogue text
+    console.log("Setting textCrawlActive to false");
   }
+}
+
   //#endregion
 }

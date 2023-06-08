@@ -675,22 +675,52 @@ class Play extends Phaser.Scene {
       const row = node.index[0];
       const col = node.index[1];
       console.log(`Node index: row=${row}, col=${col}`);
-    
+  
       const x = col * this.minimapSize;
       const y = row * this.minimapSize;
       console.log(`Image position: x=${x}, y=${y}`);
       const alpha = 1 - index * alphaStep;
-    
-      // Create an image with the appropriate alpha
-      const image = this.add.image(x, y, 'blue').setDepth(depth.miniMapSquares);
+  
+      // Create an image with the appropriate alpha and rotation
+      let imageKey = (i === newQueue.length - 1) ? 'mapArrowDot' : 'blue';
+      const image = this.add.image(x, y, imageKey).setDepth(depth.miniMapSquares);
       image.setOrigin(0, 0);
       image.setDisplaySize(this.minimapSize, this.minimapSize);
       image.setAlpha(alpha);
-    
+  
+      if (i === newQueue.length - 1) {
+        // Rotate the image based on the cardinal direction
+        const { cardDirec } = this.playerConfig;
+        switch (cardDirec) {
+          case this.CD.NORTH:
+            image.setRotation(0);
+            break;
+          case this.CD.WEST:
+            image.setRotation(Phaser.Math.DegToRad(-90));
+            image.setOrigin(1, 0); // Adjust origin to top-right corner
+            //image.setX(x + this.minimapSize); // Adjust x position to compensate for origin change
+            break;
+          case this.CD.SOUTH:
+            image.setRotation(Phaser.Math.DegToRad(180));
+            image.setOrigin(1, 1); // Adjust origin to bottom-right corner
+            //image.setX(x + this.minimapSize); // Adjust x position to compensate for origin change
+            //image.setY(y + this.minimapSize); // Adjust y position to compensate for origin change
+            break;
+          case this.CD.EAST:
+            image.setRotation(Phaser.Math.DegToRad(90));
+            image.setOrigin(0, 1); // Adjust origin to bottom-left corner
+            //image.setY(y + this.minimapSize); // Adjust y position to compensate for origin change
+            break;
+          default:
+            break;
+        }
+      }
+  
       this.squareListMiniMap.push(image);
     }
-    
   }
+  
+  
   
   
   drawMap(){
