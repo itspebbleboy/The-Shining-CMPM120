@@ -285,9 +285,9 @@ class Play extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(keyM)) {
       this.minimapActive = !this.minimapActive; // Toggle the minimap state
       if (this.minimapActive) {
-        this.drawMinimap(); // Draw the minimap
+        this.drawMap(); // Draw the minimap
       } else {
-        this.destroyMinimap();
+        this.destroyMap();
       }
     }
 
@@ -481,7 +481,7 @@ class Play extends Phaser.Scene {
 
   //#region << MINI MAP >>
   drawMinimap() {
-    this.squareList = [];
+    this.squareListMiniMap = [];
     this.minimapSize = 64; // Size of each square in the minimap
     const alphaStep = 1 / this.queue.length; // Step for decrementing alpha
   
@@ -520,38 +520,50 @@ class Play extends Phaser.Scene {
       image.setDisplaySize(this.minimapSize, this.minimapSize);
       image.setAlpha(alpha);
   
-      this.squareList.push(image);
+      this.squareListMiniMap.push(image);
     });
   }
   
   drawMap(){
-    for (let row = 0; row < this.numRows; row++) {
-      let rowValues = "";
-
-      for (let col = 0; col < this.numCols; col++) {
+    this.squareListMap = [];
+    this.minimapSize = 64; // Size of each square in the minimap
+    this.add.image()
+    for (let row = 0; row < this.hotel.numRows; row++) {
+      for (let col = 0; col < this.hotel.numCols; col++) {
         const index = [row, col].toString();
         const currentNode = this.hotel.nodes.get(index);
-        if(currentNode.isVal){
+        if(currentNode.isVal()){
+          const x = col * this.minimapSize;
+          const y = row * this.minimapSize;
+          console.log(`Image position: x=${x}, y=${y}`);
+          const image = this.add.image(x, y, 'blue').setDepth(5);
+          image.setOrigin(0, 0);
+          image.setDisplaySize(this.minimapSize, this.minimapSize);
+          this.squareListMap.push(image);
+          //image.setAlpha(alpha);
           //calculate where node should be
           //add square image at coordinates
           //add image to array
         }
       }
     }
-
   }
 
   destroyMinimap(){
-    this.squareList.forEach((square) => {
+    this.squareListMiniMap.forEach((square) => {
       square.destroy();
     });
   
     // Clear the squareList array
-    this.squareList = [];
+    this.squareListMiniMap = [];
     this.background.destroy();
   }
 
-
+  destroyMap(){
+    this.squareListMap.forEach((square) => {
+      square.destroy();
+    });
+  }
 
   createCompassGrid(facingDirection, availableDirections) {
     const gridSize = 3;
