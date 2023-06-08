@@ -414,7 +414,7 @@ class Play extends Phaser.Scene {
 
     //#endregion
 
-    this.textBox = this.add.image(screen.center.x, screen.center.y + 200, 'textBox').setOrigin(0.5, 0);
+    this.textBox = this.add.image(screen.center.x, screen.center.y + 300, 'textBox').setOrigin(0.5, 0);
     this.textBox.setDepth(depth.textBox);
 
     this.playerConfig={
@@ -642,6 +642,31 @@ class Play extends Phaser.Scene {
         console.log('hallway'+(this.currRoomType-3).toString());
         break;
     }
+    /* EMPTY: 0,
+    INTER: 1,
+    DEAD_END: 2,
+    DEAD_END0: 3,
+    DEAD_END1: 4,
+    DEAD_END2: 5,
+    HALLWAY_0: 6,
+    HALLWAY_1: 7,
+    HALLWAY_2: 8,
+    HALLWAY_3: 9,
+    HALLWAY_4: 10,
+    HALLWAY_5: 11,
+    HALLWAY_6: 12,
+    HALLWAY_7: 13,
+    HALLWAY_8: 14,
+    HALLWAY_9: 15,
+    SPECIAL_HALLWAY: 16,
+    SPECIAL_DOOR: 17,
+    */
+    if(this.currRoomType==null || this.currRoomType==0) { this.currImage = this.add.image(screen.center.x, screen.center.y, 'door'); }
+    if(this.currRoomType==1) { this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection'); }
+    if(this.currRoomType > 1 && this.currRoomType < 6){
+      
+    }
+
     this.currImage.setDepth(0);
     if(this.prevImage){
       this.prevImage.destroy();
