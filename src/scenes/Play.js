@@ -532,7 +532,9 @@ class Play extends Phaser.Scene {
         const index = [row, col].toString();
         const currentNode = this.hotel.nodes.get(index);
         if(currentNode.isVal){
-          
+          //calculate where node should be
+          //add square image at coordinates
+          //add image to array
         }
       }
     }
