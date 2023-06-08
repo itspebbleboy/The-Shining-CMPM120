@@ -598,6 +598,7 @@ class Play extends Phaser.Scene {
     }
     console.log("currRoomType: " + this.currRoomType);
     switch(this.currRoomType){
+      //
       case null:
         console.log("roomtype = null  :((((");
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
@@ -739,6 +740,8 @@ class Play extends Phaser.Scene {
   destroyBackground(){
     if(this.background){ this.background.destroy(); }
   }
+  
+  
   createCompassGrid(facingDirection, availableDirections) {
     const gridSize = 3;
     const gridAlpha = 0.5;
@@ -749,6 +752,26 @@ class Play extends Phaser.Scene {
     const gridX = centerX - gridSize * 32;
     const gridY = centerY - gridSize * 32;
   
+    // Define the rotation matrix based on the facing direction
+    let rotationMatrix;
+    switch (facingDirection) {
+      case this.CD.NORTH:
+        rotationMatrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]; // No rotation
+        break;
+      case this.CD.EAST:
+        rotationMatrix = [[0, -1, 0], [1, 0, 0], [0, 0, 1]]; // 90 degrees clockwise rotation
+        break;
+      case this.CD.SOUTH:
+        rotationMatrix = [[-1, 0, 0], [0, -1, 0], [0, 0, 1]]; // 180 degrees clockwise rotation
+        break;
+      case this.CD.WEST:
+        rotationMatrix = [[0, 1, 0], [-1, 0, 0], [0, 0, 1]]; // 270 degrees clockwise rotation
+        break;
+      default:
+        rotationMatrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]; // Default to no rotation
+        break;
+    }
+  
     // Create the compass grid
     for (let row = 0; row < gridSize; row++) {
       this.compassGrid[row] = [];
@@ -756,8 +779,12 @@ class Play extends Phaser.Scene {
         const offsetX = col * 64;
         const offsetY = row * 64;
   
-        const imageX = gridX + offsetX;
-        const imageY = gridY + offsetY;
+        // Apply rotation to the coordinates
+        const rotatedX = offsetX * rotationMatrix[0][0] + offsetY * rotationMatrix[0][1];
+        const rotatedY = offsetX * rotationMatrix[1][0] + offsetY * rotationMatrix[1][1];
+  
+        const imageX = gridX + rotatedX;
+        const imageY = gridY + rotatedY;
   
         if (row === 1 && col === 1) {
           // Center square
@@ -765,15 +792,35 @@ class Play extends Phaser.Scene {
         } else {
           this.compassGrid[row][col] = this.add.image(imageX, imageY, 'blue').setDepth(3).setAlpha(0);
         }
+  
+        console.log(`Created image at row ${row}, col ${col} with position (${imageX}, ${imageY})`);
       }
     }
-  
-    //return this.compassGrid;
   }
   
   updateCompassGrid(facingDirection, availableDirections) {
     const gridSize = 3;
     const gridAlpha = 0.5;
+  
+    // Define the rotation matrix based on the facing direction
+    let rotationMatrix;
+    switch (facingDirection) {
+      case this.CD.NORTH:
+        rotationMatrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]; // No rotation
+        break;
+      case this.CD.EAST:
+        rotationMatrix = [[0, -1, 0], [1, 0, 0], [0, 0, 1]]; // 90 degrees clockwise rotation
+        break;
+      case this.CD.SOUTH:
+        rotationMatrix = [[-1, 0, 0], [0, -1, 0], [0, 0, 1]]; // 180 degrees clockwise rotation
+        break;
+      case this.CD.WEST:
+        rotationMatrix = [[0, 1, 0], [-1, 0, 0], [0, 0, 1]]; // 270 degrees clockwise rotation
+        break;
+      default:
+        rotationMatrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]; // Default to no rotation
+        break;
+    }
   
     for (let row = 0; row < gridSize; row++) {
       for (let col = 0; col < gridSize; col++) {
@@ -783,7 +830,16 @@ class Play extends Phaser.Scene {
           // Center square
           image.setAlpha(1);
         } else {
-          const direction = this.getDirectionFromGridOffset(facingDirection, row - 1, col - 1);
+          // Apply rotation to the grid offset
+          const offsetX = col - 1;
+          const offsetY = row - 1;
+  
+          const rotatedOffset = [
+            offsetY * rotationMatrix[0][0] + offsetX * rotationMatrix[0][1],
+            offsetY * rotationMatrix[1][0] + offsetX * rotationMatrix[1][1]
+          ];
+  
+          const direction = this.getDirectionFromGridOffset(facingDirection, rotatedOffset[0], rotatedOffset[1]);
   
           if (availableDirections.includes(direction)) {
             // Available direction
@@ -793,9 +849,15 @@ class Play extends Phaser.Scene {
             image.setAlpha(0);
           }
         }
+        console.log(`Updated image at row ${row}, col ${col} with alpha ${image.alpha}`);
       }
     }
   }
+  
+  
+  
+  
+  
   
   getDirectionFromGridOffset(facingDirection, rowOffset, colOffset) {
     const directionMapping = {
