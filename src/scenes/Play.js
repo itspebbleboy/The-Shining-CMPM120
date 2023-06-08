@@ -121,6 +121,9 @@ class Play extends Phaser.Scene {
     this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
     //#endregion
 
+    // << UI ELEMENTS >>
+    this.load.image('textBox', './assets/ui/textBox.png');
+
     //#region >> EYE STATE MACHINE >>
     this.eyeState = { //state machine for eye orientation
       LEFT: {
