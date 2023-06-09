@@ -46,11 +46,11 @@ class Graph {
         node2.setNeighbor(oppositeDirection(direction), node1);
       }
     }
-    buildGraph(map) {    
+    buildGraph(map, level) {    
       this.numRows = map.length;
       this.numCols = map[0].length;
-        console.log("numRows: "+this.numRows +", numCols: " +this.numCols);
-
+        //console.log("numRows: "+this.numRows +", numCols: " +this.numCols);
+      if(!level){
         for (let i = 0; i < this.numRows; i++) {
           for (let j = 0; j < this.numCols; j++) {
             if (map[i][j] === 'I') {
@@ -62,7 +62,19 @@ class Graph {
             }
           }
         }
-    
+      }else{
+        for (let i = 0; i < this.numRows; i++) {
+          for (let j = 0; j < this.numCols; j++) {
+            if (map[i][j] === 'I') {
+              map[i][j] = 1;
+            } else if (map[i][j] === 'D') {
+              map[i][j] = Math.floor(Math.random() * 4) + 2;
+            } else if (map[i][j] === 'H') {
+              map[i][j] = Math.floor(Math.random() * 10) + 6;
+            }
+          }
+        }
+      }
         // Create nodes for each cell in the map
         for (let row = 0; row < this.numRows; row++) {
           for (let col = 0; col < this.numCols; col++) {
@@ -159,7 +171,7 @@ class Graph {
         matrix += rowValues.trim() + "\n";
       }
   
-      console.log(matrix);
+      //console.log(matrix);
     }
     
       

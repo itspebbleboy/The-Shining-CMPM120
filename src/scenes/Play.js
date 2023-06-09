@@ -2,27 +2,38 @@ class Play extends Phaser.Scene {
   constructor() {
     super("playScene");
     //#region << CLASS PROPERTIES >>
-    this.stateCooldown = false; // Cooldown state
-    this.eyeDelta = 575;
-    this.pupilDelta = 750;
-    this.wholeEyeDuration = 300;
     this.CD ={ 
       NORTH: 'north',
       WEST: 'west',
       SOUTH: 'south',
       EAST: 'east',
     }
+    //WHAT CHANGES BASED ON THE LEVEL
+    this.level;
+    this.jackAnimTimerDuration;
+    this.jackAnimDifference;
+    this.deathDifferenceDuration;
+    this.map;
+    this.starting;
+    this.dialogueList;
+    this.levelStartText;
+
+    this.stateCooldown = false; // Cooldown state
+    this.eyeDelta = 575;
+    this.pupilDelta = 750;
+    this.wholeEyeDuration = 300;
+
+    
+    //NEEDED ACROSS FUNCTIONS
     this.mapsActive = false; // Flag to indicate if minimap is active or not
-    this.cooldownDuration = 300; // Cooldown duration in milliseconds (0.2 seconds)
+    this.cooldownDuration = 300; // Cooldown duration in milliseconds (0.2 seconds) (for minimap)
     this.lastSpacePressTime = 0; // Timestamp of the last space key press
     this.queue = [];
     this.compassGrid = [];
     this.inCooldown = false;
     this.squareListMap = [];
     this.squareListMiniMap = [];
-    this.jackAnimTimerDuration = 20*1000;
-    this.jackAnimDifference = 5*1000;
-    this.deathDifferenceDuration= 5*1000;
+
     this.currentDeathAnimation = null;
     this.memoryQueue = [];
     this.visitedNodes = new Set();
@@ -32,18 +43,20 @@ class Play extends Phaser.Scene {
     this.currentTextIndex = 0; // Index of the current character being displayed in the dialogue
     this.fastForward = false; // Flag to enable fast forward
     this.currentIndex = 0; // Index of the current dialogue in the dialogue list
-    this.dialogueList = [
-      "you can look using the left and right arrow keys",
-      "to go towards the direction you’re looking in, press space",
-      "The hallways in this hotel seem to change all the time but your memory of where you’ve been and the layout of the floor might serve you correctly if you press the up arrow key.",
-      "now press it again,",
-      "time isn’t paused when you’re recalling the layout of the hotel, so be cautious,",
-      "when it’s a matter of life and death, there is no time to stall.",
-      "he might have already found a way to escape so make sure you don’t frequent around an area for too long.",
-      "enough with the tutorial.",
-    ]
+
 
     //#endregion
+  }
+
+  init(data){
+    this.level = data.num;
+    this.jackAnimTimerDuration = data.jackAnimTimerDuration;
+    this.jackAnimDifference = data.jackAnimDifference;
+    this.deathDifferenceDuration= data.deathDifferenceDuration;
+    this.map = data.map;
+    this.starting = data.starting;
+    this.dialogueList = data.dialogueList;
+    this.levelStartText = data.levelStartText;
 
   }
 
@@ -64,66 +77,68 @@ class Play extends Phaser.Scene {
     keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     //#endregion
 
-    //#region << LOADING HOTEL, HEDGE, AND EYE IMAGES >>
-    // << EYE ELEMENTS >>
-    this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
-    //#region << HOTEL ELEMENTS >> 
-    this.load.image('deadend0', './assets/hotel/deadend0.png');
-    this.load.image('deadend1', './assets/hotel/deadend1.png');
-    this.load.image('deadend2', './assets/hotel/deadend2.png');
-    this.load.image('deadend3', './assets/hotel/deadend3.png');
-    this.load.image('door', './assets/hotel/door.png');
-    this.load.image('roomDoor','./assets/hotel/roomDoor.png');
-    this.load.image('intersection', './assets/hotel/intersection.png');
-    //#region << INTERSECTION VAR >>
-    this.load.image('hallInter0', './assets/hotel/hallwayIntersection0.png');
-    this.load.image('hallInter1', './assets/hotel/hallwayIntersection1.png');
-    this.load.image('hallInter2', './assets/hotel/hallwayIntersection2.png');
-    this.load.image('hallInter3', './assets/hotel/hallwayIntersection3.png');
-    this.load.image('hallInter4', './assets/hotel/hallwayIntersection4.png');
-    this.load.image('deadendInter', './assets/hotel/hallwayIntersection5.png');
-    //#region << HALLWAY VAR >>
-    this.load.image('hallwayRoomDoor','./assets/hotel/hallwayRoomDoor.png');
-    this.load.image('hallway0', './assets/hotel/hallway0.png');
-    this.load.image('hallway1', './assets/hotel/hallway1.png');
-    this.load.image('hallway2', './assets/hotel/hallway2.png');
-    this.load.image('hallway3', './assets/hotel/hallway3.png');
-    this.load.image('hallway4', './assets/hotel/hallway4.png');
-    this.load.image('hallway5', './assets/hotel/hallway5.png');
-    this.load.image('hallway6', './assets/hotel/hallway6.png');
-    this.load.image('hallway7', './assets/hotel/hallway7.png');
-    this.load.image('hallway8', './assets/hotel/hallway8.png');
-    this.load.image('hallway9', './assets/hotel/hallway9.png');
+    //#region << LOADING IMAGES >>
+      // << EYE ELEMENTS >>
+      this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
+      //#region << HOTEL ELEMENTS >> 
+      this.load.image('deadend0', './assets/hotel/deadend0.png');
+      this.load.image('deadend1', './assets/hotel/deadend1.png');
+      this.load.image('deadend2', './assets/hotel/deadend2.png');
+      this.load.image('deadend3', './assets/hotel/deadend3.png');
+      this.load.image('door', './assets/hotel/door.png');
+      this.load.image('roomDoor','./assets/hotel/roomDoor.png');
+      this.load.image('intersection', './assets/hotel/intersection.png');
+      //#endregion
+      //#region << INTERSECTION VAR >>
+      this.load.image('hallInter0', './assets/hotel/hallwayIntersection0.png');
+      this.load.image('hallInter1', './assets/hotel/hallwayIntersection1.png');
+      this.load.image('hallInter2', './assets/hotel/hallwayIntersection2.png');
+      this.load.image('hallInter3', './assets/hotel/hallwayIntersection3.png');
+      this.load.image('hallInter4', './assets/hotel/hallwayIntersection4.png');
+      this.load.image('deadendInter', './assets/hotel/hallwayIntersection5.png');
+      //#endregion
+      //#region << HALLWAY VAR >>
+      this.load.image('hallwayRoomDoor','./assets/hotel/hallwayRoomDoor.png');
+      this.load.image('hallway0', './assets/hotel/hallway0.png');
+      this.load.image('hallway1', './assets/hotel/hallway1.png');
+      this.load.image('hallway2', './assets/hotel/hallway2.png');
+      this.load.image('hallway3', './assets/hotel/hallway3.png');
+      this.load.image('hallway4', './assets/hotel/hallway4.png');
+      this.load.image('hallway5', './assets/hotel/hallway5.png');
+      this.load.image('hallway6', './assets/hotel/hallway6.png');
+      this.load.image('hallway7', './assets/hotel/hallway7.png');
+      this.load.image('hallway8', './assets/hotel/hallway8.png');
+      this.load.image('hallway9', './assets/hotel/hallway9.png');
+      //#endregion
+    
+      //#region << HEDGE ELEMENTS >>
+      this.load.image('hedgeDeadEnd0', './assets/hedge/hedgeDeadEnd0');
+      this.load.image('hedgeDeadEnd1','./assets/hedge/hedgeDeadEnd1');
+      this.load.image('hedgeDeadEnd2','./assets/hedge/hedgeDeadEnd2');
+      this.load.image('hedgeEnd', './assets/hedge/hedgeEnd');
+      this.load.image('hedgeIntersection', './assets/hedge/hedgeIntersection');
+      this.load.image('hedgeWall', './assets/hedge/hedgeWall');
+      this.load.image('hedgeHallway0', './assets/hedge/hedgeHallway0.png');
+      this.load.image('hedgeHallway1', './assets/hedge/hedgeHallway1.png');
+      this.load.image('hedgeHallway2', './assets/hedge/hedgeHallway2.png');
+      //#endregion
+      //#region << MAP ELEMENTS >>
+      this.load.image('brownBackground', './assets/ui/brownBackground.png');
+      this.load.image('blue', './assets/ui/blueMap.png');
+      this.load.image('tan', './assets/ui/tanSmall.png');
+      this.load.image('tanBackground', './assets/ui/tanBackground.png');
+      this.load.image('rightArrow', './assets/ui/rightArrow.png');
+      this.load.image('rightArrow', './assets/ui/rightArrow.png');
+      this.load.image('leftArrow', './assets/ui/leftArrow.png');
+      this.load.image('spaceButton', './assets/ui/spaceButton.png');
+      this.load.image('forward', './assets/ui/forward.png');
+      this.load.image('forwardx2', './assets/ui/forwardx2.png');
+      this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
+      this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
+      //#endregion
+      // << UI ELEMENTS >>
+      this.load.image('textBox', './assets/ui/textBox.png');
     //#endregion
-    //#endregion
-    //#region << HEDGE ELEMENTS >>
-    this.load.image('hedgeDeadEnd0', './assets/hedge/hedgeDeadEnd0');
-    this.load.image('hedgeDeadEnd1','./assets/hedge/hedgeDeadEnd1');
-    this.load.image('hedgeDeadEnd2','./assets/hedge/hedgeDeadEnd2');
-    this.load.image('hedgeEnd', './assets/hedge/hedgeEnd');
-    this.load.image('hedgeIntersection', './assets/hedge/hedgeIntersection');
-    this.load.image('hedgeWall', './assets/hedge/hedgeWall');
-    this.load.image('hedgeHallway0', './assets/hedge/hedgeHallway0.png');
-    this.load.image('hedgeHallway1', './assets/hedge/hedgeHallway1.png');
-    this.load.image('hedgeHallway2', './assets/hedge/hedgeHallway2.png');
-    //#endregion
-    //#region << MAP ELEMENTS >>
-    this.load.image('brownBackground', './assets/ui/brownBackground.png');
-    this.load.image('blue', './assets/ui/blueMap.png');
-    this.load.image('tan', './assets/ui/tanSmall.png');
-    this.load.image('tanBackground', './assets/ui/tanBackground.png');
-    this.load.image('rightArrow', './assets/ui/rightArrow.png');
-    this.load.image('rightArrow', './assets/ui/rightArrow.png');
-    this.load.image('leftArrow', './assets/ui/leftArrow.png');
-    this.load.image('spaceButton', './assets/ui/spaceButton.png');
-    this.load.image('forward', './assets/ui/forward.png');
-    this.load.image('forwardx2', './assets/ui/forwardx2.png');
-    this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
-    this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
-    //#endregion
-
-    // << UI ELEMENTS >>
-    this.load.image('textBox', './assets/ui/textBox.png');
 
     //#region >> EYE STATE MACHINE >>
     this.eyeState = { //state machine for eye orientation
@@ -265,129 +280,10 @@ class Play extends Phaser.Scene {
   }
 
   create(){    
-    
-    //#region << THE HOTEL MAP >>
-    /*
-    this.hotelMap = [
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //0
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //1
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0], //2
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,13,14,0,0,0,0,1,9,8,1,2,0,0,0,0,0,0,0,0], //3
-      [0,0,0,0,0,0,0,0,0,2,0,0,0,3,0,0,0,0,0,6,0,0,5,0,0,0,0,0,0,0,0,0], //4
-      [0,0,0,0,0,0,0,0,2,1,5,9,8,1,4,5,3,7,5,1,2,0,9,0,0,0,0,0,0,0,0,0], //5
-      [0,0,2,0,0,0,0,0,0,3,0,0,0,5,0,0,0,0,0,7,0,0,8,0,0,0,0,0,0,0,0,0], //6
-      [0,2,1,4,12,3,6,7,9,1,2,0,2,1,6,10,7,2,4,1,0,0,4,0,2,0,0,0,2,0,0,0], //7
-      [0,0,4,0,0,0,2,0,0,6,0,0,0,4,0,0,0,0,0,0,0,0,1,3,1,6,3,7,1,2,0,0], //8
-      [0,0,7,0,0,2,1,8,5,1,2,0,0,6,0,0,0,0,0,0,0,0,0,0,3,0,0,0,3,0,0,0], //9
-      [0,0,8,0,0,0,9,0,0,3,0,0,0,5,0,0,0,0,0,0,0,0,0,0,5,0,0,0,5,0,0,0], //10
-      [0,0,9,0,0,2,1,2,0,8,0,0,0,9,0,0,0,0,0,0,0,0,0,0,3,0,0,0,6,0,0,0], //11
-      [0,0,6,0,0,0,2,0,0,1,5,7,6,1,8,10,5,7,1,3,4,3,6,3,1,2,0,0,3,0,0,0],//12
-      [0,0,8,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,3,0,0,0,0,0,2,0,0,0,8,0,0,0], //13
-      [0,0,4,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,11,0,0,0],//14
-      [0,2,1,7,4,8,9,5,6,1,2,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,4,0,0,0], //15
-      [0,0,2,0,0,0,0,0,0,9,0,0,0,0,1,6,8,12,1,0,0,0,0,0,0,0,0,0,3,0,0,0],//16
-      [0,0,0,0,0,0,0,0,2,1,6,11,0,0,9,0,0,0,7,0,0,0,0,0,0,0,0,0,7,0,0,0],//17
-      [0,0,0,0,0,0,0,0,0,8,0,0,0,0,7,0,0,0,9,0,0,0,0,0,0,0,0,0,9,0,0,0], //18
-      [0,0,0,0,0,0,0,0,0,6,0,0,0,2,1,3,9,6,1,2,0,0,0,0,0,0,0,0,3,0,0,0], //19
-      [0,0,0,0,0,0,0,0,0,4,0,0,0,0,2,0,0,0,3,0,0,0,0,2,0,0,0,0,6,0,0,0], //20
-      [0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,0,0,2,1,4,3,6,5,1,7,3,6,12,1,2,0,0],//21
-      [0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,2,0,0,0,4,0,0,0,0,2,0,0,0], //22
-      [0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0], //23
-      [0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0], //24
-      [0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,2,0,0,0,5,0,0,0,0,0,0,0,0], //25
-      [0,0,0,0,0,0,0,0,2,1,3,4,5,12,9,6,3,8,7,1,2,0,0,7,0,0,0,0,0,0,0,0],//26
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,12,0,0,0,0,0,0,0,0],//27
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,8,0,0,0,0,0,0,0,0],//28
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,6,0,0,0,0,0,0,0,0], //29
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,3,7,9,1,0,0,0,0,0,0,0,0], //30
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0], //31   
-    ]*/
-    //console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
 
-    //#endregion
-
-    //#region << NEW HOTEL MAP >> 
-    this.hotelMap = [
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'D',0,0,0,0,0,0,0,'D',0,0,0], //0
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'H',0,0,0,0,'D',0,0,'H',0,0,0], //1
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'D',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //2
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //3
-        [0,0,0,0,0,0,'D',0,0,0,0,0,0,'D','H','H','I','H','H','H','I','H','H','H','H','I','H','H','I','H','D',0], //4
-        [0,0,0,0,0,0,'H',0,0,0,0,'D',0,0,0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //5
-        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,'D',0,0,0,0,'H',0,0,'H',0,0,0], //6
-        [0,0,0,0,'D','H','I','H','H','H','H','I','H','D',0,0,'H',0,0,0,0,0,'D',0,0,'H',0,0,'H',0,0,0], //7
-        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'H',0,0,'H',0,0,0], //8
-        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H','I','H','H','I','H','H','I','H','D',0], //9
-        [0,0,0,0,0,0,'H',0,0,'D','H','I','H','H','H','H','I','H','D',0,0,0,'H',0,0,'H',0,0,'H',0,0,0], //10
-        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'D',0,0,'D',0,0,0], //11
-        [0,0,0,0,0,0,'H',0,0,0,0,'D',0,0,0,0,'H',0,0,0,0,0,'H',0,0,0,'D',0,0,0,0,0], //12
-        [0,0,0,0,0,0,'H',0,0,0,0,0,0,0,0,0,'H',0,0,0,0,0,'H',0,0,0,'H',0,0,0,0,0], //13
-        [0,0,0,0,0,0,'H',0,0,0,0,0,0,0,0,0,'H',0,0,0,'D','H','I','H','H','H','I','H','H','D',0,0], //14
-        [0,0,'D','H','H','H','I','H','D',0,0,'D',0,0,0,0,'H',0,0,'D',0,0,'H',0,0,0,'H',0,0,0,0,0], //15
-        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,'D',0,0,0,'H',0,0,0,0,0], //16
-        [0,0,0,0,0,0,'H',0,0,'D','H','I','H','H','H','H','I','H','H','I','D',0,0,0,'D','H','I','H','D',0,0,0], //17
-        [0,0,'D',0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0], //18
-        [0,0,'H',0,0,0,'H',0,0,0,0,'D',0,0,0,0,'D',0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0], //19
-        ['D','H','I','H','H','H','I','H','H','D',0,0,0,0,0,0,0,0,0,'D',0,0,'D','H','H','H','I','H','D',0,0,0], //20
-        [0,0,'H',0,0,0,'H',0,0,0,0,0,0,0,0,0,0,'D',0,0,0,0,0,0,0,0,'H',0,0,0,0,0], //21
-        [0,0,'H',0,0,0,'H',0,0,0,0,'D',0,0,0,0,0,'H',0,0,'D',0,0,0,0,0,'H',0,0,0,0,0], //22
-        [0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'H',0,0,0,0,0,'H','D',0,0,0,0], //23
-        ['D','H','I','H','H','H','I','H','H','H','H','I','H','H','H','H','H','I','H','H','I','D',0,0,0,0,'D',0,0,0,0,0], //24
-        [0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'H',0,0,0,0,0,0,0,0,0,0,0], //25
-        [0,0,'H',0,0,0,'D',0,0,0,0,'D',0,0,0,0,0,'H',0,0,'D',0,0,0,0,0,0,0,0,0,0,0], //26
-        [0,0,'H',0,0,0,0,0,0,'D',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'D',0,0,0,0,0,0,0], //27
-        [0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0], //28
-        ['D','H','I','H','H','H','H','H','H','I','H','H','H','H','H','H','H','I','H','H','H','H','H','H','I','H','D',0,0,0,0,0], //29
-        [0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'D',0,0,0,0,0,0,'H',0,0,0,0,0,0,0], //30
-        [0,0,'D',0,0,0,0,0,0,'D',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'D',0,0,0,0,0,0,0], //31
-       
-    ]
     this.hotel = new Graph();
-    this.hotel.buildGraph(this.hotelMap);
+    this.hotel.buildGraph(this.map);
     this.hotel.printGraph();
-    //#endregion
-    //#region << THE HEDGE MAZE MAP >>
-    /*
-    this.hedgeMap = [
-      [0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,2,8,1,7,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    ]
-    this.hedge = new Graph(this, this.hedgeMap);
-    */
-    //#endregion
-
-    //this.hotel.displayGraph(this, 100, 100, 100);
 
     //#region << IMAGES FOR TESTING >>
     this.add.image(0,0,'hallway0').setOrigin(0,0);
@@ -460,7 +356,6 @@ class Play extends Phaser.Scene {
     this.playerConfig={
       node: this.hotel.getNode(31,24), //set player's location
       cardDirec: this.CD.NORTH, //cardinal direction
-      //imageDisplay: currImage, //& image display
     }
     // Add delayed calls to the list
 
@@ -471,7 +366,7 @@ class Play extends Phaser.Scene {
     this.input.keyboard.on("keydown-SHIFT", () => {
       if (!this.textCrawlActive) {
         if (this.currentIndex === this.dialogueList.length - 1) {
-          this.createBlinkingText(screen.center.x, screen.center.y, 'FIND YOUR SON', 3000 , defaultHeaderStyle);
+          this.createBlinkingText(screen.center.x, screen.center.y, this.levelStartText, 3000 , defaultHeaderStyle);
           this.textCrawl.destroy();
           this.textBox.destroy();
         } else {
@@ -522,7 +417,7 @@ class Play extends Phaser.Scene {
 
     this.add.sprite(this.eye.x,this.eye.y).play('blink182').setScale(0.75); // play blink
     this.time.delayedCall(this.wholeEyeDuration, function() { // cooldown time
-      console.log("eye lul");
+      //console.log("eye lul");
       this.eye.setVisible(true);  // show eye
       this.pupil.setVisible(true); // show pupil
       this.stateCooldown = false; // set cooldown to false
@@ -648,37 +543,11 @@ class Play extends Phaser.Scene {
 
   //#region << IMAGE DISPLAY >>
   displayImage(){
-    /*
-    switch(this.currRoomType){
-      //
+    if(!level){displayHotelImage();}
+    else{ displayHedgeImage();}
+  }
 
-      case null:
-        console.log("roomtype = null  :((((");
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
-        break;
-      case 0: //EMPTY (door)
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
-        break;
-      case 1: //INTER
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
-        break;
-      case 2: //DEAD_END
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend0');
-        break;
-      case 13:
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
-        break;
-      case 14:
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'roomDoor');
-        break;
-      default:
-        this.currHallwayImageString = 'hallway'+((this.currRoomType-3).toString());
-        this.currImage = this.add.image(screen.center.x, screen.center.y, this.currHallwayImageString);
-        console.log(this.currHallwayImageString);
-        console.log(this.currRoomType-3);
-        console.log('hallway'+(this.currRoomType-3).toString());
-        break;
-    }*/
+  displayHotelImage(){
     /* EMPTY: 0,
     INTER: 1,
     DEAD_END: 2,
@@ -706,44 +575,42 @@ class Play extends Phaser.Scene {
     //console.log("currRoomType: " + this.currRoomType);
     
     if (this.currRoomType == null || this.currRoomType == 0) {
-      console.log("Creating 'door' image");
+      //console.log("Creating 'door' image");
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
     }
     
     else if (this.currRoomType == 1) {
-      console.log("Creating 'intersection' image");
+      //console.log("Creating 'intersection' image");
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
     }
     
     else if (this.currRoomType > 1 && this.currRoomType < 6) {
-      console.log("Creating 'deadend' image "+ 'deadend' + (this.currRoomType - 2).toString());
+      //console.log("Creating 'deadend' image "+ 'deadend' + (this.currRoomType - 2).toString());
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend' + (this.currRoomType - 2).toString());
     }
     
     else if (this.currRoomType > 5 && this.currRoomType < 16) {
       if (this.playerConfig.node.roomType === 1) {
         if (this.currRoomType > 5 && this.currRoomType < 11) {
-          console.log("Creating 'hallInter' image: "+'hallInter' + (this.currRoomType - 6).toString());
+          //console.log("Creating 'hallInter' image: "+'hallInter' + (this.currRoomType - 6).toString());
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallInter' + (this.currRoomType - 6).toString());
         } else {
-          console.log("Creating 'deadEndInter' image");
-          this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadEndInter');
+          //console.log("Creating 'deadEndInter' image");
+          this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadendInter');
         }
       } else {
-        console.log("Creating 'hallway' image: ");
+        //console.log("Creating 'hallway' image: ");
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway' + (this.currRoomType - 6).toString());
       }
     }
-    
-    console.log("Checking currImage depth");
-    console.log(this.currImage);
-    
     this.currImage.setDepth(0);
-    console.log("currRoomType: " + this.currRoomType + "displaying: " + this.currImage.key);
     if (this.prevImage) {
-      console.log("Destroying prevImage");
       this.prevImage.destroy();
     }
+  }
+
+  displayHedgeImage(){
+    
   }
   //#endregion
 
@@ -777,11 +644,11 @@ class Play extends Phaser.Scene {
       const index = newQueue.length - 1 - i;
       const row = node.index[0];
       const col = node.index[1];
-      console.log(`Node index: row=${row}, col=${col}`);
+      //console.log(`Node index: row=${row}, col=${col}`);
   
       const x = col * this.minimapSize;
       const y = row * this.minimapSize;
-      console.log(`Image position: x=${x}, y=${y}`);
+      //console.log(`Image position: x=${x}, y=${y}`);
       const alpha = 1 - index * alphaStep;
   
       // Create an image with the appropriate alpha and rotation
@@ -855,7 +722,7 @@ class Play extends Phaser.Scene {
     this.background = this.add.image(screen.center.x,screen.center.y, color).setDepth(depth.miniMapBackground);
     this.background.setVisible(true);
     this.background.setOrigin(0.5,0.5);
-    console.log("creating background: " +color);
+    //console.log("creating background: " +color);
   }
   destroyMiniMap() {
     if (this.squareListMiniMap.length === 0) {
@@ -866,7 +733,7 @@ class Play extends Phaser.Scene {
     });
     this.squareListMiniMap = [];
     //this.destroyBackground();
-    console.log("destroyed minimap background");
+    //console.log("destroyed minimap background");
   }
   
   destroyMap() {
@@ -878,7 +745,7 @@ class Play extends Phaser.Scene {
     });
     this.squareListMap = [];
     //this.destroyBackground();
-    console.log("destroyed map background");
+    //console.log("destroyed map background");
   }
 
   destroyBackground(){
@@ -937,7 +804,7 @@ class Play extends Phaser.Scene {
           this.compassGrid[row][col] = this.add.image(imageX, imageY, 'blue').setDepth(3).setAlpha(0);
         }
   
-        console.log(`Created image at row ${row}, col ${col} with position (${imageX}, ${imageY})`);
+        //console.log(`Created image at row ${row}, col ${col} with position (${imageX}, ${imageY})`);
       }
     }
   }
@@ -993,7 +860,7 @@ class Play extends Phaser.Scene {
             image.setAlpha(0);
           }
         }
-        console.log(`Updated image at row ${row}, col ${col} with alpha ${image.alpha}`);
+        //console.log(`Updated image at row ${row}, col ${col} with alpha ${image.alpha}`);
       }
     }
   }
@@ -1050,6 +917,7 @@ class Play extends Phaser.Scene {
     }
     this.visitIncrementor(this.playerConfig.node);
     this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
+    console.log(this.playerConfig.node.getIndex());
   }
   
   changeCardinalDirection(currCardDirection, leftOrRight){
@@ -1057,44 +925,44 @@ class Play extends Phaser.Scene {
     if(leftOrRight == 1){ //GOING RIGHT
         // if N -> E
         if(currCardDirection == this.CD.NORTH){
-            console.log("EAST");
+            //console.log("EAST");
             this.playerConfig.cardDirec = this.CD.EAST;
         }
         // if E -> S
         if(currCardDirection == this.CD.EAST){
-            console.log("SOUTH");
+            //console.log("SOUTH");
             this.playerConfig.cardDirec = this.CD.SOUTH;
         }
         // if S -> W
         if(currCardDirection == this.CD.SOUTH){
-            console.log("WEST");
+            //console.log("WEST");
             this.playerConfig.cardDirec = this.CD.WEST;
         }
         // if W -> N
         if(currCardDirection == this.CD.WEST){
-            console.log("NORTH");
+            //console.log("NORTH");
             this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
     if(leftOrRight == 0){ //GOING LEFT
         // if N -> W
         if(currCardDirection == this.CD.NORTH){
-            console.log("WEST");
+            //console.log("WEST");
             this.playerConfig.cardDirec = this.CD.WEST;
         }
         // if W -> S
         if(currCardDirection == this.CD.WEST){
-          console.log("SOUTH");
+          //console.log("SOUTH");
           this.playerConfig.cardDirec = this.CD.SOUTH;
         }
         // if S -> E
         if(currCardDirection == this.CD.SOUTH){
-          console.log("EAST");
+          //console.log("EAST");
           this.playerConfig.cardDirec = this.CD.EAST;
         }
         // if E -> N
         if(currCardDirection == this.CD.EAST){
-          console.log("NORTH");
+          //console.log("NORTH");
           this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
@@ -1140,13 +1008,13 @@ class Play extends Phaser.Scene {
       this.heartbeat1.hideOnComplete = false;
       this.heartBeat1 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1').setDepth(depth.deathAnims); // play blink
 
-      console.log("playing anim 1");
+      //console.log("playing anim 1");
     }, [], this);
     this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
       this.heartbeat2.repeat=-1;
       this.heartbeat2.hideOnComplete = false;
       this.heartBeat2 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2').setDepth(depth.deathAnims);
-      console.log("playing anim 2");
+      //console.log("playing anim 2");
     }, [], this);
     this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
       this.heartbeat3.repeat=-1;
