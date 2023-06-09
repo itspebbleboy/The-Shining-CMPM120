@@ -1,5 +1,5 @@
 class CutsceneHelper {
-    constructor(deathAnim, scene, textBox) {
+    constructor(deathAnim, scene) {
       //#region QTE properties
       this.qteInProgress = false;
       this.dialogueList = []; // Array of dialogue lines
@@ -16,17 +16,17 @@ class CutsceneHelper {
       this.textCrawl = null;
       this.animCreate = deathAnim;
       this.scene= scene;
-      this.textBox=textBox;
+      console.log(this.scene);
       //#endregion
     }  
   
     //#region <<QTE HANDLING>>
-    startQTE(qteCount = 1, onSuccess) {
+    startQTE(qteCount = 1, onSuccess, scene) {
         this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
-        this.qteText = this.scene.add.text(screen.center.x, screen.center.y+200, "Press" + " " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
+        this.qteText = scene.add.text(screen.center.x, screen.center.y+200, "Press" + " " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
         this.qteInProgress = true;
         console.log("QTE started!");
-        this.qteTimer = this.scene.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
+        this.qteTimer = scene.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
         console.log("QTE timer started!");
         //this.animation = this.scene.add.sprite(screen.center.x,screen.center.y,'qte').play();
         this.scene.input.keyboard.removeAllListeners();
@@ -69,29 +69,28 @@ class CutsceneHelper {
     //#endregion
 
     //#region << TEXT HANDLING >>
-    iterateThroughDialogue(dialogueList, onComplete, textBox) {
-      let currentIndex = 0;
-      this.startNextDialogue(dialogueList[currentIndex], textBox);
-    
+    iterateThroughDialogue(dialogueList, onComplete, scene) {
+      let currentIndex = 0; 
+      console.log("scene in iterateThruDia: " + scene);
+      this.textBox=scene.add.image(screen.center.x,screen.center.y+300,'textBox');
       const shiftKeyDownHandler = () => {
-
         if (!this.textCrawlActive) {
-          console.log("hi we in !this.textCrawlActive");
           if (currentIndex === dialogueList.length - 1) {
             if (this.textCrawl && !this.textCrawl.destroyed) {
               this.textCrawl.destroy();
             }
             onComplete();
+            if(this.textBox){ this.textBox.destroy(); }
           } else {
-            currentIndex++;
-            console.log(currentIndex);
             if (this.textCrawl && !this.textCrawl.destroyed) {
               this.textCrawl.destroy();
             }
-            this.fastForward = true; // Set fast-forward flag to true
-            this.startNextDialogue(dialogueList[currentIndex], textBox);
-            console.log("Proceeding to next dialogue");
+            currentIndex++;
+            this.startNextDialogue(dialogueList, currentIndex, scene);
+            this.fastForward = true; // Set fast-forward flag to true after starting the next dialogue
           }
+        } else if (this.fastForward) {
+          this.fastForward = false;
         }
       };
       
@@ -100,54 +99,67 @@ class CutsceneHelper {
         this.fastForward = false;
       };
     
-      this.scene.input.keyboard.on("keydown-SHIFT", shiftKeyDownHandler);
-      this.scene.input.keyboard.on("keyup-SHIFT", shiftKeyUpHandler);
+      scene.input.keyboard.on("keydown-SHIFT", shiftKeyDownHandler);
+      scene.input.keyboard.on("keyup-SHIFT", shiftKeyUpHandler);
+    
+      // Check if there is an ongoing dialogue and stop it
+      if (this.textCrawlActive && this.textCrawl) {
+        this.textCrawl.destroy();
+        console.log("Setting textCrawlActive to false");
+        this.textCrawlActive = false;
+      }
+    
+      this.startNextDialogue(dialogueList, currentIndex, scene);
     }
     
-    
-    startNextDialogue(dialogue, textBox) {
+    startNextDialogue(dialogueList, currentIndex, scene) {
       const textBoxPaddingX = 100;
       const textBoxPaddingY = 100;
-      const textBoxX = this.scene.textBox.x - this.scene.textBox.width * this.scene.textBox.originX;
-      const textBoxY = this.scene.textBox.y - this.scene.textBox.height * this.scene.textBox.originY;
+      const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
+      const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
       const textX = textBoxX + textBoxPaddingX;
       const textY = textBoxY + textBoxPaddingY;
-      console.log("hi we here");
-      this.textCrawl = this.scene.add.text(textX, textY, "", defaultTextCrawlStyle); // Assign to this.textCrawl
+      let dialogue = dialogueList[currentIndex];
+      console.log("dialogue: "+dialogueList[currentIndex]);
+      console.log("scene in startNextDia: "+ scene);
+      this.textCrawl = scene.add.text(textX, textY, "", defaultTextCrawlStyle); // Assign to this.textCrawl
       this.textCrawl.setOrigin(0, 0);
-      this.textCrawl.setWordWrapWidth(this.scene.textBox.width - textBoxPaddingX * 2);
-      console.log(this.textCrawl.text);
+      this.textCrawl.setWordWrapWidth(this.textBox.width - textBoxPaddingX * 2);
       this.fastForward = false;
       this.currentTextIndex = 0;
+      console.log("setting textCrawlactive true");
       this.textCrawlActive = true;
-      this.addCharacter(dialogue, this.textCrawl);
+
+
+      this.addCharacter(dialogue, this.textCrawl, scene);
     }
     
-      
-      
-    addCharacter(dialogue, textCrawl) {
+    addCharacter(dialogue, textCrawl, scene) {
       this.currentTextIndex++;
-      textCrawl.text = dialogue.substring(0, this.currentTextIndex);
+      this.textCrawl.text = dialogue.substring(0, this.currentTextIndex);
     
       if (this.currentTextIndex < dialogue.length && !this.fastForward) {
         const delay = this.fastForward ? 0 : this.textCrawlSpeed;
-        this.scene.time.delayedCall(delay, () => this.addCharacter(dialogue, textCrawl)); // Use textCrawl instead of this.textCrawl
+        scene.time.delayedCall(
+          delay,
+          () => this.addCharacter(dialogue, textCrawl,scene)
+        );
       } else {
         this.textCrawlActive = false;
+        console.log("setting textCrawlactive false");
         if (this.fastForward) {
           // Fast-forward: Set the full dialogue text immediately
           textCrawl.text = dialogue;
         }
-        console.log("Setting textCrawlActive to false");
       }
     }
     
     
+    
     //#endregion
 
-    createBlinkingText(textString, duration, scene, x = screen.center.x, y = screen.center.y) {
+    createBlinkingText(textString, duration, scene, x = screen.center.x, y = screen.center.y, style =defaultHeaderStyle ) {
       console.log("Scene:", scene);
-      let style = defaultHeaderStyle
       let text = scene.add.text(x, y, textString, style); 
       text.setOrigin(0.5);
       text.setDepth(depth.deathAnims);
@@ -157,10 +169,10 @@ class CutsceneHelper {
       const repeatCount = Math.floor(duration / (blinkDuration + visiblePauseDuration)); // Calculate the number of repeats
     
       let currentRepeat = 0; // Counter for the current repeat
-    
+      
       const blinkAnimation = () => {
         currentRepeat++;
-    
+        
         // Set the alpha to 0 after the visible pause duration
         scene.time.delayedCall(visiblePauseDuration, () => {
           text.alpha = 0;
@@ -185,5 +197,37 @@ class CutsceneHelper {
       // Start the blinking animation
       blinkAnimation();
     }
+
+
+    destroy() {
+      // Clean up any resources specific to the CutsceneHelper instance
+      if (this.textCrawl) {
+        this.textCrawl.destroy();
+      }
+      if (this.qteText) {
+        this.qteText.destroy();
+      }
+      if (this.textBox) {
+        this.textBox.destroy();
+      }
+  
+      // Reset all properties to their initial values
+      this.qteInProgress = false;
+      this.dialogueList = [];
+      this.currentTextIndex = 0;
+      this.fastForward = false;
+      this.currentIndex = 0;
+      this.textCrawlActive = false;
+      this.currentQTEInputOption = null;
+      this.completedQTEs = 0;
+      this.qteTimer = null;
+      this.qteTimerDuration = 1000;
+      this.textCrawlSpeed = 20;
+      this.textCrawl = null;
+      this.animCreate = null;
+      this.scene = null;
+    }
+
+
   }
   
