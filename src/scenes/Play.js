@@ -107,7 +107,7 @@ class Play extends Phaser.Scene {
     this.load.image('hedgeHallway1', './assets/hedge/hedgeHallway1.png');
     this.load.image('hedgeHallway2', './assets/hedge/hedgeHallway2.png');
     //#endregion
-    // << MAP ELEMENTS >>
+    //#region << MAP ELEMENTS >>
     this.load.image('brownBackground', './assets/ui/brownBackground.png');
     this.load.image('blue', './assets/ui/blueMap.png');
     this.load.image('tan', './assets/ui/tanSmall.png');
@@ -267,6 +267,7 @@ class Play extends Phaser.Scene {
   create(){    
     
     //#region << THE HOTEL MAP >>
+    /*
     this.hotelMap = [
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //0
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], //1
@@ -300,13 +301,51 @@ class Play extends Phaser.Scene {
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,6,0,0,0,0,0,0,0,0], //29
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,3,7,9,1,0,0,0,0,0,0,0,0], //30
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0], //31   
-    ]
+    ]*/
     //console.log("rows: " + this.hotelMap.length + " colums: " + this.hotelMap[0].length);
+
+    //#endregion
+
+    //#region << NEW HOTEL MAP >> 
+    this.hotelMap = [
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'D',0,0,0,0,0,0,0,'D',0,0,0], //0
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'H',0,0,0,0,'D',0,0,'H',0,0,0], //1
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'D',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //2
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //3
+        [0,0,0,0,0,0,'D',0,0,0,0,0,0,'D','H','H','I','H','H','H','I','H','H','H','H','I','H','H','I','H','D',0], //4
+        [0,0,0,0,0,0,'H',0,0,0,0,'D',0,0,0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //5
+        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,'D',0,0,0,0,'H',0,0,'H',0,0,0], //6
+        [0,0,0,0,'D','H','I','H','H','H','H','I','H','D',0,0,'H',0,0,0,0,0,'D',0,0,'H',0,0,'H',0,0,0], //7
+        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'H',0,0,'H',0,0,0], //8
+        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H','I','H','H','I','H','H','I','H','D',0], //9
+        [0,0,0,0,0,0,'H',0,0,'D','H','I','H','H','H','H','I','H','D',0,0,0,'H',0,0,'H',0,0,'H',0,0,0], //10
+        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'D',0,0,'D',0,0,0], //11
+        [0,0,0,0,0,0,'H',0,0,0,0,'D',0,0,0,0,'H',0,0,0,0,0,'H',0,0,0,'D',0,0,0,0,0], //12
+        [0,0,0,0,0,0,'H',0,0,0,0,0,0,0,0,0,'H',0,0,0,0,0,'H',0,0,0,'H',0,0,0,0,0], //13
+        [0,0,0,0,0,0,'H',0,0,0,0,0,0,0,0,0,'H',0,0,0,'D','H','I','H','H','H','I','H','H','D',0,0], //14
+        [0,0,'D','H','H','H','I','H','D',0,0,'D',0,0,0,0,'H',0,0,'D',0,0,'H',0,0,0,'H',0,0,0,0,0], //15
+        [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,'D',0,0,0,'H',0,0,0,0,0], //16
+        [0,0,0,0,0,0,'H',0,0,'D','H','I','H','H','H','H','I','H','H','I','D',0,0,0,'D','H','I','H','D',0,0,0], //17
+        [0,0,'D',0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0], //18
+        [0,0,'H',0,0,0,'H',0,0,0,0,'D',0,0,0,0,'D',0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0], //19
+        ['D','H','I','H','H','H','I','H','H','D',0,0,0,0,0,0,0,0,0,'D',0,0,'D','H','H','H','I','H','D',0,0,0], //20
+        [0,0,'H',0,0,0,'H',0,0,0,0,0,0,0,0,0,0,'D',0,0,0,0,0,0,0,0,'H',0,0,0,0,0], //21
+        [0,0,'H',0,0,0,'H',0,0,0,0,'D',0,0,0,0,0,'H',0,0,'D',0,0,0,0,0,'H',0,0,0,0,0], //22
+        [0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'H',0,0,0,0,0,'H','D',0,0,0,0], //23
+        ['D','H','I','H','H','H','I','H','H','H','H','I','H','H','H','H','H','I','H','H','I','D',0,0,0,0,'D',0,0,0,0,0], //24
+        [0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'H',0,0,0,0,0,0,0,0,0,0,0], //25
+        [0,0,'H',0,0,0,'D',0,0,0,0,'D',0,0,0,0,0,'H',0,0,'D',0,0,0,0,0,0,0,0,0,0,0], //26
+        [0,0,'H',0,0,0,0,0,0,'D',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'D',0,0,0,0,0,0,0], //27
+        [0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0], //28
+        ['D','H','I','H','H','H','H','H','H','I','H','H','H','H','H','H','H','I','H','H','H','H','H','H','I','H','D',0,0,0,0,0], //29
+        [0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'D',0,0,0,0,0,0,'H',0,0,0,0,0,0,0], //30
+        [0,0,'D',0,0,0,0,0,0,'D',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'D',0,0,0,0,0,0,0], //31
+       
+    ]
     this.hotel = new Graph();
     this.hotel.buildGraph(this.hotelMap);
     this.hotel.printGraph();
     //#endregion
-
     //#region << THE HEDGE MAZE MAP >>
     /*
     this.hedgeMap = [
@@ -419,7 +458,7 @@ class Play extends Phaser.Scene {
     this.textBox.setDepth(depth.textBox);
 
     this.playerConfig={
-      node: this.hotel.getNode(31,19), //set player's location
+      node: this.hotel.getNode(31,24), //set player's location
       cardDirec: this.CD.NORTH, //cardinal direction
       //imageDisplay: currImage, //& image display
     }
@@ -609,13 +648,10 @@ class Play extends Phaser.Scene {
 
   //#region << IMAGE DISPLAY >>
   displayImage(){
-    this.currRoomType = this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
-    if(this.currImage){
-      this.prevImage = this.currImage; 
-    }
-    console.log("currRoomType: " + this.currRoomType);
+    /*
     switch(this.currRoomType){
       //
+
       case null:
         console.log("roomtype = null  :((((");
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
@@ -642,7 +678,7 @@ class Play extends Phaser.Scene {
         console.log(this.currRoomType-3);
         console.log('hallway'+(this.currRoomType-3).toString());
         break;
-    }
+    }*/
     /* EMPTY: 0,
     INTER: 1,
     DEAD_END: 2,
@@ -662,18 +698,50 @@ class Play extends Phaser.Scene {
     SPECIAL_HALLWAY: 16,
     SPECIAL_DOOR: 17,
     */
-    /*
-    if(this.currRoomType==null || this.currRoomType==0) { this.currImage = this.add.image(screen.center.x, screen.center.y, 'door'); }
-    if(this.currRoomType==1) { this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection'); }
-    if(this.currRoomType > 1 && this.currRoomType < 6){
-      if(this.playerConfig.node.roomType==RoomType.INTER){ //if ur looking at a dead end from an intersection
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
-      }
-      
+
+    this.currRoomType = this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
+    if (this.currImage) {
+      this.prevImage = this.currImage; 
     }
-    */
+    //console.log("currRoomType: " + this.currRoomType);
+    
+    if (this.currRoomType == null || this.currRoomType == 0) {
+      console.log("Creating 'door' image");
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
+    }
+    
+    else if (this.currRoomType == 1) {
+      console.log("Creating 'intersection' image");
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
+    }
+    
+    else if (this.currRoomType > 1 && this.currRoomType < 6) {
+      console.log("Creating 'deadend' image "+ 'deadend' + (this.currRoomType - 2).toString());
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend' + (this.currRoomType - 2).toString());
+    }
+    
+    else if (this.currRoomType > 5 && this.currRoomType < 16) {
+      if (this.playerConfig.node.roomType === 1) {
+        if (this.currRoomType > 5 && this.currRoomType < 11) {
+          console.log("Creating 'hallInter' image: "+'hallInter' + (this.currRoomType - 6).toString());
+          this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallInter' + (this.currRoomType - 6).toString());
+        } else {
+          console.log("Creating 'deadEndInter' image");
+          this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadEndInter');
+        }
+      } else {
+        console.log("Creating 'hallway' image: ");
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway' + (this.currRoomType - 6).toString());
+      }
+    }
+    
+    console.log("Checking currImage depth");
+    console.log(this.currImage);
+    
     this.currImage.setDepth(0);
-    if(this.prevImage){
+    console.log("currRoomType: " + this.currRoomType + "displaying: " + this.currImage.key);
+    if (this.prevImage) {
+      console.log("Destroying prevImage");
       this.prevImage.destroy();
     }
   }
