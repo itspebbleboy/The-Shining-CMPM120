@@ -59,6 +59,10 @@ class Graph {
               map[i][j] = Math.floor(Math.random() * 4) + 2;
             } else if (map[i][j] === 'H') {
               map[i][j] = Math.floor(Math.random() * 10) + 6;
+            } else if (map[i][j] === 'SH'){
+              map[i][j] = 16;
+            } else if(map[i][j] === 'SD'){
+              map[i][j] = 17;
             }
           }
         }
@@ -67,11 +71,17 @@ class Graph {
           for (let col = 0; col < this.numCols; col++) {
             if (map[row][col] === 'I') {
               map[row][col] = 1;
+              console
             } else if (map[row][col] === 'D') {
               map[row][col] = Math.floor(Math.random() * 3) + 2;
             } else if (map[row][col] === 'H') {
               map[row][col] = Math.floor(Math.random() * 3) + 6;
+            }else if (map[i][j] === 'SH'){
+              map[i][j] = 16;
+            }else if(map[i][j] === 'SD'){
+              map[i][j] = 17;
             }
+            
           }
         }
       }
@@ -113,7 +123,6 @@ class Graph {
             }
           }
         }
-
       }
 
 
@@ -171,7 +180,7 @@ class Graph {
         matrix += rowValues.trim() + "\n";
       }
   
-      //console.log(matrix);
+      console.log(matrix);
     }
     
       

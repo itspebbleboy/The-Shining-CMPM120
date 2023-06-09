@@ -32,10 +32,10 @@ class Menu extends Phaser.Scene {
 
         if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             //this.scene.start("qteScene");
-            this.scene.start("playScene", levelHedge);
+            this.scene.start("introScene", levelHotel);
           }
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
-            this.scene.start("playScene", levelHotel );
+            this.scene.start("playScene", levelHedge );
           }
   
     }

@@ -17,6 +17,8 @@ class Play extends Phaser.Scene {
     this.starting;
     this.dialogueList;
     this.levelStartText;
+    this.levelEndText;
+    this.playerQueueLength;
 
     this.stateCooldown = false; // Cooldown state
     this.eyeDelta = 575;
@@ -43,7 +45,7 @@ class Play extends Phaser.Scene {
     this.currentTextIndex = 0; // Index of the current character being displayed in the dialogue
     this.fastForward = false; // Flag to enable fast forward
     this.currentIndex = 0; // Index of the current dialogue in the dialogue list
-
+    this.endActive = false;
 
     //#endregion
   }
@@ -57,7 +59,8 @@ class Play extends Phaser.Scene {
     this.starting = data.starting;
     this.dialogueList = data.dialogueList;
     this.levelStartText = data.levelStartText;
-
+    this.levelEndText = data.levelEndText;
+    this.playerQueueLength = data.playerQueueLength;
   }
 
   preload(){
@@ -126,15 +129,15 @@ class Play extends Phaser.Scene {
       //#endregion
 
       //#region << HEDGE ELEMENTS >>
-      this.load.image('hedgeDeadEnd0', './assets/hedge/hedgeDeadEnd0');
-      this.load.image('hedgeDeadEnd1','./assets/hedge/hedgeDeadEnd1');
-      this.load.image('hedgeDeadEnd2','./assets/hedge/hedgeDeadEnd2');
-      this.load.image('hedgeEnd', './assets/hedge/hedgeEnd');
-      this.load.image('hedgeIntersection', './assets/hedge/hedgeIntersection');
-      this.load.image('hedgeHallInter0','./assets/hedge/hedgeIntersection0');
-      this.load.image('hedgeHallInter1','./assets/hedge/hedgeIntersection1');
-      this.load.image('hedgeHallInter2','./assets/hedge/hedgeIntersection2');
-      this.load.image('hedgeWall', './assets/hedge/hedgeWall');
+      this.load.image('hedgeDeadEnd0', './assets/hedge/hedgeDeadEnd0.png');
+      this.load.image('hedgeDeadEnd1','./assets/hedge/hedgeDeadEnd1.png');
+      this.load.image('hedgeDeadEnd2','./assets/hedge/hedgeDeadEnd2.png');
+      this.load.image('hedgeEnd', './assets/hedge/hedgeEnd.png');
+      this.load.image('hedgeIntersection', './assets/hedge/hedgeIntersection.png');
+      this.load.image('hedgeHallInter0','./assets/hedge/hedgeHallwayIntersection0.png');
+      this.load.image('hedgeHallInter1','./assets/hedge/hedgeHallwayIntersection1.png');
+      this.load.image('hedgeHallInter2','./assets/hedge/hedgeHallwayIntersection2.png');
+      this.load.image('hedgeWall', './assets/hedge/hedgeWall.png');
       this.load.image('hedgeHallway0', './assets/hedge/hedgeHallway0.png');
       this.load.image('hedgeHallway1', './assets/hedge/hedgeHallway1.png');
       this.load.image('hedgeHallway2', './assets/hedge/hedgeHallway2.png');
@@ -260,9 +263,9 @@ class Play extends Phaser.Scene {
           console.log("ENTERED MINIMAP STATE");
         },
         update: () => {
-          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown) {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown && this.level<1) {
             this.gameState.MAP.enter();
-          } else if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown) {
+          } else if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown ) {
             this.gameState.ROOMS.enter();
           }
         },
@@ -288,6 +291,15 @@ class Play extends Phaser.Scene {
             this.gameState.MINIMAP.enter();
           }
         },
+      },
+      END : {
+        enter: () => {
+          this.currentGameState = this.gameState.END;
+          this.endActive = true;
+          this.stopAllDelayedCalls();
+          nextSceneCalls();
+        },
+        update: () => {},
       }
     };
     
@@ -298,12 +310,11 @@ class Play extends Phaser.Scene {
 
   create(){    
 
-    this.hotel = new Graph();
-    this.hotel.buildGraph(this.map);
-    this.hotel.printGraph();
+    this.graph = new Graph();
+    this.graph.buildGraph(this.map, this.level);
+    this.graph.printGraph();
 
     //#region << IMAGES FOR TESTING >>
-    this.add.image(0,0,'hallway0').setOrigin(0,0);
     this.eye = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil1').setScale(.75);
     this.pupil = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil_alone').setScale(.75);
 
@@ -366,12 +377,14 @@ class Play extends Phaser.Scene {
     });
 
     //#endregion
-
+    if(this.dialogueList.length !=0){
     this.textBox = this.add.image(screen.center.x, screen.center.y + 300, 'textBox').setOrigin(0.5, 0);
     this.textBox.setDepth(depth.textBox);
-
+    }else{
+      this.createBlinkingText(screen.center.x, screen.center.y, this.levelStartText, 3000 , defaultHeaderStyle);
+    }
     this.playerConfig={
-      node: this.hotel.getNode(31,24), //set player's location
+      node: this.graph.getNode(31,24), //set player's location
       cardDirec: this.CD.NORTH, //cardinal direction
     }
     // Add delayed calls to the list
@@ -405,14 +418,13 @@ class Play extends Phaser.Scene {
 
     this.startNextDialogue();
 
-
-
+    this.graph.printGraphAsMatrix(this.playerConfig.node);
   }
 
   update(){
     this.currentGameState.update();
 
-    if (this.mapsActive) {// If the maps are active, prevent other inputs from affecting the scene
+    if (this.mapsActive || this.endActive) {// If the maps are active, prevent other inputs from affecting the scene
       return;
     }
     this.currEyeState.update();
@@ -525,18 +537,18 @@ class Play extends Phaser.Scene {
     }
     if(this.currEyeState == this.eyeState.FORWARD && keyLEFT.isDown) // if forward and "<-" go to the left
     {
-      console.log("in forward go left");
+      //console.log("in forward go left");
       this.moveEyeLeft();
       this.eyeState.LEFT.enter(); // update sprite position and curr state.
     }
     
     if(this.currEyeState == this.eyeState.FORWARD && keyRIGHT.isDown) // if forward & "->" go to the right
     {
-      console.log("in forward go right");
+      //console.log("in forward go right");
       this.moveEyeRight(); //update sprite
       this.eyeState.RIGHT.enter(); // update state
     }
-    if(this.currEyeState == this.eyeState.FORWARD && keySPACE.isDown && this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec)) // if forward and the "SPACE" UPDATE PLAYER LOCATION
+    if(this.currEyeState == this.eyeState.FORWARD && keySPACE.isDown && this.graph.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec)) // if forward and the "SPACE" UPDATE PLAYER LOCATION
     {
       this.movePlayer();
       this.displayImage();
@@ -585,7 +597,7 @@ class Play extends Phaser.Scene {
     SPECIAL_DOOR: 17,
     */
 
-    this.currRoomType = this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
+    this.currRoomType = this.graph.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
     if (this.currImage) {
       this.prevImage = this.currImage; 
     }
@@ -619,6 +631,8 @@ class Play extends Phaser.Scene {
         //console.log("Creating 'hallway' image: ");
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway' + (this.currRoomType - 6).toString());
       }
+    }else if(this.currRoomType == 16){
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
     }
     this.currImage.setDepth(0);
     if (this.prevImage) {
@@ -627,7 +641,7 @@ class Play extends Phaser.Scene {
   }
 
   displayHedgeImage(){
-    this.currRoomType = this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
+    this.currRoomType = this.graph.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
     if (this.currImage) {
       this.prevImage = this.currImage; 
     }
@@ -646,8 +660,14 @@ class Play extends Phaser.Scene {
       if (this.playerConfig.node.roomType === 1) {
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallInter' + (this.currRoomType - 6).toString());
       }else {
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway' + (this.currRoomType - 6).toString());
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway');
       }
+    }else if(this.currRoomType == 16){
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeEnd');
+    }
+    this.currImage.setDepth(0);
+    if (this.prevImage) {
+      this.prevImage.destroy();
     }
   }
   //#endregion
@@ -735,10 +755,10 @@ class Play extends Phaser.Scene {
     this.squareListMap = [];
     this.minimapSize = 64; // Size of each square in the minimap
     this.createBackground('brownBackground');
-    for (let row = 0; row < this.hotel.numRows; row++) {
-      for (let col = 0; col < this.hotel.numCols; col++) {
+    for (let row = 0; row < this.graph.numRows; row++) {
+      for (let col = 0; col < this.graph.numCols; col++) {
         const index = [row, col].toString();
-        const currentNode = this.hotel.nodes.get(index);
+        const currentNode = this.graph.nodes.get(index);
         if(currentNode.isVal()){
           const x = col * this.minimapSize;
           const y = row * this.minimapSize;
@@ -944,18 +964,22 @@ class Play extends Phaser.Scene {
 
   //#region << PLAYER HELPER FUNCTIONS >>
   movePlayer(){
-    this.playerConfig.node=this.hotel.getNeighborInDirection(this.playerConfig.node, this.playerConfig.cardDirec)
-    this.hotel.printGraphAsMatrix(this.playerConfig.node);
+    this.playerConfig.node=this.graph.getNeighborInDirection(this.playerConfig.node, this.playerConfig.cardDirec)
+    this.graph.printGraphAsMatrix(this.playerConfig.node);
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
     // Check if the queue has reached its maximum length
-    if (this.queue.length > 10) {
+    if (this.queue.length > this.playerQueueLength) {
       // Remove the front element of the queue
       this.queue.shift();
     }
     this.visitIncrementor(this.playerConfig.node);
     this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
     console.log(this.playerConfig.node.getIndex());
+    if(this.playerConfig.node.roomType == RoomType.SPECIAL_HALLWAY){
+      this.gameState.END.enter();
+    }
+
   }
   
   changeCardinalDirection(currCardDirection, leftOrRight){
@@ -1061,9 +1085,42 @@ class Play extends Phaser.Scene {
 
     }, [], this);
   }
+
+  stopAllDelayedCalls(){
+    if(this.jackAnim0Timer) { this.jackAnim0Timer.remove(); }
+    if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
+    if(this.deathAnimTimer) { this.deathAnimTimer.remove(); }
+    if(this.heartBeat1) {
+      this.heartBeat1.stop();
+      this.heartBeat1.visible = false;
+    }if(this.heartBeat2){
+      this.heartBeat2.stop();
+      this.heartBeat2.visible = false;
+    }if(this.heartBeat3){
+      this.heartBeat3.stop();
+      this.heartBeat3.visible = false;
+    }
+  }
   //#endregion
- 
-  //#region << TEXT GRAPPLERS >>  
+  //#region << SCENE TRANSITION LOGIC >>
+  nextSceneCalls(){
+    createBlinkingText(screen.center.x,screen.center.y, 3000, this.levelEndText, defaultHeaderStyle);
+    if(!this.level){    
+      let specialDoor = this.add.image(screen.center.x,screen.center.y, 'roomDoor').setOrigin(0.5,0.5);
+      specialDoor.setDepth(depth.rooms);
+    }
+    this.time.delayedCall(3000, this.fadeInImage(), [2000],this);
+    this.time.delayedCall()
+  }
+  nextSceneLogic(){
+    if(!this.level){
+      this.scene.start("playScene");
+    }else{
+      this.scene.start("playScene");
+    }
+  }
+  //#endregion
+  //#region << TEXT GRAPPLERS >> 
   createBlinkingText(x, y, textString, duration, style) {
     const text = this.add.text(x, y, textString, style);
     text.setOrigin(0.5);
@@ -1103,6 +1160,23 @@ class Play extends Phaser.Scene {
     blinkAnimation();
   }
 
+  fadeInImage(duration) {
+    const imageX = 100; // X position of the image
+    const imageY = 100; // Y position of the image
+
+    const image = this.add.image(imageX, imageY, 'brownBackground'); // Replace 'myImage' with your image key
+    image.alpha = 0; // Set the initial alpha to 0
+    image.setDepth(depth.mapSquares);
+
+    this.tweens.add({
+      targets: image,
+      alpha: 1, // Animate the alpha property from 0 to 1
+      duration: duration,
+      ease: 'Linear', // Use a linear easing function for a constant rate
+      //onComplete: //GO TO NEXT SCENE
+    });
+  }
+
 
   addCharacter(dialogue) {
     this.currentTextIndex++;
@@ -1140,4 +1214,6 @@ class Play extends Phaser.Scene {
   }
   
   //#endregion
+
+
 }
