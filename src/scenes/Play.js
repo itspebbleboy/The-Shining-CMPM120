@@ -110,13 +110,30 @@ class Play extends Phaser.Scene {
       this.load.image('hallway8', './assets/hotel/hallway8.png');
       this.load.image('hallway9', './assets/hotel/hallway9.png');
       //#endregion
-    
+      //#region << MAP ELEMENTS >>
+      this.load.image('brownBackground', './assets/ui/brownBackground.png');
+      this.load.image('blue', './assets/ui/blueMap.png');
+      this.load.image('tan', './assets/ui/tanSmall.png');
+      this.load.image('tanBackground', './assets/ui/tanBackground.png');
+      this.load.image('rightArrow', './assets/ui/rightArrow.png');
+      this.load.image('rightArrow', './assets/ui/rightArrow.png');
+      this.load.image('leftArrow', './assets/ui/leftArrow.png');
+      this.load.image('spaceButton', './assets/ui/spaceButton.png');
+      this.load.image('forward', './assets/ui/forward.png');
+      this.load.image('forwardx2', './assets/ui/forwardx2.png');
+      this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
+      this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
+      //#endregion
+
       //#region << HEDGE ELEMENTS >>
       this.load.image('hedgeDeadEnd0', './assets/hedge/hedgeDeadEnd0');
       this.load.image('hedgeDeadEnd1','./assets/hedge/hedgeDeadEnd1');
       this.load.image('hedgeDeadEnd2','./assets/hedge/hedgeDeadEnd2');
       this.load.image('hedgeEnd', './assets/hedge/hedgeEnd');
       this.load.image('hedgeIntersection', './assets/hedge/hedgeIntersection');
+      this.load.image('hedgeHallInter0','./assets/hedge/hedgeIntersection0');
+      this.load.image('hedgeHallInter1','./assets/hedge/hedgeIntersection1');
+      this.load.image('hedgeHallInter2','./assets/hedge/hedgeIntersection2');
       this.load.image('hedgeWall', './assets/hedge/hedgeWall');
       this.load.image('hedgeHallway0', './assets/hedge/hedgeHallway0.png');
       this.load.image('hedgeHallway1', './assets/hedge/hedgeHallway1.png');
@@ -136,9 +153,9 @@ class Play extends Phaser.Scene {
       this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
       this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
       //#endregion
-      // << UI ELEMENTS >>
-      this.load.image('textBox', './assets/ui/textBox.png');
-    //#endregion
+
+    // << UI ELEMENTS >>
+    this.load.image('textBox', './assets/ui/textBox.png');
 
     //#region >> EYE STATE MACHINE >>
     this.eyeState = { //state machine for eye orientation
@@ -616,13 +633,23 @@ class Play extends Phaser.Scene {
     }
     if (this.currRoomType == null || this.currRoomType == 0) {
       //console.log("Creating 'door' image");
-      this.currImage = this.add.image(screen.center.x, screen.center.y, 'wall');
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeWall');
     }
     else if (this.currRoomType == 1) {
       //console.log("Creating 'intersection' image");
-      this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeIntersection');
     }
+    else if (this.currRoomType > 1 && this.currRoomType < 5) {
+      //console.log("Creating 'deadend' image "+ 'deadend' + (this.currRoomType - 2).toString());
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeDeadEnd' + (this.currRoomType - 2).toString());
+    }else if (this.currRoomType > 5 && this.currRoomType < 9) {
+      if (this.playerConfig.node.roomType === 1) {
+          this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallInter' + (this.currRoomType - 6).toString());
+      }else {
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway' + (this.currRoomType - 6).toString());
+      }
   }
+}
   //#endregion
 
   //#region << MAPS >>
