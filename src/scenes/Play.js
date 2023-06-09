@@ -560,8 +560,8 @@ class Play extends Phaser.Scene {
 
   //#region << IMAGE DISPLAY >>
   displayImage(){
-    if(!level){displayHotelImage();}
-    else{ displayHedgeImage();}
+    if(!this.level){this.displayHotelImage();}
+    else{ this.displayHedgeImage();}
   }
 
   displayHotelImage(){
@@ -648,8 +648,8 @@ class Play extends Phaser.Scene {
       }else {
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway' + (this.currRoomType - 6).toString());
       }
+    }
   }
-}
   //#endregion
 
   //#region << MAPS >>
