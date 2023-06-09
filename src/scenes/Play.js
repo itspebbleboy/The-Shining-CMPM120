@@ -610,7 +610,18 @@ class Play extends Phaser.Scene {
   }
 
   displayHedgeImage(){
-    
+    this.currRoomType = this.hotel.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
+    if (this.currImage) {
+      this.prevImage = this.currImage; 
+    }
+    if (this.currRoomType == null || this.currRoomType == 0) {
+      //console.log("Creating 'door' image");
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'wall');
+    }
+    else if (this.currRoomType == 1) {
+      //console.log("Creating 'intersection' image");
+      this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
+    }
   }
   //#endregion
 
