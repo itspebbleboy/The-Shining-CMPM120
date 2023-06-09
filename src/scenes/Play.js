@@ -102,6 +102,9 @@ class Play extends Phaser.Scene {
     this.load.image('hedgeDeadEnd2','./assets/hedge/hedgeDeadEnd2');
     this.load.image('hedgeEnd', './assets/hedge/hedgeEnd');
     this.load.image('hedgeIntersection', './assets/hedge/hedgeIntersection');
+    this.load.image('hedgeHallInter0','./assets/hedge/hedgeIntersection0');
+    this.load.image('hedgeHallInter1','./assets/hedge/hedgeIntersection1');
+    this.load.image('hedgeHallInter2','./assets/hedge/hedgeIntersection2');
     this.load.image('hedgeWall', './assets/hedge/hedgeWall');
     this.load.image('hedgeHallway0', './assets/hedge/hedgeHallway0.png');
     this.load.image('hedgeHallway1', './assets/hedge/hedgeHallway1.png');
