@@ -63,14 +63,14 @@ class Graph {
           }
         }
       }else{
-        for (let i = 0; i < this.numRows; i++) {
-          for (let j = 0; j < this.numCols; j++) {
-            if (map[i][j] === 'I') {
-              map[i][j] = 1;
-            } else if (map[i][j] === 'D') {
-              map[i][j] = Math.floor(Math.random() * 4) + 2;
-            } else if (map[i][j] === 'H') {
-              map[i][j] = Math.floor(Math.random() * 10) + 6;
+        for (let row = 0; row < this.numRows; row++) {
+          for (let col = 0; col < this.numCols; col++) {
+            if (map[row][col] === 'I') {
+              map[row][col] = 1;
+            } else if (map[row][col] === 'D') {
+              map[row][col] = Math.floor(Math.random() * 3) + 2;
+            } else if (map[row][col] === 'H') {
+              map[row][col] = Math.floor(Math.random() * 3) + 6;
             }
           }
         }
