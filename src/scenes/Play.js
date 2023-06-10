@@ -61,6 +61,32 @@ class Play extends Phaser.Scene {
     this.levelStartText = data.levelStartText;
     this.levelEndText = data.levelEndText;
     this.playerQueueLength = data.playerQueueLength;
+    
+    this.stateCooldown = false; // Cooldown state
+    this.eyeDelta = 575;
+    this.pupilDelta = 750;
+    this.wholeEyeDuration = 300;
+
+    //NEEDED ACROSS FUNCTIONS
+    this.mapsActive = false; // Flag to indicate if minimap is active or not
+    this.cooldownDuration = 300; // Cooldown duration in milliseconds (0.2 seconds) (for minimap)
+    this.lastSpacePressTime = 0; // Timestamp of the last space key press
+    this.queue = [];
+    this.compassGrid = [];
+    this.inCooldown = false;
+    this.squareListMap = [];
+    this.squareListMiniMap = [];
+
+    this.currentDeathAnimation = null;
+    this.memoryQueue = [];
+    this.visitedNodes = new Set();
+
+    this.textCrawlActive = false;
+    this.textCrawlSpeed = 25;
+    this.currentTextIndex = 0; // Index of the current character being displayed in the dialogue
+    this.fastForward = false; // Flag to enable fast forward
+    this.currentIndex = 0; // Index of the current dialogue in the dialogue list
+    this.endActive = false;
   }
 
   preload(){
@@ -298,7 +324,8 @@ class Play extends Phaser.Scene {
           this.currentGameState = this.gameState.END;
           this.endActive = true;
           this.stopAllDelayedCalls();
-          this.nextSceneCalls();
+          let endDelay= (!this.level) ? 2000 : 0;
+          this.time.delayedCall(endDelay, this.nextSceneCalls, [], this);
         },
         update: () => {},
       }
@@ -538,14 +565,14 @@ class Play extends Phaser.Scene {
     }
     if(this.currEyeState == this.eyeState.FORWARD && keyLEFT.isDown) // if forward and "<-" go to the left
     {
-      //console.log("in forward go left");
+      console.log("in forward go left");
       this.moveEyeLeft();
       this.eyeState.LEFT.enter(); // update sprite position and curr state.
     }
     
     if(this.currEyeState == this.eyeState.FORWARD && keyRIGHT.isDown) // if forward & "->" go to the right
     {
-      //console.log("in forward go right");
+      console.log("in forward go right");
       this.moveEyeRight(); //update sprite
       this.eyeState.RIGHT.enter(); // update state
     }
@@ -634,6 +661,7 @@ class Play extends Phaser.Scene {
       }
     }else if(this.currRoomType == 16){
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
+      this.gameState.END.enter();
     }
     this.currImage.setDepth(0);
     if (this.prevImage) {
@@ -665,8 +693,9 @@ class Play extends Phaser.Scene {
       }
     }else if(this.currRoomType == 16){
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeEnd');
+      this.gameState.END.enter();
     }
-    this.currImage.setDepth(0);
+    this.currImage.setDepth(depth.rooms);
     if (this.prevImage) {
       this.prevImage.destroy();
     }
@@ -977,10 +1006,6 @@ class Play extends Phaser.Scene {
     this.visitIncrementor(this.playerConfig.node);
     this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
     console.log(this.playerConfig.node.getIndex());
-    if(this.playerConfig.node.roomType == RoomType.SPECIAL_HALLWAY){
-      this.gameState.END.enter();
-    }
-
   }
   
   changeCardinalDirection(currCardDirection, leftOrRight){
@@ -1105,8 +1130,11 @@ class Play extends Phaser.Scene {
   //#endregion
   //#region << SCENE TRANSITION LOGIC >>
   nextSceneCalls(){
-    this.cutsceneHelper.createBlinkingText(this.levelEndText, 3000, this, screen.center.x, screen.center.y-300);
-    if(!this.level){    
+    this.eye.destroy(); // hide the current eye
+    this.pupil.destroy(); // hide the current pupil
+    if(this.textBox) {this.textBox.destroy(); this.textCrawl.destroy();}
+    this.cutsceneHelper.createBlinkingText(this.levelEndText, 2000, this, screen.center.x, screen.center.y-300);
+    if(!this.level){
       let specialDoor = this.add.image(screen.center.x,screen.center.y, 'roomDoor').setOrigin(0.5,0.5);
       specialDoor.setDepth(depth.rooms+1);
     }
@@ -1114,13 +1142,14 @@ class Play extends Phaser.Scene {
 
   }
   nextSceneLogic = () =>{
-    this.time.delayedCall(3000, this.fadeInImage, [2000],this);
+    this.time.delayedCall(2000, this.fadeInImage, [1000],this);
   }
   nextSceneAction= () =>{
     if(!this.level){
+      console.log("starting bathroomScene");
       this.scene.start("bathroomScene");
     }else{
-      this.scene.start("playScene");
+      this.scene.start("endCutscene");
     }
   }
   //#endregion
