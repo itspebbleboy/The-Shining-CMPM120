@@ -187,7 +187,15 @@ class Play extends Phaser.Scene {
       this.load.image('textBox', './assets/ui/textBox.png');
     //#endregion
     //#region << LOADING AUDIO >>
-    this.scene.load.audio(); //
+    this.scene.load.audio(); // creak 0
+    this.scene.load.audio(); // creak 1
+    this.scene.load.audio(); // creak 2
+    this.scene.load.audio(); // snowCrunch0
+    this.scene.load.audio(); // snowCrunch1
+    this.scene.load.audio(); // snowCrunch2
+    this.scene.load.audio(); // heartBeat
+    this.scene.load.audio(); // doorKnob
+
     //this.scene.sound.add();
 
     //#region >> EYE STATE MACHINE >>
