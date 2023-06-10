@@ -6,7 +6,7 @@ class IntroScene extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image('background', './assets/ui/brownBackground.png')
+        this.load.image('background', './assets/ui/brownBackground.png');
         this.load.image('bat', './assets/cutscene/bat.png');
         this.load.image('textBox', './assets/ui/textBox.png');
     }
@@ -40,13 +40,14 @@ class IntroScene extends Phaser.Scene {
             "implied domestic abuse, implied child abuse, implied violence, implied death, knife imagery, and general dark themes, ",
             
             "if you're ready to start, please note that you can speed up messages with shift and dismiss them with shift.",
-            ], this.cutscenePartTwo, this)
+            ], this.cutscenePartTwo, this);
     }
     update(){
 
     }
+
     cutscenePartTwo = () => {
-        this.cutsceneHelper.destroy();
+        //this.cutsceneHelper.destroy();
         this.cutsceneHelper.iterateThroughDialogue(
             [
               "this is your husband.",
@@ -65,8 +66,9 @@ class IntroScene extends Phaser.Scene {
       };
       
     batQTE=() =>{
+        console.log(">>> batQTE");
         this.cutsceneHelper.createBlinkingText("SWING THE BAT", 2000, this);
-        this.cutsceneHelper.startQTE(this.cutscenePartThree, this);
+        this.cutsceneHelper.startQTE(3, this.cutscenePartThree, this);
     }
     cutscenePartThree = () =>{
         this.background.destroy()
@@ -77,9 +79,9 @@ class IntroScene extends Phaser.Scene {
             "you managed to lock him in the hotel's kitchen pantry but you don't know how long that'll hold him back.",
             "you managed to grab a knife while you were there.",
             "you have to go back to your room to get your son and escape.",
-        ], startScene, this)
+        ], this.startScene, this)
     }
-    startScene= () =>{
+    startScene = () =>{
         this.scene.start("playScene", levelHotel);
     }
 }

@@ -294,10 +294,11 @@ class Play extends Phaser.Scene {
       },
       END : {
         enter: () => {
+          console.log("entering end state");
           this.currentGameState = this.gameState.END;
           this.endActive = true;
           this.stopAllDelayedCalls();
-          nextSceneCalls();
+          this.nextSceneCalls();
         },
         update: () => {},
       }
@@ -313,7 +314,7 @@ class Play extends Phaser.Scene {
     this.graph = new Graph();
     this.graph.buildGraph(this.map, this.level);
     this.graph.printGraph();
-
+    this.cutsceneHelper = new CutsceneHelper();
     //#region << IMAGES FOR TESTING >>
     this.eye = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil1').setScale(.75);
     this.pupil = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil_alone').setScale(.75);
@@ -381,7 +382,7 @@ class Play extends Phaser.Scene {
     this.textBox = this.add.image(screen.center.x, screen.center.y + 300, 'textBox').setOrigin(0.5, 0);
     this.textBox.setDepth(depth.textBox);
     }else{
-      this.createBlinkingText(screen.center.x, screen.center.y, this.levelStartText, 3000 , defaultHeaderStyle);
+      this.cutsceneHelper.createBlinkingText(this.levelStartText, 3000, this);
     }
     this.playerConfig={
       node: this.graph.getNode(31,24), //set player's location
@@ -1104,17 +1105,20 @@ class Play extends Phaser.Scene {
   //#endregion
   //#region << SCENE TRANSITION LOGIC >>
   nextSceneCalls(){
-    createBlinkingText(screen.center.x,screen.center.y, 3000, this.levelEndText, defaultHeaderStyle);
+    this.cutsceneHelper.createBlinkingText(this.levelEndText, 3000, this, screen.center.x, screen.center.y-300);
     if(!this.level){    
       let specialDoor = this.add.image(screen.center.x,screen.center.y, 'roomDoor').setOrigin(0.5,0.5);
-      specialDoor.setDepth(depth.rooms);
+      specialDoor.setDepth(depth.rooms+1);
     }
-    this.time.delayedCall(3000, this.fadeInImage(), [2000],this);
-    this.time.delayedCall()
+    this.cutsceneHelper.startQTE(1, this.nextSceneLogic, this);
+
   }
-  nextSceneLogic(){
+  nextSceneLogic = () =>{
+    this.time.delayedCall(3000, this.fadeInImage, [2000],this);
+  }
+  nextSceneAction= () =>{
     if(!this.level){
-      this.scene.start("playScene");
+      this.scene.start("bathroomScene");
     }else{
       this.scene.start("playScene");
     }
@@ -1161,18 +1165,18 @@ class Play extends Phaser.Scene {
   }
 
   fadeInImage(duration) {
-    const imageX = 100; // X position of the image
-    const imageY = 100; // Y position of the image
 
-    const image = this.add.image(imageX, imageY, 'brownBackground'); // Replace 'myImage' with your image key
+    const image = this.add.image(screen.center.x, screen.center.y, 'brownBackground'); // Replace 'myImage' with your image key
     image.alpha = 0; // Set the initial alpha to 0
     image.setDepth(depth.mapSquares);
+    image.setOrigin(0.5,0.5);
 
     this.tweens.add({
       targets: image,
       alpha: 1, // Animate the alpha property from 0 to 1
       duration: duration,
       ease: 'Linear', // Use a linear easing function for a constant rate
+      onComplete: this.nextSceneAction,
       //onComplete: //GO TO NEXT SCENE
     });
   }

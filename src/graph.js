@@ -76,10 +76,10 @@ class Graph {
               map[row][col] = Math.floor(Math.random() * 3) + 2;
             } else if (map[row][col] === 'H') {
               map[row][col] = Math.floor(Math.random() * 3) + 6;
-            }else if (map[i][j] === 'SH'){
-              map[i][j] = 16;
-            }else if(map[i][j] === 'SD'){
-              map[i][j] = 17;
+            }else if (map[row][col] === 'SH'){
+              map[row][col] = 16;
+            }else if(map[row][col] === 'SD'){
+              map[row][col] = 17;
             }
             
           }

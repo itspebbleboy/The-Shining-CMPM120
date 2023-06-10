@@ -5,7 +5,7 @@ class EndScene extends Phaser.Scene {
     }
 
     preload(){
-
+        this.load.image('endScene', './assets/cutscene/endScene.png');
     }create(){
         
     }update(){
