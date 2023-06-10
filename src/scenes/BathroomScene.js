@@ -122,11 +122,24 @@ class BathroomScene extends Phaser.Scene {
                 "but it isn't over",
             ], this.cutscenePartTwelve, this);
     }
-    cutscenePartTwelve =() =>{
+    cutscenePartTwelve = () =>{
         //PLAY ANIMATION
         //on animation complete, play QTE
+        this.cutsceneHelper.createBlinkingText("USE THE KNIFE", 2000, this);
+        this.cutsceneHelper.startQTE(5, this.cutscenePartThirteen, this);
+    }
+    cutscenePartThirteen = () =>{
+        this.background.destroy();
+        this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5);
+        this.cutsceneHelper.iterateThroughDialogue(
+            [
+                "it's cold",
+                "your mother...",
+            ], this.cutscenePartTwelve, this);
     }
     startScene= () =>{
+        this.background.destroy();
+        this.background = this.add.image(screen.center.x,screen.center.y, 'dannyWindow').setOrigin(0.5,0.5);
 
     }
 }
