@@ -56,7 +56,7 @@ class BathroomScene extends Phaser.Scene {
     }
     cutscenePartFive= () =>{
         this.background.destroy();
-        this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5); //REPLACE WITH EMPTY WINDOW
+        this.background = this.add.image(screen.center.x,screen.center.y, 'closeWindow').setOrigin(0.5,0.5); //REPLACE WITH EMPTY WINDOW
         this.cutsceneHelper.iterateThroughDialogue(
             [
                 "wait,",
@@ -79,7 +79,7 @@ class BathroomScene extends Phaser.Scene {
     }
     cutscenePartEight =() =>{
         this.background.destroy();
-        this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5); //REPLACE WITH EMPTY WINDOW
+        this.background = this.add.image(screen.center.x,screen.center.y, 'openWindow').setOrigin(0.5,0.5); //REPLACE WITH EMPTY WINDOW
         this.cutsceneHelper.createBlinkingText("ESCAPE THROUGH THE WINDOW", 2000, this);
         this.cutsceneHelper.startQTE(2, this.cutscenePartNine, this);
     }
@@ -108,7 +108,6 @@ class BathroomScene extends Phaser.Scene {
                 "that was close,",
                 "but it isn't over",
             ], this.cutscenePartTwelve, this);
-        
     }
     cutscenePartTwelve =() =>{
         //PLAY ANIMATION
