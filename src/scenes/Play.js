@@ -685,11 +685,14 @@ class Play extends Phaser.Scene {
     else if (this.currRoomType > 1 && this.currRoomType < 5) {
       //console.log("Creating 'deadend' image "+ 'deadend' + (this.currRoomType - 2).toString());
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeDeadEnd' + (this.currRoomType - 2).toString());
+      console.log(this.currImage.key);
     }else if (this.currRoomType > 5 && this.currRoomType < 9) {
       if (this.playerConfig.node.roomType === 1) {
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallInter' + (this.currRoomType - 6).toString());
+          console.log(this.currImage.key);
       }else {
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway' + (this.currRoomType - 2).toString());
+        console.log(this.currImage.key);
       }
     }else if(this.currRoomType == 16){
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeEnd');

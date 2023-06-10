@@ -28,6 +28,17 @@ class IntroScene extends Phaser.Scene {
         repeat: -1,
         });
         
+        this.gameover = this.anims.create({
+            key: 'qte',
+            frames: this.anims.generateFrameNames('shining_atlas', {
+              prefix: 'jack',
+              start: 1,
+              end: 8
+            }),
+            frameRate: 1.5,
+            repeat: -1,
+          });
+
         this.cutsceneHelper = new CutsceneHelper(this.gameover,this);
         //#endregion
         this.cutsceneHelper.iterateThroughDialogue(
