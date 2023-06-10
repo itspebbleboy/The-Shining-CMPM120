@@ -23,8 +23,8 @@ class Menu extends Phaser.Scene {
     create(){
         this.add.image(screen.center.x, screen.center.y, 'brownBackground');
         this.add.text(screen.center.x, screen.center.y, 'THE SHINING BY:\n Tatiana Lucero and Athena Patronas', headerConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y +250, 'press <-- for Hotel Hotel', headerConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y +350, 'press --> for Hedge Exploration', headerConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +250, 'press <-- for game', headerConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +350, 'press --> for hotel', headerConfig).setOrigin(0.5);
         console.log("level: " +levelHotel.num);
     }
 
@@ -35,7 +35,7 @@ class Menu extends Phaser.Scene {
             this.scene.start("introScene", levelHotel);
           }
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
-            this.scene.start("playScene", levelHedge );
+            this.scene.start("playScene", levelHotel );
           }
   
     }

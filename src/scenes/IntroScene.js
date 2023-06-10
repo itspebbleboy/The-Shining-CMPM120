@@ -47,8 +47,7 @@ class IntroScene extends Phaser.Scene {
     }
     cutscenePartTwo = () => {
         this.cutsceneHelper.destroy();
-        this.cutsceneHelper1 = new CutsceneHelper(this.gameover,this);
-        this.cutsceneHelper1.iterateThroughDialogue(
+        this.cutsceneHelper.iterateThroughDialogue(
             [
               "this is your husband.",
               "you've been in this hotel for a couple months now and he's slowly been becoming more and more aggressive with you and your son.",

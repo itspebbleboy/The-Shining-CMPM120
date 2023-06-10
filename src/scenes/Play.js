@@ -41,7 +41,7 @@ class Play extends Phaser.Scene {
     this.visitedNodes = new Set();
 
     this.textCrawlActive = false;
-    this.textCrawlSpeed = 75;
+    this.textCrawlSpeed = 25;
     this.currentTextIndex = 0; // Index of the current character being displayed in the dialogue
     this.fastForward = false; // Flag to enable fast forward
     this.currentIndex = 0; // Index of the current dialogue in the dialogue list

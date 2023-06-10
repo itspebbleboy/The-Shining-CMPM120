@@ -3,6 +3,7 @@ class CutsceneHelper {
       //#region QTE properties
       this.qteInProgress = false;
       this.dialogueList = []; // Array of dialogue lines
+      this.currentIndex = 0;
       this.currentTextIndex = 0; // Index of the current character being displayed in the dialogue
       this.fastForward = false; // Flag to enable fast forward
       this.currentIndex = 0; // Index of the current dialogue in the dialogue list
@@ -68,91 +69,93 @@ class CutsceneHelper {
     }
     //#endregion
 
-    //#region << TEXT HANDLING >>
     iterateThroughDialogue(dialogueList, onComplete, scene) {
-      let currentIndex = 0; 
       console.log("scene in iterateThruDia: " + scene);
-      this.textBox=scene.add.image(screen.center.x,screen.center.y+300,'textBox');
-      const shiftKeyDownHandler = () => {
-        if (!this.textCrawlActive) {
-          if (currentIndex === dialogueList.length - 1) {
-            if (this.textCrawl && !this.textCrawl.destroyed) {
-              this.textCrawl.destroy();
-            }
-            onComplete();
-            if(this.textBox){ this.textBox.destroy(); }
-          } else {
-            if (this.textCrawl && !this.textCrawl.destroyed) {
-              this.textCrawl.destroy();
-            }
-            currentIndex++;
-            this.startNextDialogue(dialogueList, currentIndex, scene);
-            this.fastForward = true; // Set fast-forward flag to true after starting the next dialogue
-          }
-        } else if (this.fastForward) {
-          this.fastForward = false;
-        }
-      };
-      
-    
-      const shiftKeyUpHandler = () => {
-        this.fastForward = false;
-      };
-    
-      scene.input.keyboard.on("keydown-SHIFT", shiftKeyDownHandler);
-      scene.input.keyboard.on("keyup-SHIFT", shiftKeyUpHandler);
-    
-      // Check if there is an ongoing dialogue and stop it
-      if (this.textCrawlActive && this.textCrawl) {
-        this.textCrawl.destroy();
-        console.log("Setting textCrawlActive to false");
-        this.textCrawlActive = false;
-      }
-    
-      this.startNextDialogue(dialogueList, currentIndex, scene);
-    }
-    
-    startNextDialogue(dialogueList, currentIndex, scene) {
+      this.textBox = scene.add.image(screen.center.x, screen.center.y + 300, 'textBox');
       const textBoxPaddingX = 100;
       const textBoxPaddingY = 100;
       const textBoxX = this.textBox.x - this.textBox.width * this.textBox.originX;
       const textBoxY = this.textBox.y - this.textBox.height * this.textBox.originY;
       const textX = textBoxX + textBoxPaddingX;
       const textY = textBoxY + textBoxPaddingY;
-      let dialogue = dialogueList[currentIndex];
-      console.log("dialogue: "+dialogueList[currentIndex]);
-      console.log("scene in startNextDia: "+ scene);
-      this.textCrawl = scene.add.text(textX, textY, "", defaultTextCrawlStyle); // Assign to this.textCrawl
+  
+      this.textCrawl = scene.add.text(textX, textY, "", defaultTextCrawlStyle);
       this.textCrawl.setOrigin(0, 0);
       this.textCrawl.setWordWrapWidth(this.textBox.width - textBoxPaddingX * 2);
-      this.fastForward = false;
+      this.textCrawl.setDepth(4);
+  
+      const shiftKeyDownHandler = () => {
+        if (!this.textCrawlActive) {
+          // LAST INDEX, EXIT DIALOGUE
+          if (this.currentIndex === dialogueList.length - 1) {
+            if (this.textCrawl && !this.textCrawl.destroyed) {
+              this.textCrawl.destroy();
+            }
+            onComplete();
+            if (this.textBox) { this.textBox.destroy(); }
+            this.destroy();
+          }
+          // CONTINUE WITH NEW TEXT & RESET TEXT CRAWL
+          else {
+            if (this.textCrawl && !this.textCrawl.destroyed) {
+              this.textCrawl.text = "";
+              console.log("resetting text to be \"\"");
+            }
+            console.log("calling start next dialogue index: " + this.currentIndex);
+            this.startNextDialogue(dialogueList, scene);
+          }
+        }
+      };
+  
+      scene.input.keyboard.on("keydown-SHIFT", shiftKeyDownHandler);
+  
+      // Check if there is an ongoing dialogue and stop it
+      if (this.textCrawlActive && this.textCrawl) {
+        this.textCrawl.text = "";
+        console.log("Setting textCrawlActive to false");
+        this.textCrawlActive = false;
+      }
+  
       this.currentTextIndex = 0;
       console.log("setting textCrawlactive true");
       this.textCrawlActive = true;
-
-
-      this.addCharacter(dialogue, this.textCrawl, scene);
+      this.startNextDialogue(dialogueList, scene);
     }
-    
-    addCharacter(dialogue, textCrawl, scene) {
+  
+    startNextDialogue(dialogueList, scene) {
+      console.log("IN START NEXT DIALOGUE, current dialogue being fed: "+ dialogueList[this.currentIndex] );
+      console.log("dialogue: " + dialogueList[this.currentIndex]);
+      console.log("scene in startNextDia: " + scene);
+      this.textCrawl.text = "";
+      this.currentTextIndex = 0;
+      console.log("setting textCrawlactive true");
+      this.textCrawlActive = true;
+  
+      this.addCharacter(dialogueList[this.currentIndex], scene);
+      this.currentIndex++;
+    }
+  
+    addCharacter(dialogue, scene) {
       this.currentTextIndex++;
       this.textCrawl.text = dialogue.substring(0, this.currentTextIndex);
-    
-      if (this.currentTextIndex < dialogue.length && !this.fastForward) {
-        const delay = this.fastForward ? 0 : this.textCrawlSpeed;
+  
+      if (this.currentTextIndex < dialogue.length) {
+        const delay = this.textCrawlSpeed;
         scene.time.delayedCall(
           delay,
-          () => this.addCharacter(dialogue, textCrawl,scene)
+          () => this.addCharacter(dialogue, scene), [],
         );
       } else {
         this.textCrawlActive = false;
         console.log("setting textCrawlactive false");
-        if (this.fastForward) {
-          // Fast-forward: Set the full dialogue text immediately
-          textCrawl.text = dialogue;
-        }
+  
+        // Debug logs
+        console.log("Dialogue finished: " + dialogue);
       }
     }
+    
+    
+    
     
     
     
@@ -201,15 +204,15 @@ class CutsceneHelper {
 
     destroy() {
       // Clean up any resources specific to the CutsceneHelper instance
-      if (this.textCrawl) {
-        this.textCrawl.destroy();
-      }
+      //if (this.textCrawl) {
+        //this.textCrawl.destroy();
+      //}
       if (this.qteText) {
         this.qteText.destroy();
       }
-      if (this.textBox) {
-        this.textBox.destroy();
-      }
+      //if (this.textBox) {
+        //this.textBox.destroy();
+      //}
   
       // Reset all properties to their initial values
       this.qteInProgress = false;
