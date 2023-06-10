@@ -4,7 +4,7 @@ const config = {
     parent: 'phaser-example',
     width: 2048,
     height: 2048,
-    scene: [Menu, IntroScene, Play, BathroomScene]
+    scene: [Menu, Play, IntroScene, BathroomScene, EndScene]
   };
   
   // Create a new Phaser game
