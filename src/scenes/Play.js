@@ -1105,7 +1105,10 @@ class Play extends Phaser.Scene {
   //#endregion
   //#region << SCENE TRANSITION LOGIC >>
   nextSceneCalls(){
-    this.cutsceneHelper.createBlinkingText(this.levelEndText, 3000, this, screen.center.x, screen.center.y-300);
+    this.eye.destroy(); // hide the current eye
+    this.pupil.destroy(); // hide the current pupil
+    if(this.textBox) {this.textBox.destroy(); this.textCrawl.destroy();}
+    this.cutsceneHelper.createBlinkingText(this.levelEndText, 2000, this, screen.center.x, screen.center.y-300);
     if(!this.level){    
       let specialDoor = this.add.image(screen.center.x,screen.center.y, 'roomDoor').setOrigin(0.5,0.5);
       specialDoor.setDepth(depth.rooms+1);
@@ -1114,10 +1117,11 @@ class Play extends Phaser.Scene {
 
   }
   nextSceneLogic = () =>{
-    this.time.delayedCall(3000, this.fadeInImage, [2000],this);
+    this.time.delayedCall(2000, this.fadeInImage, [1000],this);
   }
   nextSceneAction= () =>{
     if(!this.level){
+      console.log("starting bathroomScene");
       this.scene.start("bathroomScene");
     }else{
       this.scene.start("playScene");
