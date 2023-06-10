@@ -426,7 +426,8 @@ class Play extends Phaser.Scene {
           this.createBlinkingText(screen.center.x, screen.center.y, this.levelStartText, 3000 , defaultHeaderStyle);
           this.textCrawl.destroy();
           this.textBox.destroy();
-        } else {
+          this.currentIndex++;
+        } else if(this.currentIndex < this.dialogueList.length - 1) {
           this.currentIndex++;
           this.textCrawl.destroy();
           this.startNextDialogue();
