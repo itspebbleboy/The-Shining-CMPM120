@@ -73,6 +73,9 @@ class CutsceneHelper {
       
       this.createBlinkingText("IT'S OVER, TRY AGAIN", 2000, scene);
       this.scene.time.delayedCall(5000, () => {
+        if (this.animation) {
+          this.animation.destroy();
+        }
         this.scene.scene.restart;
       });
     }
