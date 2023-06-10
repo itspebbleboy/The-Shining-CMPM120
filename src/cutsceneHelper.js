@@ -63,7 +63,7 @@ class CutsceneHelper {
     
     handleQTESuccess(onSucess) {
       console.log("All QTEs completed");
-      this.scene.add.text(screen.center.x, screen.center.y, "All QTEs complete!", defaultQTEStyle).setOrigin(0.5, 0.5);
+      //this.scene.add.text(screen.center.x, screen.center.y, "All QTEs complete!", defaultQTEStyle).setOrigin(0.5, 0.5);
       this.qteText.destroy();
       onSucess();
     }
@@ -105,7 +105,7 @@ class CutsceneHelper {
         if (!this.textCrawlActive && this.currentIndex < this.currDialogueList.length) 
         {
           if(!(this.currentIndex == 0)){ this.startNextDialogue(this.currDialogueList[this.currentIndex], this.scene); }
-          this.currentIndex++;
+          //this.currentIndex++;
         }
         else if (!this.textCrawlActive && this.currentIndex >= this.currDialogueList.length)
         {
@@ -142,7 +142,7 @@ class CutsceneHelper {
       this.textCrawlActive = true; //TEXT CRAWL IS HAPPENING
   
       this.addCharacter(currDialogueLine, this.scene); //TEXT CRAWL CODE
-      //this.currentIndex++;
+      this.currentIndex++;
     }
     
     addCharacter(currDialogueLine, scene) {

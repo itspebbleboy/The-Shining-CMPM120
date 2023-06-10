@@ -16,7 +16,7 @@ class IntroScene extends Phaser.Scene {
         //this.textBox = this.add.image(screen.center.x, screen.center.y + 300, 'textBox').setOrigin(0.5, 0);
   
         // << QTE ANIMATION >>
-        /*
+        
         this.gameover = this.anims.create({
         key: 'qte',
         frames: this.anims.generateFrameNames('shining_atlas', {
@@ -26,7 +26,8 @@ class IntroScene extends Phaser.Scene {
         }),
         frameRate: 1.5,
         repeat: -1,
-        });*/
+        });
+        
         this.cutsceneHelper = new CutsceneHelper(this.gameover,this);
         //#endregion
         this.cutsceneHelper.iterateThroughDialogue(
