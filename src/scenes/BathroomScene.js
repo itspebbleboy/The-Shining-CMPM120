@@ -22,6 +22,18 @@ class BathroomScene extends Phaser.Scene {
         this.load.image('closeWindow','./assets/cutscene/closeWindow.png');
 
     }create(){
+        this.anims.create({
+            key: 'axeScene',
+            frames: [
+                {key: 'bathroom0', frame:null},
+                {key: 'bathroom1', frame:null},
+                {key: 'bathroom2', frame:null},
+                {key: 'bathroom3', frame:null},
+                {key: 'bathroom4', frame:null},
+                {key: 'bathroom5', frame:null}
+            ],
+            frameRate: 20,
+          });
         
     }update(){
 
