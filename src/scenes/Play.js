@@ -337,23 +337,17 @@ class Play extends Phaser.Scene {
   }
 
   create(){    
-
-    this.graph = new Graph();
-    this.graph.buildGraph(this.map, this.level);
-    this.graph.printGraph();
-    this.cutsceneHelper = new CutsceneHelper();
-    //#region << IMAGES FOR TESTING >>
-    this.eye = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil1').setScale(.75);
-    this.pupil = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil_alone').setScale(.75);
-
-    this.eye.setOrigin(0.5); // Adjust the anchor point of the sprites to the center
-    this.pupil.setOrigin(0.5);
-
-    this.eye.setDepth(depth.eye);
-    this.pupil.setDepth(depth.eye);
-    //#endregion
-
     //#region << ANIMS >>
+    this.gameover = this.anims.create({
+      key: 'qte',
+      frames: this.anims.generateFrameNames('shining_atlas', {
+          prefix: 'jack',
+          start: 1,
+          end: 8
+      }),
+      frameRate: 1
+      });
+
     this.anims.create({
       key: 'blink182',
       frames: this.anims.generateFrameNames('shining_atlas', { 
@@ -404,6 +398,22 @@ class Play extends Phaser.Scene {
     });
 
     //#endregion
+
+    this.graph = new Graph();
+    this.graph.buildGraph(this.map, this.level);
+    this.graph.printGraph();
+    this.cutsceneHelper = new CutsceneHelper(this.gameover, this);
+    //#region << IMAGES FOR TESTING >>
+    this.eye = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil1').setScale(.75);
+    this.pupil = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil_alone').setScale(.75);
+
+    this.eye.setOrigin(0.5); // Adjust the anchor point of the sprites to the center
+    this.pupil.setOrigin(0.5);
+
+    this.eye.setDepth(depth.eye);
+    this.pupil.setDepth(depth.eye);
+    //#endregion
+    
     if(this.dialogueList.length !=0){
     this.textBox = this.add.image(screen.center.x, screen.center.y + 300, 'textBox').setOrigin(0.5, 0);
     this.textBox.setDepth(depth.textBox);

@@ -5,6 +5,7 @@ class EndScene extends Phaser.Scene {
     }
 
     preload(){
+        this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
         this.load.image('background', './assets/ui/brownBackground.png');
         this.load.image('textBox', './assets/ui/textBox.png');
 

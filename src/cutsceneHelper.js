@@ -20,28 +20,26 @@ class CutsceneHelper {
       console.log(this.scene);
       //#endregion
 
-      this.create();
     }  
-  
-    create(){
-    }
+    
 
     //#region <<QTE HANDLING>>
     startQTE(qteCount = 1, onSuccess, scene) {
       this.currentQTEInputOption = this.qteInputOptions[Phaser.Math.Between(0, this.qteInputOptions.length - 1)];
-      this.qteText = this.scene.add.text(screen.center.x, screen.center.y+200, "Press" + " " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
+      console.log(scene.key);
+      this.qteText = scene.add.text(screen.center.x, screen.center.y+200, "Press" + " " + this.currentQTEInputOption.toUpperCase() + "!", defaultQTEStyle).setOrigin(0.5, 0.5);
       this.qteText.setDepth(depth.deathAnims);
       this.qteInProgress = true;
       //this.scene=scene;
       console.log("QTE started!");
-      this.qteTimer = this.scene.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [], this);
+      this.qteTimer = this.scene.time.delayedCall(this.qteTimerDuration, this.handleQTEFailure, [scene], this);
       console.log("QTE timer started!");
-      //this.animation = this.scene.add.sprite(screen.center.x,screen.center.y,'qte').play();
+      this.animation = scene.add.sprite(screen.center.x,screen.center.y).play({key:'qte', frameRate: 8*1000/this.qteTimerDuration}).setDepth(7);
       this.scene.input.keyboard.removeAllListeners();
-      this.scene.input.keyboard.on("keydown-" + this.currentQTEInputOption.toUpperCase(), (event) => this.handleQTEInput(event, qteCount, onSuccess), this);
+      this.scene.input.keyboard.on("keydown-" + this.currentQTEInputOption.toUpperCase(), (event) => this.handleQTEInput(event, qteCount, onSuccess, scene), this);
     }
     
-    handleQTEInput(event, qteCount, onSuccess) {
+    handleQTEInput(event, qteCount, onSuccess, scene) {
       if (this.animation) {
         this.animation.destroy();
       }
@@ -53,7 +51,7 @@ class CutsceneHelper {
         qteCount--;
     
         if (qteCount !== 0) {
-          this.startQTE(qteCount, onSuccess);
+          this.startQTE(qteCount, onSuccess, scene);
         } else {
           console.log("All QTEs completed");
           this.handleQTESuccess(onSuccess);
@@ -68,14 +66,14 @@ class CutsceneHelper {
       onSucess();
     }
 
-    handleQTEFailure() {
+    handleQTEFailure(scene) {
       console.log("QTE failure!");
       this.qteInProgress = false;
       this.qteText.destroy();
       
-      this.createBlinkingText("IT'S OVER, TRY AGAIN", 2000);
-      this.scene.time.delayedCall(2000, () => {
-        this.scene.scene.restart();
+      this.createBlinkingText("IT'S OVER, TRY AGAIN", 2000, scene);
+      this.scene.time.delayedCall(5000, () => {
+        this.scene.scene.restart;
       });
     }
     //#endregion
@@ -168,12 +166,12 @@ class CutsceneHelper {
     }
     //#endregion
 
-    createBlinkingText(textString, duration, scene, x = screen.center.x, y = screen.center.y, style =defaultHeaderStyle ) {
+    createBlinkingText(textString, duration, scene, x = screen.center.x, y = screen.center.y, style = defaultHeaderStyle ) {
       console.log("Scene:", this.scene);
       this.scene = scene;
       let text = scene.add.text(x, y, textString, style); 
       text.setOrigin(0.5);
-      text.setDepth(depth.deathAnims);
+      text.setDepth(depth.deathAnims+1);
     
       const blinkDuration = 500; // Duration of each blink in milliseconds
       const visiblePauseDuration = 200; // Duration to keep the text visible between blinks

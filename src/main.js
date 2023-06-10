@@ -232,7 +232,7 @@ let defaultTextCrawlStyle = {
 
 let defaultHeaderStyle = {
   fontFamily: 'Tremendous',
-  fontSize: screen.width/10,
+  fontSize: screen.width/15,
   color: color_pal.white,
   align: 'center',
   padding: 5,

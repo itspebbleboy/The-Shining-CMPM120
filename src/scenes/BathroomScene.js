@@ -5,6 +5,7 @@ class BathroomScene extends Phaser.Scene {
     }
 
     preload(){
+        this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
         this.load.image('background', './assets/ui/brownBackground.png');
         this.load.image('textBox', './assets/ui/textBox.png');
 
@@ -34,18 +35,18 @@ class BathroomScene extends Phaser.Scene {
             ],
             frameRate: 1,
           });
-        
+          
         this.gameover = this.anims.create({
             key: 'qte',
             frames: this.anims.generateFrameNames('shining_atlas', {
-              prefix: 'jack',
-              start: 1,
-              end: 8
+                prefix: 'jack',
+                start: 1,
+                end: 8
             }),
             frameRate: 1.5,
-            repeat: -1,
-          });  
-          
+            //repeat: -1,
+        });
+
         this.cutsceneHelper = new CutsceneHelper(this.gameover,this);
         this.background = this.add.image(screen.center.x,screen.center.y, 'redrum').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
