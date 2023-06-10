@@ -193,7 +193,8 @@ class Play extends Phaser.Scene {
     this.scene.load.audio(); // snowCrunch0
     this.scene.load.audio(); // snowCrunch1
     this.scene.load.audio(); // snowCrunch2
-    this.scene.load.audio(); // heartBeat
+    this.scene.load.audio('heartBeat', '.assets/music/Heartbeat_Single_1.mp3'); // heartBeat
+    this.scene.load.audio('theme', 'Theme.mp3');
     this.scene.load.audio(); // doorKnob
 
     //this.scene.sound.add();
