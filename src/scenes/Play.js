@@ -400,7 +400,6 @@ class Play extends Phaser.Scene {
         end: 8
       }),
       frameRate: 1.5,
-      repeat: 0,
       hideOnComplete: false,
     });
 
