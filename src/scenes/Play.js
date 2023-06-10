@@ -182,9 +182,13 @@ class Play extends Phaser.Scene {
       this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
       this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
       //#endregion
-
-    // << UI ELEMENTS >>
-    this.load.image('textBox', './assets/ui/textBox.png');
+    
+      // << UI ELEMENTS >>
+      this.load.image('textBox', './assets/ui/textBox.png');
+    //#endregion
+    //#region << LOADING AUDIO >>
+    this.scene.load.audio(); //
+    //this.scene.sound.add();
 
     //#region >> EYE STATE MACHINE >>
     this.eyeState = { //state machine for eye orientation
@@ -289,7 +293,7 @@ class Play extends Phaser.Scene {
           console.log("ENTERED MINIMAP STATE");
         },
         update: () => {
-          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown && this.level<1) {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown /*&& this.level<1*/) {
             this.gameState.MAP.enter();
           } else if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown ) {
             this.gameState.ROOMS.enter();
@@ -420,9 +424,13 @@ class Play extends Phaser.Scene {
     }else{
       this.cutsceneHelper.createBlinkingText(this.levelStartText, 3000, this);
     }
+
     this.playerConfig={
       node: this.graph.getNode(31,24), //set player's location
       cardDirec: this.CD.NORTH, //cardinal direction
+    }
+    if(this.level){
+      this.playerConfig.node= this.graph.getNode(31,15);
     }
     // Add delayed calls to the list
 
@@ -701,8 +709,7 @@ class Play extends Phaser.Scene {
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallInter' + (this.currRoomType - 6).toString());
           console.log(this.currImage.key);
       }else {
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway' + (this.currRoomType - 2).toString());
-        console.log(this.currImage.key);
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway'+ (this.currRoomType - 6).toString());
       }
     }else if(this.currRoomType == 16){
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeEnd');
