@@ -18,6 +18,9 @@ class BathroomScene extends Phaser.Scene {
         this.load.image('wendyWindow', './assets/cutscene/wendyWindow.png');
         this.load.image('farAwayJack', './assets/cutscene/farAwayJack.png');
         this.load.image('redrum', './assets/cutscene/redRum.png');
+        this.load.image('openWindow','./assets/cutscene/openWindow.png');
+        this.load.image('closeWindow','./assets/cutscene/closeWindow.png');
+
     }create(){
         
     }update(){
