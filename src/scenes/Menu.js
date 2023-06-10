@@ -18,6 +18,7 @@ class Menu extends Phaser.Scene {
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         //#endregion
         this.load.image('brownBackground', './assets/ui/brownBackground.png');
+        this.scene.load.audio('theme', './assets/music/Theme.mp3');
         
     }
 
