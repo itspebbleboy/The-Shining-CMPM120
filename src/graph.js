@@ -17,6 +17,7 @@ const RoomType = {
     HALLWAY_9: 15,
     SPECIAL_HALLWAY: 16,
     SPECIAL_DOOR: 17,
+    STARTING_HALLWAY:18,
 };
   
 class Graph {
@@ -45,10 +46,45 @@ class Graph {
         node2.setNeighbor(oppositeDirection(direction), node1);
       }
     }
-    buildGraph(map) {
-        this.numRows = map.length;
-        this.numCols = map[0].length;
-    
+    buildGraph(map, level) {    
+      this.numRows = map.length;
+      this.numCols = map[0].length;
+        //console.log("numRows: "+this.numRows +", numCols: " +this.numCols);
+      if(!level){
+        for (let i = 0; i < this.numRows; i++) {
+          for (let j = 0; j < this.numCols; j++) {
+            if (map[i][j] === 'I') {
+              map[i][j] = 1;
+            } else if (map[i][j] === 'D') {
+              map[i][j] = Math.floor(Math.random() * 4) + 2;
+            } else if (map[i][j] === 'H') {
+              map[i][j] = Math.floor(Math.random() * 10) + 6;
+            } else if (map[i][j] === 'SH'){
+              map[i][j] = 16;
+            } else if(map[i][j] === 'SD'){
+              map[i][j] = 17;
+            }
+          }
+        }
+      }else{
+        for (let row = 0; row < this.numRows; row++) {
+          for (let col = 0; col < this.numCols; col++) {
+            if (map[row][col] === 'I') {
+              map[row][col] = 1;
+              console
+            } else if (map[row][col] === 'D') {
+              map[row][col] = Math.floor(Math.random() * 3) + 2;
+            } else if (map[row][col] === 'H') {
+              map[row][col] = Math.floor(Math.random() * 3) + 6;
+            }else if (map[row][col] === 'SH'){
+              map[row][col] = 16;
+            }else if(map[row][col] === 'SD'){
+              map[row][col] = 17;
+            }
+            
+          }
+        }
+      }
         // Create nodes for each cell in the map
         for (let row = 0; row < this.numRows; row++) {
           for (let col = 0; col < this.numCols; col++) {
@@ -87,7 +123,6 @@ class Graph {
             }
           }
         }
-
       }
 
 

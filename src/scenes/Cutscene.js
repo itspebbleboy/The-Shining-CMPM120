@@ -22,8 +22,23 @@ class Cutscene extends Phaser.Scene {
     }
 
     create(){
-        // based on dialouge update which scene is showed basically is the plan -> maybe make like a function or some shit?
-        
+    //#region << LOADING IN TEXTBOX AND GAME OVER >>
+    this.textBox = this.add.image(screen.center.x, screen.center.y + 400, 'textBox').setOrigin(0.5, 0);
+  
+    // << QTE ANIMATION >>
+    this.gameover = this.anims.create({
+      key: 'qte',
+      frames: this.anims.generateFrameNames('shining_atlas', {
+        prefix: 'jack',
+        start: 1,
+        end: 8
+      }),
+      frameRate: 1.5,
+      repeat: -1,
+    });
+    this.cutsceneHelper = new CutsceneHelper();
+
+    //#endregion
     }
 
     update(){
