@@ -690,7 +690,7 @@ class Play extends Phaser.Scene {
       if (this.playerConfig.node.roomType === 1) {
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallInter' + (this.currRoomType - 6).toString());
       }else {
-        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway');
+        this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway'+ (this.currRoomType - 6).toString());
       }
     }else if(this.currRoomType == 16){
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeEnd');
