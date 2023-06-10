@@ -81,7 +81,7 @@ class BathroomScene extends Phaser.Scene {
         this.cutsceneHelper.startQTE(2, this.cutscenePartSeven, this);
     }
     cutscenePartSeven= () =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'wendyWindow').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
             [
@@ -91,13 +91,13 @@ class BathroomScene extends Phaser.Scene {
             ], this.cutscenePartEight, this);
     }
     cutscenePartEight =() =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'openWindow').setOrigin(0.5,0.5); //REPLACE WITH EMPTY WINDOW
         this.cutsceneHelper.createBlinkingText("ESCAPE THROUGH THE WINDOW", 2000, this);
         this.cutsceneHelper.startQTE(2, this.cutscenePartNine, this);
     }
     cutscenePartNine = () =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'wendyWindow').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
             [
@@ -107,14 +107,14 @@ class BathroomScene extends Phaser.Scene {
             ], this.cutscenePartTen, this);
     }
     cutscenePartTen = () =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5); //THIS ONE STAYS BACKGROUND
         //PLAY AXE TO DOOR AUDIO
         this.cutsceneHelper.createBlinkingText("MOVE TO THE CORNER", 2000, this);
         this.cutsceneHelper.startQTE(2, this.cutscenePartEleven, this);
     }
     cutscenePartEleven = () =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'bathroom0').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
             [
@@ -129,17 +129,46 @@ class BathroomScene extends Phaser.Scene {
         this.cutsceneHelper.startQTE(5, this.cutscenePartThirteen, this);
     }
     cutscenePartThirteen = () =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
             [
                 "it's cold",
                 "your mother...",
-            ], this.cutscenePartTwelve, this);
+            ], this.cutscenePartFourteen, this);
+    }
+    cutscenePartFourteen= () => {
+        if(this.background) {this.background.destroy();}
+        this.background = this.add.image(screen.center.x,screen.center.y, 'dannyWindow').setOrigin(0.5,0.5);
+        this.cutsceneHelper.iterateThroughDialogue(
+            [
+                "she told you to run",
+                "you don't know what's gonna happen to her",
+                "you don't have much time to really think about it",
+            ], this.cutscenePartFifteen, this);
+    }
+    cutscenePartFifteen = () =>{
+        if(this.background) {this.background.destroy();}
+        this.background = this.add.image(screen.center.x,screen.center.y, 'farAwayJack').setOrigin(0.5,0.5);
+        this.cutsceneHelper.iterateThroughDialogue(
+            [
+                "because...",
+                "he's here."
+            ], this.cutscenePartSixteen, this);
+    }
+    cutscenePartSixteen= () => {
+        if(this.background) {this.background.destroy();}
+        this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5);
+        this.cutsceneHelper.createBlinkingText("RUN", 2000, this);
+        this.cutsceneHelper.startQTE(5, this.cutscenePartSeventeen, this);
+    }
+    cutscenePartSeventeen = () => {
+        if(this.background) {this.background.destroy();}
+        this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5); //REPLACE WITH MAZE ENTRANCE
+        this.cutsceneHelper.createBlinkingText("ENTER THE MAZE", 2000, this);
+        this.cutsceneHelper.startQTE(2, this.startScene, this);
     }
     startScene= () =>{
-        this.background.destroy();
-        this.background = this.add.image(screen.center.x,screen.center.y, 'dannyWindow').setOrigin(0.5,0.5);
-
+        this.scene.start("playScene", levelHedge);
     }
 }
