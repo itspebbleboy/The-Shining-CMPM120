@@ -1152,9 +1152,10 @@ class Play extends Phaser.Scene {
       //console.log("playing anim 2");
     }, [], this);
     this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
-      this.heartbeat3.repeat=-1;
+      this.heartbeat3;
       this.heartbeat3.hideOnComplete = false;
       this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
+      this.add.text(screen.center.x, screen.center.y, "Here's Jonnhy", defaultHeaderStyle);
 
     }, [], this);
   }

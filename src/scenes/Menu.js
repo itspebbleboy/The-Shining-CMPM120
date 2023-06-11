@@ -30,6 +30,7 @@ class Menu extends Phaser.Scene {
         this.add.text(screen.center.x, screen.center.y +450, 'press UP for hedge', headerConfig).setOrigin(0.5);
         console.log("level: " +levelHotel.num);
         this.sound.add('theme').play();
+        this.add.text(screen.center.x, screen.center.y +550, 'press DOWN for murder', headerConfig).setOrigin(0.5);
     }
 
     update(){
@@ -44,7 +45,8 @@ class Menu extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
             this.scene.start("playScene", levelHedge );
         }
-        
-  
+        if(Phaser.Input.Keyboard.JustDown(keyDOWN)){
+            this.scene.start("axeScene");
+        }
     }
 }
