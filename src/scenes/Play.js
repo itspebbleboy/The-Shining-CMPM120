@@ -311,7 +311,7 @@ class Play extends Phaser.Scene {
           console.log("ENTERED MINIMAP STATE");
         },
         update: () => {
-          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown /*&& this.level<1*/) {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown && this.level<1) {
             this.gameState.MAP.enter();
           } else if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown ) {
             this.gameState.ROOMS.enter();
