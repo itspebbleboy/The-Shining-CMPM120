@@ -59,12 +59,12 @@ let levelHotel = {
   },
   dialogueList : [
     "you can look using the left and right arrow keys",
-    "to go towards the direction you’re looking in, press space",
-    "The hallways in this hotel seem to change all the time but your memory of where you’ve been and the layout of the floor might serve you correctly if you press the up arrow key.",
-    "now press it again,",
-    "time isn’t paused when you’re recalling the layout of the hotel, so be cautious,",
-    "when it’s a matter of life and death, there is no time to stall.",
-    "he might have already found a way to escape so make sure you don’t frequent around an area for too long.",
+    "to go towards the direction you're looking in, press space",
+    "The hallways in this hotel seem to change all the time but your memory of where you've been might serve you correctly if you press the up arrow key.",
+    "now press it twice to remember the layout of the floor,",
+    "time isn't paused when you're recalling the layout of the hotel, so be cautious,",
+    "when it's a matter of life and death, there is no time to stall.",
+    "he might have already found a way to escape so make sure you don't frequent around an area for too long.",
     "enough with the tutorial.",
   ],
   levelStartText : [
@@ -233,7 +233,7 @@ let defaultTextCrawlStyle = {
 
 let defaultHeaderStyle = {
   fontFamily: 'Tremendous',
-  fontSize: screen.width/15,
+  fontSize: screen.width/17,
   color: color_pal.white,
   align: 'center',
   padding: 5,

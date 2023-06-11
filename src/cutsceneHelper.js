@@ -12,8 +12,8 @@ class CutsceneHelper {
       this.currentQTEInputOption = null; // Current QTE input option
       this.completedQTEs = 0; // Number of completed QTEs
       this.qteTimer = null; // Timer for QTE duration
-      this.qteTimerDuration = 3000; // Duration of QTE timer = 5 seconds
-      this.textCrawlSpeed = 20; // Speed of text crawl in milliseconds
+      this.qteTimerDuration = 1500; // Duration of QTE timer = 5 seconds
+      this.textCrawlSpeed = 10; // Speed of text crawl in milliseconds
       this.textCrawl = "";
       this.animCreate = deathAnim;
       this.scene = scene;
@@ -176,7 +176,7 @@ class CutsceneHelper {
       text.setOrigin(0.5);
       text.setDepth(depth.deathAnims+1);
     
-      const blinkDuration = 500; // Duration of each blink in milliseconds
+      const blinkDuration = 100; // Duration of each blink in milliseconds
       const visiblePauseDuration = 200; // Duration to keep the text visible between blinks
       const repeatCount = Math.floor(duration / (blinkDuration + visiblePauseDuration)); // Calculate the number of repeats
     
@@ -234,7 +234,7 @@ class CutsceneHelper {
       this.completedQTEs = 0;
       this.qteTimer = null;
       this.qteTimerDuration = 1000;
-      this.textCrawlSpeed = 20;
+      this.textCrawlSpeed = 10;
       this.textCrawl = null;
       this.animCreate = null;
       this.scene = null;
