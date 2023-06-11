@@ -77,7 +77,7 @@ class IntroScene extends Phaser.Scene {
             "well done.",
             "he's unconscious now, the time you have to act is small.",
             "you managed to lock him in the hotel's kitchen pantry but you don't know how long that'll hold him back.",
-            "you managed to grab a knife while you were there.",
+            "you grabbed a knife while you were there.",
             "you have to go back to your room to get your son and escape.",
         ], this.startScene, this)
     }

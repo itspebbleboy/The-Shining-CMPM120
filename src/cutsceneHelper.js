@@ -71,12 +71,14 @@ class CutsceneHelper {
       this.qteInProgress = false;
       this.qteText.destroy();
       
-      this.createBlinkingText("IT'S OVER, TRY AGAIN", 2000, scene);
+      //this.createBlinkingText("IT'S OVER, TRY AGAIN", 6000, scene);
+      this.scene.time.delayedCall(2000,()=>{
+        this.gameoverText = scene.add.text(screen.center.x, screen.center.y,"You've been captured." , defaultHeaderStyle).setDepth(10).setOrigin(0.5,0.5);
+        console.log(screen.center.x);
+        console.log(screen.center.y);
+      });
       this.scene.time.delayedCall(5000, () => {
-        if (this.animation) {
-          this.animation.destroy();
-        }
-        this.scene.scene.restart;
+        this.scene.scene.start("menuScene");
       });
     }
     //#endregion
@@ -174,7 +176,7 @@ class CutsceneHelper {
       this.scene = scene;
       let text = scene.add.text(x, y, textString, style); 
       text.setOrigin(0.5);
-      text.setDepth(depth.deathAnims+1);
+      //text.setDepth(depth.deathAnims);
     
       const blinkDuration = 100; // Duration of each blink in milliseconds
       const visiblePauseDuration = 200; // Duration to keep the text visible between blinks
@@ -233,7 +235,7 @@ class CutsceneHelper {
       this.currentQTEInputOption = null;
       this.completedQTEs = 0;
       this.qteTimer = null;
-      this.qteTimerDuration = 1000;
+      this.qteTimerDuration = 1500;
       this.textCrawlSpeed = 10;
       this.textCrawl = null;
       this.animCreate = null;

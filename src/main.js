@@ -110,7 +110,7 @@ let levelHedge = {
     [0,0,0,'H',0,0,0,'H',0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,'H',0,0,0,0], //26
     [0,0,0,'H',0,0,0,'H',0,0,0,'D',0,0,0,'D',0,0,0,'D',0,0,0,'H',0,0,0,'H',0,0,0,0], //27
     [0,0,0,'H',0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,0], //28
-    [0,'D','H','I','H','H','H','I','H','H','H','H','H','H','H','I','H','H','H','H','H','H','H','I','H','H','H','I','H','D',0,0], //29
+    [0,'D','H','I','H','H','H','I','H','H','H','H','SH','H','H','I','H','H','H','H','H','H','H','I','H','H','H','I','H','D',0,0], //29
     [0,0,0,'H',0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,0], //30
     [0,0,0,'D',0,0,0,'D',0,0,0,0,0,0,0,'D',0,0,0,0,0,0,0,'D',0,0,0,'D',0,0,0,0], //31
   ],
@@ -208,6 +208,21 @@ let color_pal = {
 // header config
 let headerConfig = {
   fontFamily: 'Gill Sans',
+  fontSize: screen.width/16,
+  //backgroundColor: color_pal.black,
+  color: color_pal.white,
+  align: 'center',
+  padding: {
+      top: 5,
+      bottom: 5,
+      left: 5,
+      right: 5
+  },
+  fixedWidth: 0
+}
+
+let subHeaderConfig = {
+  fontFamily: 'Gill Sans',
   fontSize: screen.width/25,
   //backgroundColor: color_pal.black,
   color: color_pal.white,
@@ -242,6 +257,7 @@ let defaultHeaderStyle = {
   backgroundColor: color_pal.red,
   fontStyle: 'bold',
 }
+
 
 let defaultQTEStyle = {
   fontFamily: 'Tremendous',
