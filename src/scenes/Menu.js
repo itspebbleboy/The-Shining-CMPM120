@@ -28,36 +28,14 @@ class Menu extends Phaser.Scene {
         this.add.text(screen.center.x, screen.center.y-100, 'Escape', headerConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y+50,'created by Tatiana Lucero and Athena Patronas\ntheme cover created by Julian Rubinstein', subHeaderConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +600, 'press space to start', subHeaderConfig).setOrigin(0.5);
-        //this.add.text(screen.center.x, screen.center.y +250, 'press <-- for game', headerConfig).setOrigin(0.5);
-        //this.add.text(screen.center.x, screen.center.y +350, 'press --> for hotel', headerConfig).setOrigin(0.5);
-        //this.add.text(screen.center.x, screen.center.y +450, 'press ^ for hedge', headerConfig).setOrigin(0.5);
         console.log("level: " +levelHotel.num);
         this.sound.add('theme').play({loop: true});
-        //this.add.text(screen.center.x, screen.center.y +550, 'press M for murder', headerConfig).setOrigin(0.5);
     }
 
     update(){
         if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-            //this.scene.start("qteScene");
             this.scene.start("introScene", levelHotel);
           }
-        /*
-        if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            //this.scene.start("qteScene");
-            this.scene.start("introScene", levelHotel);
-          }
-          */
-        if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
-            this.scene.start("playScene", levelHotel );
-          }
-          
-        if (Phaser.Input.Keyboard.JustDown(keyUP)) {
-            this.scene.start("playScene", levelHedge );
-        }
-        /*
-        if(Phaser.Input.Keyboard.JustDown(keyM)){
-            this.scene.start("axeScene");
-        }
-        */
+   
     }
 }
