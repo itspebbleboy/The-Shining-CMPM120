@@ -21,6 +21,7 @@ class BathroomScene extends Phaser.Scene {
         this.load.image('redrum', './assets/cutscene/redRum.png');
         this.load.image('openWindow','./assets/cutscene/openWindow.png');
         this.load.image('closeWindow','./assets/cutscene/closeWindow.png');
+        this.load.audio('doorLocked', './assets/audio/doorLocked.mp3');
 
     }create(){
         this.anims.create({
@@ -33,20 +34,9 @@ class BathroomScene extends Phaser.Scene {
                 {key: 'bathroom4', frame:null},
                 {key: 'bathroom5', frame:null}
             ],
-            frameRate: 1,
-          });
-          
-        this.gameover = this.anims.create({
-            key: 'qte',
-            frames: this.anims.generateFrameNames('shining_atlas', {
-                prefix: 'jack',
-                start: 1,
-                end: 8
-            }),
-            frameRate: 1.5,
-            //repeat: -1,
+            frameRate: 20,
         });
-
+        
         this.cutsceneHelper = new CutsceneHelper(this.gameover,this);
         this.background = this.add.image(screen.center.x,screen.center.y, 'redrum').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
@@ -137,14 +127,11 @@ class BathroomScene extends Phaser.Scene {
     cutscenePartTwelve = () =>{
         //PLAY ANIMATION
         //on animation complete, play QTE
-        this.add.sprite(screen.center.x,screen.center.y).play('axeScene'); // play axe
-        this.time.delayedCall(5000, ()=>{
-            this.cutsceneHelper.createBlinkingText("USE THE KNIFE", 2000, this);
-            this.cutsceneHelper.startQTE(5, this.cutscenePartThirteen, this);
-          }, [], this);
+        this.cutsceneHelper.createBlinkingText("USE THE KNIFE", 2000, this);
+        this.cutsceneHelper.startQTE(5, this.cutscenePartThirteen, this);
     }
     cutscenePartThirteen = () =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
             [
