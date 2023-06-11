@@ -73,7 +73,7 @@ let levelHotel = {
   levelEndText: [
     'OPEN THE DOOR'
   ],
-  playerQueueLength: 20,
+  playerQueueLength: 10,
 }
 let levelHedge = {
   num: 1,
@@ -126,7 +126,7 @@ let levelHedge = {
   levelEndText: [
     'RUN TO THE SNOWCAT'
   ],
-  playerQueueLength: 20
+  playerQueueLength: 60
 }
 //#endregion
 

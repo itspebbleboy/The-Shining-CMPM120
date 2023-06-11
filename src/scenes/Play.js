@@ -197,6 +197,8 @@ class Play extends Phaser.Scene {
     this.load.audio('snowCrunch1','./assets/audio/snowCrunch1.mp3'); // snowCrunch 1
     this.load.audio('snowCrunch2','./assets/audio/snowCrunch2.mp3'); // snowCrunch 2
     this.load.audio('snowCrunch3','./assets/audio/snowCrunch3.mp3'); // snowCrunch 3
+    
+    this.load.audio('doorOpenClose','./assets/audio/doorOpenClose.mp3'); // snowCrunch 3
     //this.load.audio(); // snowCrunch1
     //this.load.audio(); // snowCrunch2
     this.load.audio('heartBeat', './assets/audio/Heartbeat_Single_1.mp3'); // heartBeat
@@ -1256,6 +1258,9 @@ class Play extends Phaser.Scene {
       onComplete: this.nextSceneAction,
       //onComplete: //GO TO NEXT SCENE
     });
+    if(!this.level){
+      this.playOneShot('doorOpenClose');
+    }
   }
 
 
