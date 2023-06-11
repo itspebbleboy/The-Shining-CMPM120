@@ -16,6 +16,7 @@ class Menu extends Phaser.Scene {
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
         //#endregion
         this.load.image('brownBackground', './assets/ui/brownBackground.png');
         this.load.audio('theme', './assets/audio/Theme.mp3');
@@ -27,10 +28,10 @@ class Menu extends Phaser.Scene {
         this.add.text(screen.center.x, screen.center.y, 'THE SHINING BY:\n Tatiana Lucero and Athena Patronas', headerConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +250, 'press <-- for game', headerConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +350, 'press --> for hotel', headerConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y +450, 'press UP for hedge', headerConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +450, 'press ^ for hedge', headerConfig).setOrigin(0.5);
         console.log("level: " +levelHotel.num);
         this.sound.add('theme').play();
-        this.add.text(screen.center.x, screen.center.y +550, 'press DOWN for murder', headerConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +550, 'press M for murder', headerConfig).setOrigin(0.5);
     }
 
     update(){
@@ -45,7 +46,7 @@ class Menu extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
             this.scene.start("playScene", levelHedge );
         }
-        if(Phaser.Input.Keyboard.JustDown(keyDOWN)){
+        if(Phaser.Input.Keyboard.JustDown(keyM)){
             this.scene.start("axeScene");
         }
     }
