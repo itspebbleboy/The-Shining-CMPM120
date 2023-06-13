@@ -1134,6 +1134,7 @@ class Play extends Phaser.Scene {
     if(this.heartBeat1 && this.heartbeat1.isPlaying()) {
       this.heartBeat1.stop();
       this.heartBeat1.visible = false;
+      this.heartBeat.stop();
     }if(this.heartBeat2 && this.heartbeat2.isPlaying()){
       this.heartBeat2.stop();
       this.heartBeat2.visible = false;
@@ -1145,7 +1146,7 @@ class Play extends Phaser.Scene {
       this.heartbeat1.repeat=-1;
       this.heartbeat1.hideOnComplete = false;
       this.heartBeat1 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1').setDepth(depth.deathAnims); // play blink
-      //console.log("playing anim 1");
+      this.heartBeat = this.sound.add('heartBeat').play({loop: true});
     }, [], this);
     this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
       this.heartbeat2.repeat=-1;
