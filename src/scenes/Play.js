@@ -392,7 +392,7 @@ class Play extends Phaser.Scene {
         end: 2
       }),
       yoyo: true,
-      frameRate: 3,
+      frameRate: 2.25,
       repeat: -1
     });
 
@@ -404,7 +404,7 @@ class Play extends Phaser.Scene {
         end: 4
       }),
       yoyo: true,
-      frameRate: 3,
+      frameRate: 2.25,
       repeat: -1
     });
 
@@ -1131,14 +1131,14 @@ class Play extends Phaser.Scene {
     if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
     if(this.deathAnimTimer) { this.deathAnimTimer.remove(); }
 
-    if(this.heartBeat1 && this.heartbeat1.isPlaying()) {
+    if(this.heartBeat1 !=  null) {
       this.heartBeat1.stop();
       this.heartBeat1.visible = false;
       this.heartBeat.stop();
-    }if(this.heartBeat2 && this.heartbeat2.isPlaying()){
+    }if(this.heartBeat2 != null){
       this.heartBeat2.stop();
       this.heartBeat2.visible = false;
-    }if(this.heartBeat3 && this.heartbeat3.isPlaying()){
+    }if(this.heartBeat3 != null){
       this.heartBeat3.stop();
       this.heartBeat3.visible = false;
     }
@@ -1183,6 +1183,7 @@ class Play extends Phaser.Scene {
   nextSceneCalls(){
     this.eye.destroy(); // hide the current eye
     this.pupil.destroy(); // hide the current pupil
+    if(this.heartBeat) { this.heartBeat.destroy(); }
     if(this.textBox) {this.textBox.destroy(); this.textCrawl.destroy();}
     this.cutsceneHelper.createBlinkingText(this.levelEndText, 2000, this, screen.center.x, screen.center.y-300);
     if(!this.level){
