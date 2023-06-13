@@ -1,7 +1,6 @@
-class Menu extends Phaser.Scene {
+class DebugMenu extends Phaser.Scene {
     constructor() {
-        super("menuScene");
-        this.music = null;
+        super("debugMenuScene");
     }
 
     preload(){
@@ -27,21 +26,30 @@ class Menu extends Phaser.Scene {
     create(){
         this.add.image(screen.center.x, screen.center.y, 'brownBackground');
         this.add.text(screen.center.x, screen.center.y-100, 'Escape', headerConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y+50,'created by Tatiana Lucero and Athena Patronas\ntheme cover by Julian Rubinstein', subHeaderConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y +600, 'press space to start', subHeaderConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y +800, '↑ for scene select (for graders)', subHeaderConfig).setOrigin(0.5);
-        console.log("level: " +levelHotel.num);
-        if(!this.music){
-        this.music = this.sound.add('theme').play({loop: true});
-        }
+        this.add.text(screen.center.x, screen.center.y+50,'created by Tatiana Lucero and Athena Patronas\ntheme cover created by Julian Rubinstein', subHeaderConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +600, 'space to return to regular menu', subHeaderConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +200, '→ for hotel level', subHeaderConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +300, '← for hedge level', subHeaderConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +400, '↑ for bathroom cutscene', subHeaderConfig).setOrigin(0.5);
+        
+        this.add.text(screen.center.x, screen.center.y +500, '↓ for axe cutscene', subHeaderConfig).setOrigin(0.5);
+        
+        this.add.text(screen.center.x, screen.center.y +800, 'you only get to see da end cutscene \nif you escape hedge maze tho >:(', subHeaderConfig).setOrigin(0.5);
+        //console.log("level: " +levelHotel.num);
     }
 
     update(){
         if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-            this.scene.start("introScene", levelHotel);
+            this.scene.start("menuScene");
+        }
+        if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            this.scene.start("playScene", levelHotel);
+        }
+        if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
+            this.scene.start("playScene", levelHedge);
         }
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
-            this.scene.start("debugMenuScene");
+            this.scene.start("bathroomScene", levelHedge);
         }
     }
 }

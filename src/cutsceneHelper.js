@@ -43,7 +43,7 @@ class CutsceneHelper {
       if (this.animation) {
         this.animation.destroy();
       }
-      if (this.qteInProgress && event.key === this.currentQTEInputOption) {
+      if (this.qteInProgress && (event.key === this.currentQTEInputOption || event.key === this.currentQTEInputOption.toUpperCase()) ) {
         console.log("QTE input handled!");
         this.qteInProgress = false;
         this.qteTimer.remove();
