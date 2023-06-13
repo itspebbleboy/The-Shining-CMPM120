@@ -1137,7 +1137,11 @@ class Play extends Phaser.Scene {
       this.heartbeat3.repeat=-1;
       this.heartbeat3.hideOnComplete = false;
       this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
+<<<<<<< Updated upstream
 
+=======
+      
+>>>>>>> Stashed changes
     }, [], this);
   }
 
@@ -1276,6 +1280,16 @@ class Play extends Phaser.Scene {
   }
   
   //#endregion
+/*
+  snowEmitter(){
+    const particles = this.add.particles("snow");
+    particles.createEmitter({
+      x: 0,
+      y: 0,
+      //EmitZone
+      speedY: 
+    })
 
-
+  }
+*/
 }
