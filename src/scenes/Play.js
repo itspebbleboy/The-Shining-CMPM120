@@ -169,6 +169,7 @@ class Play extends Phaser.Scene {
       this.load.image('hedgeHallway0', './assets/hedge/hedgeHallway0.png');
       this.load.image('hedgeHallway1', './assets/hedge/hedgeHallway1.png');
       this.load.image('hedgeHallway2', './assets/hedge/hedgeHallway2.png');
+      this.load.image('snow','./assets/hedge/snow.png');
       //#endregion
       //#region << MAP ELEMENTS >>
       this.load.image('brownBackground', './assets/ui/brownBackground.png');
@@ -359,6 +360,7 @@ class Play extends Phaser.Scene {
   }
 
   create(){    
+    this.snowEmitter();
     //#region << ANIMS >>
     this.gameover = this.anims.create({
       key: 'qte',
@@ -451,7 +453,8 @@ class Play extends Phaser.Scene {
       this.playerConfig.node= this.graph.getNode(31,15);
     }
     // Add delayed calls to the list
-
+    //this.stopAllDelayedCalls();
+    this.restartAllDelayedCalls();
     this.createCompassGrid(this.playerConfig.cardDirec);
     this.movePlayer();
     this.displayImage(this.playerConfig.cardDirec);
@@ -1130,15 +1133,16 @@ class Play extends Phaser.Scene {
     if(this.jackAnim0Timer) { this.jackAnim0Timer.remove(); }
     if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
     if(this.deathAnimTimer) { this.deathAnimTimer.remove(); }
-
-    if(this.heartBeat1 !=  null) {
+    if(this.failed){this.failed.remove();}
+ 
+    if(this.heartBeat1 !=  null && this.heartBeat1.stop) {
       this.heartBeat1.stop();
       this.heartBeat1.visible = false;
-      this.heartBeat.stop();
-    }if(this.heartBeat2 != null){
+      this.heartBeat1.stop();
+    }if(this.heartBeat2 != null && this.heartBeat2.stop){
       this.heartBeat2.stop();
       this.heartBeat2.visible = false;
-    }if(this.heartBeat3 != null){
+    }if(this.heartBeat3 != null && this.heartBeat3.stop){
       this.heartBeat3.stop();
       this.heartBeat3.visible = false;
     }
@@ -1158,10 +1162,10 @@ class Play extends Phaser.Scene {
       this.heartbeat3;
       this.heartbeat3.hideOnComplete = false;
       this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
-      this.text = this.time.delayedCall(2000, ()=>{
-        this.add.text(screen.center.x, screen.center.y, "You Failed", defaultHeaderStyle).setOrigin(0.5,0.5);
+      this.failed = this.time.delayedCall(5000, ()=>{
+        this.add.text(screen.center.x, screen.center.y, "You Failed", defaultHeaderStyle).setOrigin(0.5,0.5).setDepth(10);
         this.leave = this.time.delayedCall(1000, ()=>{
-          this.scene.start("menuScene");
+          
         });
       });
     }, [], this);
@@ -1171,16 +1175,19 @@ class Play extends Phaser.Scene {
     if(this.jackAnim0Timer) { this.jackAnim0Timer.remove(); }
     if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
     if(this.deathAnimTimer) { this.deathAnimTimer.remove(); }
-    if(this.heartBeat1) {
+    if(this.failed){this.failed.remove();}
+
+    if(this.heartBeat1 && this.heartBeat1.stop) {
       this.heartBeat1.stop();
+      this.heartBeat1.destroy();
       this.heartBeat1.visible = false;
-    }if(this.heartBeat2){
+    }if(this.heartBeat2 && this.heartBeat2.stop){
       this.heartBeat2.stop();
+      this.heartBeat2.destroy();
       this.heartBeat2.visible = false;
-    }if(this.heartBeat3){
+    }if(this.heartBeat3 && this.heartBeat3.stop){
       this.heartBeat3.stop();
-      this.text.stop();
-      this.leave.stop();
+      this.heartBeat3.destroy();
       this.heartBeat3.visible = false;
     }
   }
@@ -1308,16 +1315,9 @@ class Play extends Phaser.Scene {
   }
   
   //#endregion
-/*
-  snowEmitter(){
-    const particles = this.add.particles("snow");
-    particles.createEmitter({
-      x: 0,
-      y: 0,
-      //EmitZone
-      speedY: 
-    })
 
+  snowEmitter(){
+    
   }
-*/
+
 }
