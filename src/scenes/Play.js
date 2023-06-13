@@ -1157,6 +1157,12 @@ class Play extends Phaser.Scene {
       this.heartbeat3;
       this.heartbeat3.hideOnComplete = false;
       this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
+      this.text = this.time.delayedCall(2000, ()=>{
+        this.add.text(screen.center.x, screen.center.y, "You Failed", defaultHeaderStyle).setOrigin(0.5,0.5);
+        this.leave = this.time.delayedCall(1000, ()=>{
+          this.scene.start("menuScene");
+        });
+      });
     }, [], this);
   }
 
@@ -1172,6 +1178,8 @@ class Play extends Phaser.Scene {
       this.heartBeat2.visible = false;
     }if(this.heartBeat3){
       this.heartBeat3.stop();
+      this.text.stop();
+      this.leave.stop();
       this.heartBeat3.visible = false;
     }
   }
