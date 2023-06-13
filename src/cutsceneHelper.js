@@ -60,8 +60,6 @@ class CutsceneHelper {
     }
     
     handleQTESuccess(onSucess) {
-      console.log("All QTEs completed");
-      //this.scene.add.text(screen.center.x, screen.center.y, "All QTEs complete!", defaultQTEStyle).setOrigin(0.5, 0.5);
       this.qteText.destroy();
       onSucess();
     }
@@ -70,12 +68,9 @@ class CutsceneHelper {
       console.log("QTE failure!");
       this.qteInProgress = false;
       this.qteText.destroy();
-      
-      //this.createBlinkingText("IT'S OVER, TRY AGAIN", 6000, scene);
+
       this.scene.time.delayedCall(2000,()=>{
-        this.gameoverText = scene.add.text(screen.center.x, screen.center.y,"You've been captured." , defaultHeaderStyle).setDepth(10).setOrigin(0.5,0.5);
-        console.log(screen.center.x);
-        console.log(screen.center.y);
+        this.gameoverText = scene.add.text(screen.center.x, screen.center.y, "YOU FAILED" , defaultHeaderStyle).setDepth(10).setOrigin(0.5,0.5);
       });
       this.scene.time.delayedCall(5000, () => {
         this.scene.scene.start("menuScene");

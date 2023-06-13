@@ -130,9 +130,7 @@ class BathroomScene extends Phaser.Scene {
             ], this.cutscenePartTwelve, this);
     }
     cutscenePartTwelve = () =>{
-        //PLAY ANIMATION
-        //on animation complete, play QTE
-        this.add.sprite(screen.center.x,screen.center.y).play('axeScene'); // play axe
+        this.add.sprite(screen.center.x,screen.center.y).play('axeScene');
         this.time.delayedCall(5000, ()=>{
             this.cutsceneHelper.createBlinkingText("USE THE KNIFE", 2000, this);
             this.cutsceneHelper.startQTE(5, this.cutscenePartThirteen, this);

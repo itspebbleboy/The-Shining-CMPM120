@@ -1131,13 +1131,13 @@ class Play extends Phaser.Scene {
     if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
     if(this.deathAnimTimer) { this.deathAnimTimer.remove(); }
 
-    if(this.heartBeat1) {
+    if(this.heartBeat1 && this.heartbeat1.isPlaying()) {
       this.heartBeat1.stop();
       this.heartBeat1.visible = false;
-    }if(this.heartBeat2){
+    }if(this.heartBeat2 && this.heartbeat2.isPlaying()){
       this.heartBeat2.stop();
       this.heartBeat2.visible = false;
-    }if(this.heartBeat3){
+    }if(this.heartBeat3 && this.heartbeat3.isPlaying()){
       this.heartBeat3.stop();
       this.heartBeat3.visible = false;
     }
