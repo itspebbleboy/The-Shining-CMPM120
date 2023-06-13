@@ -1,6 +1,7 @@
 class BathroomScene extends Phaser.Scene {
     constructor() {
         super("bathroomScene");
+        this.sfx = [];
         // cutscene properties
     }
 
@@ -21,6 +22,9 @@ class BathroomScene extends Phaser.Scene {
         this.load.image('redrum', './assets/cutscene/redRum.png');
         this.load.image('openWindow','./assets/cutscene/openWindow.png');
         this.load.image('closeWindow','./assets/cutscene/closeWindow.png');
+        this.load.audio('doorLocked', './assets/audio/doorLocked.mp3');
+        this.load.audio('windowOpen', './assets/audio/windowOpen.mp3');
+        this.load.audio('doorSMASH', './assets/audio/doorSMASH.mp3');
 
     }create(){
         this.anims.create({
@@ -34,19 +38,8 @@ class BathroomScene extends Phaser.Scene {
                 {key: 'bathroom5', frame:null}
             ],
             frameRate: 1,
-          });
-          
-        this.gameover = this.anims.create({
-            key: 'qte',
-            frames: this.anims.generateFrameNames('shining_atlas', {
-                prefix: 'jack',
-                start: 1,
-                end: 8
-            }),
-            frameRate: 1.5,
-            //repeat: -1,
         });
-
+        
         this.cutsceneHelper = new CutsceneHelper(this.gameover,this);
         this.background = this.add.image(screen.center.x,screen.center.y, 'redrum').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
@@ -59,7 +52,7 @@ class BathroomScene extends Phaser.Scene {
 
     }
     cutscenePartTwo= () =>{
-        //DORKNOB AUDIO
+        this.playOneShot('doorLocked');
         this.cutsceneHelper.iterateThroughDialogue(
             [
                 "oh god,",
@@ -82,6 +75,7 @@ class BathroomScene extends Phaser.Scene {
     cutscenePartFive= () =>{
         this.background.destroy();
         this.background = this.add.image(screen.center.x,screen.center.y, 'closeWindow').setOrigin(0.5,0.5); //REPLACE WITH EMPTY WINDOW
+        this.playOneShot('windowOpen');
         this.cutsceneHelper.iterateThroughDialogue(
             [
                 "wait,",
@@ -121,7 +115,8 @@ class BathroomScene extends Phaser.Scene {
     cutscenePartTen = () =>{
         if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5); //THIS ONE STAYS BACKGROUND
-        //PLAY AXE TO DOOR AUDIO
+        
+        this.playOneShot('doorSMASH');
         this.cutsceneHelper.createBlinkingText("MOVE TO THE CORNER", 2000, this);
         this.cutsceneHelper.startQTE(2, this.cutscenePartEleven, this);
     }
@@ -135,16 +130,14 @@ class BathroomScene extends Phaser.Scene {
             ], this.cutscenePartTwelve, this);
     }
     cutscenePartTwelve = () =>{
-        //PLAY ANIMATION
-        //on animation complete, play QTE
-        this.add.sprite(screen.center.x,screen.center.y).play('axeScene'); // play axe
+        this.add.sprite(screen.center.x,screen.center.y).play('axeScene');
         this.time.delayedCall(5000, ()=>{
             this.cutsceneHelper.createBlinkingText("USE THE KNIFE", 2000, this);
             this.cutsceneHelper.startQTE(5, this.cutscenePartThirteen, this);
-          }, [], this);
+        });
     }
     cutscenePartThirteen = () =>{
-        this.background.destroy();
+        if(this.background) {this.background.destroy();}
         this.background = this.add.image(screen.center.x,screen.center.y, 'background').setOrigin(0.5,0.5);
         this.cutsceneHelper.iterateThroughDialogue(
             [
@@ -186,4 +179,12 @@ class BathroomScene extends Phaser.Scene {
     startScene= () =>{
         this.scene.start("playScene", levelHedge);
     }
+
+    playOneShot(key, config){
+        if(!this.sfx[key]){
+          this.sfx[key] = this.sound.add(key, config);
+        }
+        this.sfx[key].play();
+        console.log("Playing " + key + " " + this.sfx[key].isPlaying);
+      }
 }

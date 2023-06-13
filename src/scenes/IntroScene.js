@@ -32,15 +32,14 @@ class IntroScene extends Phaser.Scene {
         //#endregion
         this.cutsceneHelper.iterateThroughDialogue(
             [
-            "welcome to our adaptation of a movie you might have heard of.",
+            "welcome to our adaptation of a movie you might have heard of. (press shift to advance)",
             
             "this is our build for our CMPM 120 class (june 2023).",
             
             "some content warnings before we begin:",
             
             "implied domestic abuse, implied child abuse, implied violence, implied death, knife imagery, and general dark themes, ",
-            
-            "if you're ready to start, please note that you can speed up messages with shift and dismiss them with shift.",
+            "now, it begins...",
             ], this.cutscenePartTwo, this);
     }
     update(){
@@ -78,7 +77,7 @@ class IntroScene extends Phaser.Scene {
             "well done.",
             "he's unconscious now, the time you have to act is small.",
             "you managed to lock him in the hotel's kitchen pantry but you don't know how long that'll hold him back.",
-            "you managed to grab a knife while you were there.",
+            "you grabbed a knife while you were there.",
             "you have to go back to your room to get your son and escape.",
         ], this.startScene, this)
     }

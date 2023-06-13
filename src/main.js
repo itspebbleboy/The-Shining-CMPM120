@@ -4,7 +4,7 @@ const config = {
     parent: 'phaser-example',
     width: 2048,
     height: 2048,
-    scene: [Menu, Play, IntroScene, BathroomScene, EndScene]
+    scene: [Menu, DebugMenu, Play, AxeScene, IntroScene, BathroomScene, EndScene]
   };
   
   // Create a new Phaser game
@@ -26,7 +26,7 @@ let levelHotel = {
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //3
     [0,0,0,0,0,0,'D',0,0,0,0,0,0,'D','H','H','I','H','H','H','I','H','H','H','H','I','H','H','I','H','D',0], //4
     [0,0,0,0,0,0,'H',0,0,0,0,'D',0,0,0,0,'H',0,0,0,'H',0,0,0,0,'H',0,0,'H',0,0,0], //5
-    [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,'D',0,0,0,0,'H',0,0,'H',0,0,0], //6
+    [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,'D',0,0,0,0,'SH',0,0,'H',0,0,0], //6
     [0,0,0,0,'D','H','I','H','H','H','H','I','H','D',0,0,'H',0,0,0,0,0,'D',0,0,'H',0,0,'H',0,0,0], //7
     [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,0,'H',0,0,'H',0,0,'H',0,0,0], //8
     [0,0,0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H',0,0,0,0,'H','I','H','H','I','H','H','I','H','D',0], //9
@@ -49,22 +49,22 @@ let levelHotel = {
     [0,0,'H',0,0,0,'D',0,0,0,0,'D',0,0,0,0,0,'H',0,0,'D',0,0,0,0,0,0,0,0,0,0,0], //26
     [0,0,'H',0,0,0,0,0,0,'D',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'D',0,0,0,0,0,0,0], //27
     [0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0], //28
-    ['D','H','I','SH','H','H','H','H','H','I','H','H','H','H','H','H','H','I','H','H','H','H','H','H','I','H','D',0,0,0,0,0], //29
+    ['D','H','I','H','H','H','H','H','H','I','H','H','H','H','H','H','H','I','H','H','H','H','H','H','I','H','D',0,0,0,0,0], //29
     [0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0], //30
     [0,0,'D',0,0,0,0,0,0,'D',0,0,0,0,0,0,0,'D',0,0,0,0,0,0,'D',0,0,0,0,0,0,0], //31
   ],
-  starting: {
+  starting: { // remember 31 ,24
     x: 31,
     y: 24
   },
   dialogueList : [
     "you can look using the left and right arrow keys",
-    "to go towards the direction you’re looking in, press space",
-    "The hallways in this hotel seem to change all the time but your memory of where you’ve been and the layout of the floor might serve you correctly if you press the up arrow key.",
-    "now press it again,",
-    "time isn’t paused when you’re recalling the layout of the hotel, so be cautious,",
-    "when it’s a matter of life and death, there is no time to stall.",
-    "he might have already found a way to escape so make sure you don’t frequent around an area for too long.",
+    "to go towards the direction you're looking in, press space",
+    "The hallways in this hotel seem to change all the time but your memory of where you've been might serve you correctly if you press the up arrow key.",
+    "now press it twice to remember the layout of the floor,",
+    "time isn't paused when you're recalling the layout of the hotel, so be cautious,",
+    "when it's a matter of life and death, there is no time to stall.",
+    "he might have already found a way to escape so make sure you don't frequent around an area for too long.",
     "enough with the tutorial.",
   ],
   levelStartText : [
@@ -73,7 +73,7 @@ let levelHotel = {
   levelEndText: [
     'OPEN THE DOOR'
   ],
-  playerQueueLength: 20,
+  playerQueueLength: 10,
 }
 let levelHedge = {
   num: 1,
@@ -97,16 +97,16 @@ let levelHedge = {
     [0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0], //13
     [0,0,0,0,'H',0,0,0,0,0,0,'D',0,0,0,'H',0,0,0,'D',0,0,0,0,0,0,'H',0,0,0,0,0], //14
     [0,0,0,0,'H',0,0,0,0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,0,0,0,'H',0,0,0,0,0], //15
-    [0,0,0,0,'H',0,0,0,0,0,0,0,'D','H','H','I','H','H','D',0,0,0,0,0,0,'H',0,0,0,0,0], //16
+    [0,0,0,0,'H',0,0,0,0,0,0,0,'D','H','H','I','H','H','D',0,0,0,0,0,0,0,'H',0,0,0,0,0], //16
     [0,0,0,0,'H',0,0,0,0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,0,0,0,'H',0,0,0,0,0], //17
     [0,0,0,0,'H',0,0,0,0,0,0,'D',0,0,0,'D',0,0,0,'D',0,0,0,0,0,0,'H',0,0,0,0,0], //19
     [0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0], //18
-    [0,0,0,0,'I','H','H','H','H','H','H','I','H','D',0,0,0,'D','H','I','H','H','H','H','H','H','I',0,0,0,0,0], //20
+    [0,0,'D','H','I','H','H','H','H','H','H','I','H','D',0,0,0,'D','H','I','H','H','H','H','H','H','I','H','D',0,0,0], //20
     [0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'H',0,0,0,0,0], //21
     [0,0,0,0,'D',0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,'D',0,0,0,0,0], //22
     [0,0,0,'D',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'D',0,0,0,0], //23
     [0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0], //24
-    [0,'D','H','I','H','H','H','I','H','H','H','I',0,0,0,0,0,0,0,'I','H','H','H','I','H','H','H','I','H','D',0,0], //25
+    [0,'D','H','I','H','H','H','I','H','H','H','I','H','D',0,0,0,'D','H','I','H','H','H','I','H','H','H','I','H','D',0,0], //25
     [0,0,0,'H',0,0,0,'H',0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,'H',0,0,0,0], //26
     [0,0,0,'H',0,0,0,'H',0,0,0,'D',0,0,0,'D',0,0,0,'D',0,0,0,'H',0,0,0,'H',0,0,0,0], //27
     [0,0,0,'H',0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,0,0,0,0,'H',0,0,0,'H',0,0,0,0], //28
@@ -126,7 +126,7 @@ let levelHedge = {
   levelEndText: [
     'RUN TO THE SNOWCAT'
   ],
-  playerQueueLength: 20
+  playerQueueLength: 60
 }
 //#endregion
 
@@ -208,6 +208,21 @@ let color_pal = {
 // header config
 let headerConfig = {
   fontFamily: 'Gill Sans',
+  fontSize: screen.width/16,
+  //backgroundColor: color_pal.black,
+  color: color_pal.white,
+  align: 'center',
+  padding: {
+      top: 5,
+      bottom: 5,
+      left: 5,
+      right: 5
+  },
+  fixedWidth: 0
+}
+
+let subHeaderConfig = {
+  fontFamily: 'Gill Sans',
   fontSize: screen.width/25,
   //backgroundColor: color_pal.black,
   color: color_pal.white,
@@ -233,7 +248,7 @@ let defaultTextCrawlStyle = {
 
 let defaultHeaderStyle = {
   fontFamily: 'Tremendous',
-  fontSize: screen.width/15,
+  fontSize: screen.width/17,
   color: color_pal.white,
   align: 'center',
   padding: 5,
@@ -242,6 +257,7 @@ let defaultHeaderStyle = {
   backgroundColor: color_pal.red,
   fontStyle: 'bold',
 }
+
 
 let defaultQTEStyle = {
   fontFamily: 'Tremendous',

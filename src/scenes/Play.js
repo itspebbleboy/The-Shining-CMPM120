@@ -19,6 +19,8 @@ class Play extends Phaser.Scene {
     this.levelStartText;
     this.levelEndText;
     this.playerQueueLength;
+    
+    this.sfx = {};
 
     this.stateCooldown = false; // Cooldown state
     this.eyeDelta = 575;
@@ -187,15 +189,21 @@ class Play extends Phaser.Scene {
       this.load.image('textBox', './assets/ui/textBox.png');
     //#endregion
     //#region << LOADING AUDIO >>
-    this.scene.load.audio(); // creak 0
-    this.scene.load.audio(); // creak 1
-    this.scene.load.audio(); // creak 2
-    this.scene.load.audio(); // snowCrunch0
-    this.scene.load.audio(); // snowCrunch1
-    this.scene.load.audio(); // snowCrunch2
-    this.scene.load.audio('heartBeat', '.assets/music/Heartbeat_Single_1.mp3'); // heartBeat
-    this.scene.load.audio('theme', 'Theme.mp3');
-    this.scene.load.audio(); // doorKnob
+    this.load.audio('creak0','./assets/audio/creak0.mp3'); // creak 0
+    this.load.audio('creak1','./assets/audio/creak1.mp3'); // creak 1
+    this.load.audio('creak2','./assets/audio/creak2.mp3'); // creak 2
+    this.load.audio('creak3','./assets/audio/creak3.mp3'); // creak 3
+    this.load.audio('snowCrunch0','./assets/audio/snowCrunch0.mp3'); // snowCrunch 0
+    this.load.audio('snowCrunch1','./assets/audio/snowCrunch1.mp3'); // snowCrunch 1
+    this.load.audio('snowCrunch2','./assets/audio/snowCrunch2.mp3'); // snowCrunch 2
+    this.load.audio('snowCrunch3','./assets/audio/snowCrunch3.mp3'); // snowCrunch 3
+    
+    this.load.audio('doorOpenClose','./assets/audio/doorOpenClose.mp3'); // snowCrunch 3
+    //this.load.audio(); // snowCrunch1
+    //this.load.audio(); // snowCrunch2
+    this.load.audio('heartBeat', './assets/audio/Heartbeat_Single_1.mp3'); // heartBeat
+    this.load.audio('theme', 'Theme.mp3');
+    //this.load.audio(); // doorKnob
 
     //this.scene.sound.add();
 
@@ -211,6 +219,7 @@ class Play extends Phaser.Scene {
           if(this.space()){ //if space is pressed change the cardinal direction based on current position
             this.changeCardinalDirection(this.playerConfig.cardDirec, this.leftOrRight = 0);
             this.displayImage(this.playerConfig.cardDirec);
+            this.movementSFX();
             this.moveEyeRight();
             this.eyeState.FORWARD.enter();
             // NEED TO ADD : change eye state & move back to middle & update state to forward
@@ -302,7 +311,7 @@ class Play extends Phaser.Scene {
           console.log("ENTERED MINIMAP STATE");
         },
         update: () => {
-          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown /*&& this.level<1*/) {
+          if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyUP.isDown && this.level<1) {
             this.gameState.MAP.enter();
           } else if (this.upAndDownArrowCoolDown.getProgress() === 1 && keyDOWN.isDown ) {
             this.gameState.ROOMS.enter();
@@ -606,6 +615,7 @@ class Play extends Phaser.Scene {
     if(this.currEyeState == this.eyeState.FORWARD && keySPACE.isDown && this.graph.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec)) // if forward and the "SPACE" UPDATE PLAYER LOCATION
     {
       this.movePlayer();
+      this.movementSFX();
       this.displayImage();
       //MOVE EYE FORWARD FYUNCTION TRHAT DOES JIGGLE ANIMATION CALL GO HEREREJIEWRJUBHIKRUHJHUIJALR
       this.moveEyeForward();
@@ -1036,7 +1046,18 @@ class Play extends Phaser.Scene {
     this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
     console.log(this.playerConfig.node.getIndex());
   }
-  
+
+  movementSFX(){
+    let key = (this.level)? 'snowCrunch' : 'creak';
+    this.playOneShot(key+(Math.floor(Math.random() * 4)).toString());
+  }
+  playOneShot(key, config){
+    if(!this.sfx[key]){
+      this.sfx[key] = this.sound.add(key, config);
+    }
+    this.sfx[key].play();
+    console.log("Playing " + key + " " + this.sfx[key].isPlaying);
+  }
   changeCardinalDirection(currCardDirection, leftOrRight){
     //given the current cardinal direction & if the movement changes player's curr cardinal direction
     if(leftOrRight == 1){ //GOING RIGHT
@@ -1110,13 +1131,13 @@ class Play extends Phaser.Scene {
     if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
     if(this.deathAnimTimer) { this.deathAnimTimer.remove(); }
 
-    if(this.heartBeat1) {
+    if(this.heartBeat1 && this.heartbeat1.isPlaying()) {
       this.heartBeat1.stop();
       this.heartBeat1.visible = false;
-    }if(this.heartBeat2){
+    }if(this.heartBeat2 && this.heartbeat2.isPlaying()){
       this.heartBeat2.stop();
       this.heartBeat2.visible = false;
-    }if(this.heartBeat3){
+    }if(this.heartBeat3 && this.heartbeat3.isPlaying()){
       this.heartBeat3.stop();
       this.heartBeat3.visible = false;
     }
@@ -1124,7 +1145,6 @@ class Play extends Phaser.Scene {
       this.heartbeat1.repeat=-1;
       this.heartbeat1.hideOnComplete = false;
       this.heartBeat1 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1').setDepth(depth.deathAnims); // play blink
-
       //console.log("playing anim 1");
     }, [], this);
     this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
@@ -1134,14 +1154,9 @@ class Play extends Phaser.Scene {
       //console.log("playing anim 2");
     }, [], this);
     this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
-      this.heartbeat3.repeat=-1;
+      this.heartbeat3;
       this.heartbeat3.hideOnComplete = false;
       this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
-<<<<<<< Updated upstream
-
-=======
-      
->>>>>>> Stashed changes
     }, [], this);
   }
 
@@ -1182,7 +1197,7 @@ class Play extends Phaser.Scene {
       console.log("starting bathroomScene");
       this.scene.start("bathroomScene");
     }else{
-      this.scene.start("endCutscene");
+      this.scene.start("endScene");
     }
   }
   //#endregion
@@ -1241,6 +1256,9 @@ class Play extends Phaser.Scene {
       onComplete: this.nextSceneAction,
       //onComplete: //GO TO NEXT SCENE
     });
+    if(!this.level){
+      this.playOneShot('doorOpenClose');
+    }
   }
 
 
