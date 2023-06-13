@@ -180,7 +180,7 @@ class Graph {
         matrix += rowValues.trim() + "\n";
       }
   
-      console.log(matrix);
+      //(matrix);
     }
     
       
