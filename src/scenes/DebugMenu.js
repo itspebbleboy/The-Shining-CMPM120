@@ -28,8 +28,8 @@ class DebugMenu extends Phaser.Scene {
         this.add.text(screen.center.x, screen.center.y-100, 'Escape', headerConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y+50,'created by Tatiana Lucero and Athena Patronas\ntheme cover created by Julian Rubinstein', subHeaderConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +600, 'space to return to regular menu', subHeaderConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y +200, '→ for hotel level', subHeaderConfig).setOrigin(0.5);
-        this.add.text(screen.center.x, screen.center.y +300, '← for hedge level', subHeaderConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +200, '← for hotel level', subHeaderConfig).setOrigin(0.5);
+        this.add.text(screen.center.x, screen.center.y +300, '→ for hedge level', subHeaderConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +400, '↑ for bathroom cutscene', subHeaderConfig).setOrigin(0.5);
         
         this.add.text(screen.center.x, screen.center.y +500, '↓ for axe cutscene', subHeaderConfig).setOrigin(0.5);
