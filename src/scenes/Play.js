@@ -339,6 +339,32 @@ class Play extends Phaser.Scene {
   }
 
   create(){    
+    //#region << BEG SKY FOR HELP ON THIS >>
+    /*
+    if(this.level){
+      this.emitter = this.add.particles( 0 , 0 ,'snow', {
+        x: screen.width / 2,
+        y: 0,
+        lifespan: { min: 8000, max: 10000 },
+        emitZone: {
+          source: new Phaser.Geom.Rectangle(0, 0, screen.width, 30),
+          type: 'random',
+          quantity: 70,
+        },
+        speedY: { min: 20, max: 40 },
+        speedX: { min: -10, max: 10 },
+        accelerationY: { min: 10, max: 20 },
+        scale: { random: [0.2, 1] },
+        gravityY: 10,
+        frequency: 10,
+        //depth: 50,
+        active: true,
+      });
+      this.add.existing(this.emitter);      
+    }
+    this.add.image(screen.topMid.x, screen.topMid.y, 'snow').setDepth(50);
+    */
+    //#endregion
     //#region << ANIMS >>
     this.gameover = this.anims.create({
       key: 'qte',   // animation to impose qte pressure on player, upon complete game ends
@@ -468,7 +494,11 @@ class Play extends Phaser.Scene {
     
     this.startNextDialogue();
 
-    this.graph.printGraphAsMatrix(this.playerConfig.node);
+    //this.graph.printGraphAsMatrix(this.playerConfig.node);
+    if(this.level){
+      this.emitter.start();
+      console.log(this.emitter);
+    }
   }
 
   update(){
@@ -748,11 +778,9 @@ class Play extends Phaser.Scene {
       const index = newQueue.length - 1 - i;
       const row = node.index[0];
       const col = node.index[1];
-      //console.log(`Node index: row=${row}, col=${col}`);
   
       const x = col * this.minimapSize;
       const y = row * this.minimapSize;
-      //console.log(`Image position: x=${x}, y=${y}`);
       const alpha = 1 - index * alphaStep;
   
       // Create an image with the appropriate alpha and rotation
@@ -792,10 +820,7 @@ class Play extends Phaser.Scene {
   
       this.squareListMiniMap.push(image);
     }
-  }
-  
-  
-  
+  } 
   
   drawMap(){
     this.squareListMap = [];
@@ -808,7 +833,6 @@ class Play extends Phaser.Scene {
         if(currentNode.isVal()){
           const x = col * this.minimapSize;
           const y = row * this.minimapSize;
-          //console.log(`Image position: x=${x}, y=${y}`);
           const image = this.add.image(x, y, 'tan').setDepth(5);
           image.setOrigin(0, 0);
           image.setDisplaySize(this.minimapSize, this.minimapSize);
@@ -826,7 +850,6 @@ class Play extends Phaser.Scene {
     this.background = this.add.image(screen.center.x,screen.center.y, color).setDepth(depth.miniMapBackground);
     this.background.setVisible(true);
     this.background.setOrigin(0.5,0.5);
-    //console.log("creating background: " +color);
   }
   destroyMiniMap() {
     if (this.squareListMiniMap.length === 0) {
@@ -837,7 +860,6 @@ class Play extends Phaser.Scene {
     });
     this.squareListMiniMap = [];
     //this.destroyBackground();
-    //console.log("destroyed minimap background");
   }
   
   destroyMap() {
@@ -849,7 +871,6 @@ class Play extends Phaser.Scene {
     });
     this.squareListMap = [];
     //this.destroyBackground();
-    //console.log("destroyed map background");
   }
 
   destroyBackground(){
@@ -1035,55 +1056,49 @@ class Play extends Phaser.Scene {
     this.sfx[key].play();
     console.log("Playing " + key + " " + this.sfx[key].isPlaying);
   }
+  //#region << CARDINAL DIRECTIONS >>
   changeCardinalDirection(currCardDirection, leftOrRight){
     //given the current cardinal direction & if the movement changes player's curr cardinal direction
     if(leftOrRight == 1){ //GOING RIGHT
         // if N -> E
         if(currCardDirection == this.CD.NORTH){
-            //console.log("EAST");
             this.playerConfig.cardDirec = this.CD.EAST;
         }
         // if E -> S
         if(currCardDirection == this.CD.EAST){
-            //console.log("SOUTH");
             this.playerConfig.cardDirec = this.CD.SOUTH;
         }
         // if S -> W
         if(currCardDirection == this.CD.SOUTH){
-            //console.log("WEST");
             this.playerConfig.cardDirec = this.CD.WEST;
         }
         // if W -> N
         if(currCardDirection == this.CD.WEST){
-            //console.log("NORTH");
             this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
     if(leftOrRight == 0){ //GOING LEFT
         // if N -> W
         if(currCardDirection == this.CD.NORTH){
-            //console.log("WEST");
             this.playerConfig.cardDirec = this.CD.WEST;
         }
         // if W -> S
         if(currCardDirection == this.CD.WEST){
-          //console.log("SOUTH");
           this.playerConfig.cardDirec = this.CD.SOUTH;
         }
         // if S -> E
         if(currCardDirection == this.CD.SOUTH){
-          //console.log("EAST");
           this.playerConfig.cardDirec = this.CD.EAST;
         }
         // if E -> N
         if(currCardDirection == this.CD.EAST){
-          //console.log("NORTH");
           this.playerConfig.cardDirec = this.CD.NORTH;
         }
     }
     this.updateCompassGrid(this.playerConfig.cardDirec, this.playerConfig.node.availableDirections());
   }
-
+  //#endregion
+  //#region << VISITATION QUEUE >>
   visitIncrementor(node) {
     const nodeIndex = node.getIndex();
   
@@ -1102,7 +1117,8 @@ class Play extends Phaser.Scene {
     this.restartAllDelayedCalls();
     //reset all delayed calls
   }
-
+  //#endregion
+  //#region << DELAYED CALL FUNCTIONS FOR DEATH ANIMATIONS >>
   restartAllDelayedCalls() {
     if(this.jackAnim0Timer) { this.jackAnim0Timer.remove(); }
     if(this.jackAnim1Timer) { this.jackAnim1Timer.remove(); }
@@ -1130,7 +1146,6 @@ class Play extends Phaser.Scene {
       this.heartbeat2.repeat=-1;
       this.heartbeat2.hideOnComplete = false;
       this.heartBeat2 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2').setDepth(depth.deathAnims);
-      //console.log("playing anim 2");
     }, [], this);
     this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
       this.heartbeat3;
@@ -1166,6 +1181,7 @@ class Play extends Phaser.Scene {
     }
   }
   //#endregion
+  //#endregion
   //#region << SCENE TRANSITION LOGIC >>
   nextSceneCalls(){
     this.eye.destroy(); // hide the current eye
@@ -1180,10 +1196,10 @@ class Play extends Phaser.Scene {
     this.cutsceneHelper.startQTE(1, this.nextSceneLogic, this);
 
   }
-  nextSceneLogic = () =>{
+  nextSceneLogic = () =>{ // calls the fade image for the next scene
     this.time.delayedCall(2000, this.fadeInImage, [1000],this);
   }
-  nextSceneAction= () =>{
+  nextSceneAction= () =>{ 
     if(!this.level){
       console.log("starting bathroomScene");
       this.scene.start("bathroomScene");
@@ -1227,7 +1243,6 @@ class Play extends Phaser.Scene {
         });
       }
     };
-  
     // Start the blinking animation
     blinkAnimation();
   }
@@ -1251,7 +1266,6 @@ class Play extends Phaser.Scene {
       this.playOneShot('doorOpenClose');
     }
   }
-
 
   addCharacter(dialogue) {
     this.currentTextIndex++;
@@ -1289,9 +1303,4 @@ class Play extends Phaser.Scene {
   }
   
   //#endregion
-
-  snowEmitter(){
-    
-  }
-
 }

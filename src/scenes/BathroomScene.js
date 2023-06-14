@@ -6,6 +6,7 @@ class BathroomScene extends Phaser.Scene {
     }
 
     preload(){
+        //#region << BEEFY LOAD INS >>
         this.load.atlas('shining_atlas', './assets/shining.png', './assets/shining.json');  // holds the closing eye animation -> might add more to json later one who knows
         this.load.image('background', './assets/ui/brownBackground.png');
         this.load.image('textBox', './assets/ui/textBox.png');
@@ -25,6 +26,7 @@ class BathroomScene extends Phaser.Scene {
         this.load.audio('doorLocked', './assets/audio/doorLocked.mp3');
         this.load.audio('windowOpen', './assets/audio/windowOpen.mp3');
         this.load.audio('doorSMASH', './assets/audio/doorSMASH.mp3');
+        //#endregion
 
     }create(){
         this.anims.create({

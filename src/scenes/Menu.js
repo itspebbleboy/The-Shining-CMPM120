@@ -30,7 +30,6 @@ class Menu extends Phaser.Scene {
         this.add.text(screen.center.x, screen.center.y+50,'created by Tatiana Lucero and Athena Patronas\ntheme cover by Julian Rubinstein', subHeaderConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +600, 'press space to start', subHeaderConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +800, '↑ for scene select (for graders)', subHeaderConfig).setOrigin(0.5);
-        //console.log("level: " +levelHotel.num);
         if(!this.music){
         //this.music = this.sound.add('theme').play({loop: true});
         }
