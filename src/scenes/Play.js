@@ -60,6 +60,8 @@ class Play extends Phaser.Scene {
     this.deathDifferenceDuration= data.deathDifferenceDuration;
     this.map = data.map;
     this.starting = data.starting;
+    this.starting.x = data.starting.x;
+    this.starting.y = data.starting.y;
     this.dialogueList = data.dialogueList;
     this.levelStartText = data.levelStartText;
     this.levelEndText = data.levelEndText;
@@ -397,7 +399,7 @@ class Play extends Phaser.Scene {
         end: 2
       }),
       yoyo: true,
-      frameRate: 2.25,
+      frameRate: 2.2,
       repeat: -1
     });
 
@@ -409,7 +411,7 @@ class Play extends Phaser.Scene {
         end: 4
       }),
       yoyo: true,
-      frameRate: 2.25,
+      frameRate: 2.2,
       repeat: -1
     });
 
@@ -451,11 +453,8 @@ class Play extends Phaser.Scene {
 
     //#region << PLAYER CONFIG FOR MATRIX >>
     this.playerConfig={
-      node: this.graph.getNode(31,24), //set player's location
+      node: this.graph.getNode(this.starting.x,this.starting.y), //set player's location
       cardDirec: this.CD.NORTH, //cardinal direction
-    }
-    if(this.level){
-      this.playerConfig.node= this.graph.getNode(31,15);
     }
     //#endregion
 
@@ -496,8 +495,8 @@ class Play extends Phaser.Scene {
 
     //this.graph.printGraphAsMatrix(this.playerConfig.node);
     if(this.level){
-      this.emitter.start();
-      console.log(this.emitter);
+      //this.emitter.start();
+      //console.log(this.emitter);
     }
   }
 
@@ -1031,7 +1030,7 @@ class Play extends Phaser.Scene {
 
   //#region << PLAYER HELPER FUNCTIONS >>
   movePlayer(){
-    this.playerConfig.node=this.graph.getNeighborInDirection(this.playerConfig.node, this.playerConfig.cardDirec)
+    this.playerConfig.node=this.graph.getNeighborInDirection(this.playerConfig.node, this.playerConfig.cardDirec);
     this.graph.printGraphAsMatrix(this.playerConfig.node);
     // Add the newly moved node to the back of the queue
     this.queue.push(this.playerConfig.node);
@@ -1152,9 +1151,17 @@ class Play extends Phaser.Scene {
       this.heartbeat3.hideOnComplete = false;
       this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
       this.failed = this.time.delayedCall(5000, ()=>{
-        this.add.text(screen.center.x, screen.center.y, "You Failed", defaultHeaderStyle).setOrigin(0.5,0.5).setDepth(10);
-        this.leave = this.time.delayedCall(1000, ()=>{
-          
+        this.failText = this.add.text(screen.center.x, screen.center.y, "You Failed", defaultHeaderStyle).setOrigin(0.5,0.5).setDepth(10);
+        this.teleport = this.time.delayedCall(1000, ()=>{
+          this.playerConfig.node = this.graph.getNode(this.starting.x,this.starting.y);
+          this.playerConfig.cardDirec = this.CD.NORTH;
+          this.currentGameState = this.gameState.ROOMS;
+          this.restartAllDelayedCalls();
+          //this.queue=[];
+          this.memoryQueue=[];
+          this.movePlayer();
+          this.displayImage();
+          this.failText.destroy();
         });
       });
     }, [], this);

@@ -150,7 +150,7 @@ let levelHedge = {
   ],
   starting: {
     x: 31,
-    y: 24
+    y: 15
   },
   dialogueList : [
   ],
