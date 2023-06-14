@@ -1,4 +1,36 @@
-﻿// Define the configuration object
+﻿/* CMPM 120 The Greatest Game of All Time: Athena Patronas and Tatiana Lucero
+
+  Debug Menu How-To:
+    Our game is composed of several scenes, and to make it easier for the grader to 
+    go back and check scenes without playing through the game again we have made a 
+    seperate menu in order to start the game at different points. All ya gotta do is 
+    press up on the main menu.
+
+  5 Major Phaser Components we used:
+
+    1. Animation Manager: 
+          Created animations in the axe cutscene to display the axe cutting through the door, 
+          to make the eye blink when moving forward thorugh the hotel/maze, and to create game over visual. 
+    2. Tween Manager: 
+          Used to move the hotel/hedge maze eye UI to the left and right of the screen based 
+          based off prior location.
+    3. Timers:
+          We wanted to alert the player that the enemy AI was nearby, so if a player lurked around the same 
+          nodes for a certain duration of time the animation would start playing, and they would have to enter a new 
+          node not in their queue in order to lose the enemy and call off the timers. 
+    4. Text Objects: 
+          Tatiana created a dialouge system that [ tati exaplain ur dialouge system]
+    5. Particle Effects:
+          We made it snow in the outside hedge portion of the game :)) 
+
+    Other Cool Features:
+    - hedge/hotel configs
+    - qte implementation
+    - 
+
+
+*/
+// Define the configuration object
 const config = {
     type: Phaser.CANVAS,
     parent: 'phaser-example',
@@ -10,7 +42,9 @@ const config = {
   // Create a new Phaser game
 const game = new Phaser.Game(config);
 
+//#region << KEY DEFINES >>
 let keyW, keyA, keyS, keyD, keyM, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER, keySPACE;
+//#endregion
 
 //#region << LEVEL CONFIG >>
 
@@ -189,6 +223,7 @@ let depth = {
 
 //#endregion
 
+//#region << COLOR CODES >>
 let color_pal = {
   red: "#b04640",
   brown: "#211309",
@@ -202,7 +237,7 @@ let color_pal = {
     return parseInt(this[colorName].replace("#", "0x"));
   }
 };
-
+//#endregion
 
 //#region [[ TEXT STYLES ]] =============================================================
 // header config

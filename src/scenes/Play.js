@@ -51,7 +51,8 @@ class Play extends Phaser.Scene {
 
     //#endregion
   }
-
+  
+  //#region << INIT DATA TO PASS TO OTHER SCENES/FUNCTIONS >>
   init(data){
     this.level = data.num;
     this.jackAnimTimerDuration = data.jackAnimTimerDuration;
@@ -90,6 +91,7 @@ class Play extends Phaser.Scene {
     this.currentIndex = 0; // Index of the current dialogue in the dialogue list
     this.endActive = false;
   }
+  //#endregion
 
   preload(){
 
@@ -130,7 +132,7 @@ class Play extends Phaser.Scene {
       //#endregion
       //#region << HALLWAY VAR >>
       this.load.image('hallwayRoomDoor','./assets/hotel/hallwayRoomDoor.png');
-      this.load.image('hallway0', './assets/hotel/hallway0.png');
+      this.load.image('hallway0', './assets/hotel/hallway0.png'); 
       this.load.image('hallway1', './assets/hotel/hallway1.png');
       this.load.image('hallway2', './assets/hotel/hallway2.png');
       this.load.image('hallway3', './assets/hotel/hallway3.png');
@@ -141,21 +143,6 @@ class Play extends Phaser.Scene {
       this.load.image('hallway8', './assets/hotel/hallway8.png');
       this.load.image('hallway9', './assets/hotel/hallway9.png');
       //#endregion
-      //#region << MAP ELEMENTS >>
-      this.load.image('brownBackground', './assets/ui/brownBackground.png');
-      this.load.image('blue', './assets/ui/blueMap.png');
-      this.load.image('tan', './assets/ui/tanSmall.png');
-      this.load.image('tanBackground', './assets/ui/tanBackground.png');
-      this.load.image('rightArrow', './assets/ui/rightArrow.png');
-      this.load.image('rightArrow', './assets/ui/rightArrow.png');
-      this.load.image('leftArrow', './assets/ui/leftArrow.png');
-      this.load.image('spaceButton', './assets/ui/spaceButton.png');
-      this.load.image('forward', './assets/ui/forward.png');
-      this.load.image('forwardx2', './assets/ui/forwardx2.png');
-      this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
-      this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
-      //#endregion
-
       //#region << HEDGE ELEMENTS >>
       this.load.image('hedgeDeadEnd0', './assets/hedge/hedgeDeadEnd0.png');
       this.load.image('hedgeDeadEnd1','./assets/hedge/hedgeDeadEnd1.png');
@@ -172,22 +159,15 @@ class Play extends Phaser.Scene {
       this.load.image('snow','./assets/hedge/snow.png');
       //#endregion
       //#region << MAP ELEMENTS >>
-      this.load.image('brownBackground', './assets/ui/brownBackground.png');
-      this.load.image('blue', './assets/ui/blueMap.png');
-      this.load.image('tan', './assets/ui/tanSmall.png');
-      this.load.image('tanBackground', './assets/ui/tanBackground.png');
-      this.load.image('rightArrow', './assets/ui/rightArrow.png');
-      this.load.image('rightArrow', './assets/ui/rightArrow.png');
-      this.load.image('leftArrow', './assets/ui/leftArrow.png');
-      this.load.image('spaceButton', './assets/ui/spaceButton.png');
-      this.load.image('forward', './assets/ui/forward.png');
-      this.load.image('forwardx2', './assets/ui/forwardx2.png');
-      this.load.image('mapArrowBlue', './assets/ui/mapArrowBlue.png');
-      this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png');
+      this.load.image('brownBackground', './assets/ui/brownBackground.png');  // background for layout
+      this.load.image('blue', './assets/ui/blueMap.png'); // player visited location for mini map
+      this.load.image('tan', './assets/ui/tanSmall.png'); // fill for minimap
+      this.load.image('tanBackground', './assets/ui/tanBackground.png'); // background for recently visited map
+      this.load.image('mapArrowDot', './assets/ui/mapArrowBlueDot.png'); // players current location on map
       //#endregion
-    
-      // << UI ELEMENTS >>
+      //#region << UI ELEMENTS >>
       this.load.image('textBox', './assets/ui/textBox.png');
+      //#endregion
     //#endregion
     //#region << LOADING AUDIO >>
     this.load.audio('creak0','./assets/audio/creak0.mp3'); // creak 0
@@ -207,7 +187,7 @@ class Play extends Phaser.Scene {
     //this.load.audio(); // doorKnob
 
     //this.scene.sound.add();
-
+    //#endregion
     //#region >> EYE STATE MACHINE >>
     this.eyeState = { //state machine for eye orientation
       LEFT: {
@@ -223,7 +203,6 @@ class Play extends Phaser.Scene {
             this.movementSFX();
             this.moveEyeRight();
             this.eyeState.FORWARD.enter();
-            // NEED TO ADD : change eye state & move back to middle & update state to forward
           }
         },
       },
@@ -360,10 +339,9 @@ class Play extends Phaser.Scene {
   }
 
   create(){    
-    this.snowEmitter();
     //#region << ANIMS >>
     this.gameover = this.anims.create({
-      key: 'qte',
+      key: 'qte',   // animation to impose qte pressure on player, upon complete game ends
       frames: this.anims.generateFrameNames('shining_atlas', {
           prefix: 'jack',
           start: 1,
@@ -372,7 +350,7 @@ class Play extends Phaser.Scene {
       frameRate: 1
       });
 
-    this.anims.create({
+    this.anims.create({ // animation for the eye to blink
       key: 'blink182',
       frames: this.anims.generateFrameNames('shining_atlas', { 
           prefix: "pupil",
@@ -384,8 +362,7 @@ class Play extends Phaser.Scene {
       yoyo:true,
       hideOnComplete: true,
     });
-
-    // DEATH ANIMATIONS / JACK IS NEAR
+    //#region << DEATH ANIMATIONS / JACK IS NEAR >>
     this.heartbeat1= this.anims.create({
       key: 'heartbeat1',
       frames: this.anims.generateFrameNames('shining_atlas', {
@@ -420,14 +397,15 @@ class Play extends Phaser.Scene {
       frameRate: 1.5,
       hideOnComplete: false,
     });
-
+    //#endregion
     //#endregion
 
     this.graph = new Graph();
     this.graph.buildGraph(this.map, this.level);
     this.graph.printGraph();
     this.cutsceneHelper = new CutsceneHelper(this.gameover, this);
-    //#region << IMAGES FOR TESTING >>
+
+    //#region << SPAWNING THE EYE >>
     this.eye = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil1').setScale(.75);
     this.pupil = this.add.image(screen.center.x, screen.center.y, 'shining_atlas', 'pupil_alone').setScale(.75);
 
@@ -445,6 +423,7 @@ class Play extends Phaser.Scene {
       this.cutsceneHelper.createBlinkingText(this.levelStartText, 3000, this);
     }
 
+    //#region << PLAYER CONFIG FOR MATRIX >>
     this.playerConfig={
       node: this.graph.getNode(31,24), //set player's location
       cardDirec: this.CD.NORTH, //cardinal direction
@@ -452,6 +431,8 @@ class Play extends Phaser.Scene {
     if(this.level){
       this.playerConfig.node= this.graph.getNode(31,15);
     }
+    //#endregion
+
     // Add delayed calls to the list
     //this.stopAllDelayedCalls();
     this.restartAllDelayedCalls();
@@ -459,6 +440,7 @@ class Play extends Phaser.Scene {
     this.movePlayer();
     this.displayImage(this.playerConfig.cardDirec);
     
+    //#region << TO MOVE DIALOUGE ALONG >>
     this.input.keyboard.on("keydown-SHIFT", () => {
       if (!this.textCrawlActive) {
         if (this.currentIndex === this.dialogueList.length - 1) {
@@ -474,7 +456,7 @@ class Play extends Phaser.Scene {
         }
       }
     });
-    
+   
     this.input.keyboard.on("keydown-SHIFT", () => {
       this.fastForward = true;
     });
@@ -482,7 +464,8 @@ class Play extends Phaser.Scene {
     this.input.keyboard.on("keyup-SHIFT", () => {
       this.fastForward = false;
     });
-
+    //#endregion
+    
     this.startNextDialogue();
 
     this.graph.printGraphAsMatrix(this.playerConfig.node);
@@ -494,8 +477,8 @@ class Play extends Phaser.Scene {
     if (this.mapsActive || this.endActive) {// If the maps are active, prevent other inputs from affecting the scene
       return;
     }
-    this.currEyeState.update();
-    this.readInput();
+    this.currEyeState.update(); // if the eye has moved update it
+    this.readInput(); // if the player has gave input update it
 
     //console.log("heartbeat1 repeat:" + this.heartbeat1.repeat + ", heatbeat1 hideOnComplete: " + this.heartbeat1.hideOnComplete);
   }
@@ -591,7 +574,7 @@ class Play extends Phaser.Scene {
   //#endregion
   
   //#region << INPUT READERS >>
-  space() {//returns true if space bar
+  space() {//returns true if space bar is pressed
     if (Phaser.Input.Keyboard.JustDown(keySPACE) && !this.stateCooldown/*&& this.spaceCooldownEvent.getElapsed() === 0*/) {
       return true;
     }
@@ -620,19 +603,18 @@ class Play extends Phaser.Scene {
       this.movePlayer();
       this.movementSFX();
       this.displayImage();
-      //MOVE EYE FORWARD FYUNCTION TRHAT DOES JIGGLE ANIMATION CALL GO HEREREJIEWRJUBHIKRUHJHUIJALR
-      this.moveEyeForward();
+      this.moveEyeForward();  // eye blinks
     }
 
     if(this.currEyeState == this.eyeState.LEFT && keyRIGHT.isDown) //if left & "->" go forward
     {
-      this.moveEyeRight(); //update sprite
+      this.moveEyeRight(); // move eye to the right
       this.eyeState.FORWARD.enter(); //update state
     }
     
     if(this.currEyeState == this.eyeState.RIGHT && keyLEFT.isDown) //if right & "<-" go forward
     {
-      this.moveEyeLeft(); //update sprite
+      this.moveEyeLeft(); //move eye to the left 
       this.eyeState.FORWARD.enter(); //update state
     }
   }
@@ -643,7 +625,7 @@ class Play extends Phaser.Scene {
     if(!this.level){this.displayHotelImage();}
     else{ this.displayHedgeImage();}
   }
-
+  //#region << HOTEL DISPLAY IMAGE >>
   displayHotelImage(){
     /* EMPTY: 0,
     INTER: 1,
@@ -668,38 +650,31 @@ class Play extends Phaser.Scene {
     this.currRoomType = this.graph.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
     if (this.currImage) {
       this.prevImage = this.currImage; 
-    }
-    //console.log("currRoomType: " + this.currRoomType);
+    }  
     
-    if (this.currRoomType == null || this.currRoomType == 0) {
-      //console.log("Creating 'door' image");
+    if (this.currRoomType == null || this.currRoomType == 0) {  // if player is at a 0/null node show a door
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'door');
     }
     
-    else if (this.currRoomType == 1) {
-      //console.log("Creating 'intersection' image");
+    else if (this.currRoomType == 1) {  // if player is a 1 node show intersection
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'intersection');
     }
     
-    else if (this.currRoomType > 1 && this.currRoomType < 6) {
-      //console.log("Creating 'deadend' image "+ 'deadend' + (this.currRoomType - 2).toString());
+    else if (this.currRoomType > 1 && this.currRoomType < 6) {  // if player is at a 1-6 node show random deadend variant
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadend' + (this.currRoomType - 2).toString());
     }
     
     else if (this.currRoomType > 5 && this.currRoomType < 16) {
       if (this.playerConfig.node.roomType === 1) {
-        if (this.currRoomType > 5 && this.currRoomType < 11) {
-          //console.log("Creating 'hallInter' image: "+'hallInter' + (this.currRoomType - 6).toString());
+        if (this.currRoomType > 5 && this.currRoomType < 11) {  // if player right before an intersection show hallway variant w/intersection
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallInter' + (this.currRoomType - 6).toString());
-        } else {
-          //console.log("Creating 'deadEndInter' image");
+        } else {  // otherwise show a deadend intersection
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'deadendInter');
         }
-      } else {
-        //console.log("Creating 'hallway' image: ");
+      } else {  // if not an intersection show random hallway variant
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallway' + (this.currRoomType - 6).toString());
       }
-    }else if(this.currRoomType == 16){
+    }else if(this.currRoomType == 16){  // if you're at your room's hallway show special door
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hallwayRoomDoor');
       this.gameState.END.enter();
     }
@@ -708,32 +683,30 @@ class Play extends Phaser.Scene {
       this.prevImage.destroy();
     }
   }
-
+  //#endregion
+  //#region << DISPLAY HEDGE HALLS AND VARIANTS >>
   displayHedgeImage(){
     this.currRoomType = this.graph.getNeighborRoomType(this.playerConfig.node, this.playerConfig.cardDirec);
     if (this.currImage) {
       this.prevImage = this.currImage; 
     }
-    if (this.currRoomType == null || this.currRoomType == 0) {
-      //console.log("Creating 'door' image");
+    if (this.currRoomType == null || this.currRoomType == 0) {  // if node is null or 0 show a hedge wall
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeWall');
     }
-    else if (this.currRoomType == 1) {
-      //console.log("Creating 'intersection' image");
+    else if (this.currRoomType == 1) {  // if node is 1 show intersection
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeIntersection');
     }
-    else if (this.currRoomType > 1 && this.currRoomType < 5) {
-      //console.log("Creating 'deadend' image "+ 'deadend' + (this.currRoomType - 2).toString());
+    else if (this.currRoomType > 1 && this.currRoomType < 5) {  // otherwise show deadend
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeDeadEnd' + (this.currRoomType - 2).toString());
       console.log(this.currImage.key);
     }else if (this.currRoomType > 5 && this.currRoomType < 9) {
-      if (this.playerConfig.node.roomType === 1) {
+      if (this.playerConfig.node.roomType === 1) {  // if at node before an intersection show hallway variant
           this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallInter' + (this.currRoomType - 6).toString());
           console.log(this.currImage.key);
-      }else {
+      }else { // otherwise its a hallway and show random hallway variant
         this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeHallway'+ (this.currRoomType - 6).toString());
       }
-    }else if(this.currRoomType == 16){
+    }else if(this.currRoomType == 16){  // or we've reached the end of the game
       this.currImage = this.add.image(screen.center.x, screen.center.y, 'hedgeEnd');
       this.gameState.END.enter();
     }
@@ -742,6 +715,7 @@ class Play extends Phaser.Scene {
       this.prevImage.destroy();
     }
   }
+  //#endregion
   //#endregion
 
   //#region << MAPS >>

@@ -32,8 +32,6 @@ class DebugMenu extends Phaser.Scene {
         this.add.text(screen.center.x, screen.center.y +300, '→ for hedge level', subHeaderConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +400, '↑ for bathroom cutscene', subHeaderConfig).setOrigin(0.5);
         
-        this.add.text(screen.center.x, screen.center.y +500, '↓ for axe cutscene', subHeaderConfig).setOrigin(0.5);
-        
         this.add.text(screen.center.x, screen.center.y +800, 'you only get to see da end cutscene \nif you escape hedge maze tho >:(', subHeaderConfig).setOrigin(0.5);
         //console.log("level: " +levelHotel.num);
     }
