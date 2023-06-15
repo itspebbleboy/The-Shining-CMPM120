@@ -124,6 +124,7 @@ let levelHotel = {
     "now press it twice to remember the layout of the floor,",
     "time isn't paused when you're recalling the layout of the hotel, so be cautious,",
     "when it's a matter of life and death, there is no time to stall.",
+    "if it gets too scary you can exit to the menu w/ ESC",
     "he might have already found a way to escape so make sure you don't frequent around an area for too long.",
     "enough with the tutorial.",
   ],

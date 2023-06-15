@@ -342,32 +342,7 @@ class Play extends Phaser.Scene {
   }
 
   create(){    
-    //#region << BEG SKY FOR HELP ON THIS >>
-    /*
-    if(this.level){
-      this.emitter = this.add.particles( 0 , 0 ,'snow', {
-        x: screen.width / 2,
-        y: 0,
-        lifespan: { min: 8000, max: 10000 },
-        emitZone: {
-          source: new Phaser.Geom.Rectangle(0, 0, screen.width, 30),
-          type: 'random',
-          quantity: 70,
-        },
-        speedY: { min: 20, max: 40 },
-        speedX: { min: -10, max: 10 },
-        accelerationY: { min: 10, max: 20 },
-        scale: { random: [0.2, 1] },
-        gravityY: 10,
-        frequency: 10,
-        //depth: 50,
-        active: true,
-      });
-      this.add.existing(this.emitter);      
-    }
-    this.add.image(screen.topMid.x, screen.topMid.y, 'snow').setDepth(50);
-    */
-    //#endregion
+
     //#region << ANIMS >>
     this.gameover = this.anims.create({
       key: 'qte',   // animation to impose qte pressure on player, upon complete game ends
@@ -509,7 +484,9 @@ class Play extends Phaser.Scene {
     }
     this.currEyeState.update(); // if the eye has moved update it
     this.readInput(); // if the player has gave input update it
-
+    if (Phaser.Input.Keyboard.JustDown(keyESC)) {
+      this.scene.start("menuScene");
+    }
     //console.log("heartbeat1 repeat:" + this.heartbeat1.repeat + ", heatbeat1 hideOnComplete: " + this.heartbeat1.hideOnComplete);
   }
 

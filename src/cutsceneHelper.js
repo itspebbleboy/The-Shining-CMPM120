@@ -73,7 +73,7 @@ class CutsceneHelper {
         this.gameoverText = scene.add.text(screen.center.x, screen.center.y, "YOU FAILED" , defaultHeaderStyle).setDepth(10).setOrigin(0.5,0.5);
       });
       this.scene.time.delayedCall(5000, () => {
-        this.scene.scene.start("menuScene");
+        this.scene.scene.start(this.scene.key);
       });
     }
     //#endregion
