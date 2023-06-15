@@ -1126,17 +1126,14 @@ class Play extends Phaser.Scene {
     if(this.failed){this.failed.remove();}
  
     if(this.heartBeat1 !=  null && this.heartBeat1.stop) {
-      //this.heartBeat1.stop();
-      this.anims.remove('heartbeat1');
+      this.heartBeat1.stop();
       this.heartBeat1.visible = false;
       if(this.heartBeatAudio){ this.sound.removeByKey('heartBeat');  }
     }if(this.heartBeat2 != null && this.heartBeat2.stop){
-      //this.heartBeat2.stop();
-      this.anims.remove('heartbeat2');
+      this.heartBeat2.stop();
       this.heartBeat2.visible = false;
     }if(this.heartBeat3 != null && this.heartBeat3.stop){
-      //this.heartBeat3.stop();
-      this.anims.remove('heartbeat3');
+      this.heartBeat3.stop();
       this.heartBeat3.visible = false;
     }
     this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
