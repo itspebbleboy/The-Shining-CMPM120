@@ -20,9 +20,7 @@
           node not in their queue in order to lose the enemy and call off the timers. 
     4. Text Objects: 
           Tatiana created a dialouge system that [ tati exaplain ur dialouge system]
-    5. Particle Effects:
-          We made it snow in the outside hedge portion of the game :)) 
-
+   
     Supreme Coolness:
       sorry we're actually pretty proud of the mechanics & systems + algorithms 
       we implemented for this game so here's an overly long explanation
