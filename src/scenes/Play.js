@@ -66,6 +66,7 @@ class Play extends Phaser.Scene {
     this.levelStartText = data.levelStartText;
     this.levelEndText = data.levelEndText;
     this.playerQueueLength = data.playerQueueLength;
+    this.memQueueLength = data.memQueueLength;
     
     this.stateCooldown = false; // Cooldown state
     this.eyeDelta = 575;
@@ -1109,7 +1110,7 @@ class Play extends Phaser.Scene {
       this.visitedNodes.add(nodeIndex);
       this.memoryQueue.push(nodeIndex); 
     }
-    if (this.memoryQueue.length > 10) {
+    if (this.memoryQueue.length > this.memQueueLength) {
       this.memoryQueue.shift(); // Remove the oldest element from the queue
     }
     this.visitCounter++;

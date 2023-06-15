@@ -22,11 +22,32 @@
           Tatiana created a dialouge system that [ tati exaplain ur dialouge system]
    
     Supreme Coolness:
-    - hedge/hotel configs
-    - graph class
-    - qte implementation
-    - 
-
+      sorry we're actually pretty proud of the mechanics & systems + algorithms 
+      we implemented for this game so here's an overly long explanation
+    << REUSING THE PLAY SCENE >>
+      the play scene is fed a config when starting it to create diff levels (currently there's 2, the hotel & hedge maze) 
+      which includes a map used in the graph class construction (only thing that has to change is adding a displayImage function 
+      if you'd like the change how the level looks) the config has the power to alter the map of the graph, the player's starting point 
+      (that they'll be teleported to if they die), aggression of the AI in terms of time and the amount of nodes that will be remembered,
+      the starting level text, & ending level text, and the amount of distance shown as recently traveled on the map. 
+      TLDR: the playScene is reused thanks to a level config and cool coding
+    << ENEMY AI >>
+      you may notice when you play that there's the illusion of the enemy ai but it isn't random, it utilizes a timer 
+      that's constantly ticking & a memoryQueue. If you enter a node that isn't part of this memory queue, 
+      the timers get reset and the node gets added into the memory queue, when at it's limit( which is determined by the level config) 
+      the oldest entry gets popped off the queue. 
+      TLDR: if you frequent around an area for too long, he'll getcha
+    << CUTSCENE HELPER >>
+      ^the cutscene scenes are basically comprised of a linked list of dialouge to iterate through or a qte if wanted, 
+      along w/ scripted sound effects & other events due to the cutsceneHelper. When calling the cutsceneHelpers' startQTE or iterateThroughDialogue function 
+      you feed it a function to call on completion, or for the QTE's case, on a success, which allows the cutscene scenes to have that linked list structure
+    << DIFFERENCES BETWEEN HOTEL & HEDGE >>
+      cool design choices that might not be noticeable on first playthrough:
+      - you have access to the full map in the hotel, but your memory ( the amount of blue nodes visible ) isn't that good, however in the hedge maze
+      we take that away from the player, yet give them a much better memory so they can construct the map themselves 
+      (thematic explanation: Wendy would be familiar with the layout of the hotel while Danny's quite literally in a maze yet can see the snow on the ground)
+    << BLUE INDICATOR AT THE TOP OF THE SCREEN >> 
+      - i had to use rotation matrixes for that to work so that's pretty cool
 
 */
 //game config
@@ -107,6 +128,7 @@ let levelHotel = {
     'OPEN THE DOOR'
   ],
   playerQueueLength: 10,
+  memQueueLength: 10,
 }
 let levelHedge = {
   num: 1,
@@ -159,7 +181,8 @@ let levelHedge = {
   levelEndText: [
     'RUN TO THE SNOWCAT'
   ],
-  playerQueueLength: 60
+  playerQueueLength: 60,
+  memQueueLength: 15,
 }
 //#endregion
 
