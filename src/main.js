@@ -25,12 +25,13 @@
 
     Other Cool Features:
     - hedge/hotel configs
+    - graph class
     - qte implementation
     - 
 
 
 */
-// Define the configuration object
+//game config
 const config = {
     type: Phaser.CANVAS,
     parent: 'phaser-example',
@@ -42,7 +43,7 @@ const config = {
   // Create a new Phaser game
 const game = new Phaser.Game(config);
 
-//#region << KEY DEFINES >>
+//#region << KEY DEFINITIONS >>
 let keyW, keyA, keyS, keyD, keyM, keyE, keyF, keyZ, keyX, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyESC, keyENTER, keySPACE;
 //#endregion
 
@@ -220,7 +221,6 @@ let depth = {
   deathAnims: 8,
   textBox: 9,
 }
-
 //#endregion
 
 //#region << COLOR CODES >>

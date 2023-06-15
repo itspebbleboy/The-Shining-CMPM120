@@ -1193,7 +1193,7 @@ class Play extends Phaser.Scene {
   nextSceneCalls(){
     this.eye.destroy(); // hide the current eye
     this.pupil.destroy(); // hide the current pupil
-    if(this.heartBeat) { this.heartBeat.destroy(); }
+    if(this.heartBeat) { this.heartBeat.stop(); }
     if(this.textBox) {this.textBox.destroy(); this.textCrawl.destroy();}
     this.cutsceneHelper.createBlinkingText(this.levelEndText, 2000, this, screen.center.x, screen.center.y-300);
     if(!this.level){
