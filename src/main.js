@@ -23,7 +23,7 @@
     5. Particle Effects:
           We made it snow in the outside hedge portion of the game :)) 
 
-    Other Cool Features:
+    Supreme Coolness:
     - hedge/hotel configs
     - graph class
     - qte implementation

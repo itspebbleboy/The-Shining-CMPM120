@@ -1127,7 +1127,7 @@ class Play extends Phaser.Scene {
     if(this.heartBeat1 !=  null && this.heartBeat1.stop) {
       this.heartBeat1.stop();
       this.heartBeat1.visible = false;
-      this.heartBeat1.stop();
+      if(this.heartBeatAudio){ this.sound.removeByKey('heartBeat');  }
     }if(this.heartBeat2 != null && this.heartBeat2.stop){
       this.heartBeat2.stop();
       this.heartBeat2.visible = false;
@@ -1139,7 +1139,7 @@ class Play extends Phaser.Scene {
       this.heartbeat1.repeat=-1;
       this.heartbeat1.hideOnComplete = false;
       this.heartBeat1 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1').setDepth(depth.deathAnims); // play blink
-      this.heartBeat = this.sound.add('heartBeat').play({loop: true});
+      this.heartBeatAudio = this.sound.add('heartBeat').play({loop: true});
     }, [], this);
     this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
       this.heartbeat2.repeat=-1;
@@ -1193,7 +1193,7 @@ class Play extends Phaser.Scene {
   nextSceneCalls(){
     this.eye.destroy(); // hide the current eye
     this.pupil.destroy(); // hide the current pupil
-    if(this.heartBeat) { this.heartBeat.stop(); }
+    if(this.heartBeatAudio) { this.sound.removeByKey('heartBeat'); }
     if(this.textBox) {this.textBox.destroy(); this.textCrawl.destroy();}
     this.cutsceneHelper.createBlinkingText(this.levelEndText, 2000, this, screen.center.x, screen.center.y-300);
     if(!this.level){

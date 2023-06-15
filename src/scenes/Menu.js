@@ -31,7 +31,7 @@ class Menu extends Phaser.Scene {
         this.add.text(screen.center.x, screen.center.y +600, 'press space to start', subHeaderConfig).setOrigin(0.5);
         this.add.text(screen.center.x, screen.center.y +800, '↑ for scene select (for graders)', subHeaderConfig).setOrigin(0.5);
         if(!this.music){
-        //this.music = this.sound.add('theme').play({loop: true});
+        this.music = this.sound.add('theme').play({loop: true});
         }
     }
 
