@@ -391,7 +391,7 @@ class Play extends Phaser.Scene {
       hideOnComplete: true,
     });
     //#region << DEATH ANIMATIONS / JACK IS NEAR >>
-    this.heartbeat1= this.anims.create({
+    this.heartBeat1= this.anims.create({
       key: 'heartbeat1',
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
@@ -403,7 +403,7 @@ class Play extends Phaser.Scene {
       repeat: -1
     });
 
-    this.heartbeat2= this.anims.create({
+    this.heartBeat2= this.anims.create({
       key: 'heartbeat2',
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
@@ -415,7 +415,7 @@ class Play extends Phaser.Scene {
       repeat: -1
     });
 
-    this.heartbeat3= this.anims.create({
+    this.heartBeat3= this.anims.create({
       key: 'heartbeat3',
       frames: this.anims.generateFrameNames('shining_atlas', {
         prefix: 'jack',
@@ -1136,19 +1136,19 @@ class Play extends Phaser.Scene {
       this.heartBeat3.visible = false;
     }
     this.jackAnim0Timer = this.time.delayedCall(this.jackAnimTimerDuration, function JAT0() {
-      this.heartbeat1.repeat=-1;
-      this.heartbeat1.hideOnComplete = false;
+      this.heartBeat1.repeat=-1;
+      this.heartBeat1.hideOnComplete = false;
       this.heartBeat1 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat1').setDepth(depth.deathAnims); // play blink
       this.heartBeatAudio = this.sound.add('heartBeat').play({loop: true});
     }, [], this);
     this.jackAnim1Timer =  this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference, function JAT1()  {
-      this.heartbeat2.repeat=-1;
-      this.heartbeat2.hideOnComplete = false;
+      this.heartBeat2.repeat=-1;
+      this.heartBeat2.hideOnComplete = false;
       this.heartBeat2 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat2').setDepth(depth.deathAnims);
     }, [], this);
     this.deathAnimTimer = this.time.delayedCall(this.jackAnimTimerDuration + this.jackAnimDifference + this.deathDifferenceDuration, function DAT() {
-      this.heartbeat3;
-      this.heartbeat3.hideOnComplete = false;
+      this.heartBeat3;
+      this.heartBeat3.hideOnComplete = false;
       this.heartBeat3 = this.add.sprite(screen.center.x,screen.center.y).play('heartbeat3').setDepth(depth.deathAnims);
       this.failed = this.time.delayedCall(5000, ()=>{
         this.failText = this.add.text(screen.center.x, screen.center.y, "You Failed", defaultHeaderStyle).setOrigin(0.5,0.5).setDepth(10);
