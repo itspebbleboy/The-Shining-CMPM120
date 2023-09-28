@@ -60,9 +60,15 @@
 const config = {
     type: Phaser.CANVAS,
     parent: 'phaser-example',
-    width: 512,
-    height: 512,
-    scene: [Menu, DebugMenu, Play, IntroScene, BathroomScene, EndScene]
+    width: 2048,
+    height: 2048,
+    scene: [Menu, DebugMenu, Play, IntroScene, BathroomScene, EndScene],
+    scale: {
+      // Fit to window
+      mode: Phaser.Scale.FIT,
+      // Center vertically and horizontally
+      autoCenter: Phaser.Scale.CENTER_BOTH
+  },
   };
   
   // Create a new Phaser game
