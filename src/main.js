@@ -60,8 +60,8 @@
 const config = {
     type: Phaser.CANVAS,
     parent: 'phaser-example',
-    width: 2048,
-    height: 2048,
+    width: 512,
+    height: 512,
     scene: [Menu, DebugMenu, Play, IntroScene, BathroomScene, EndScene]
   };
   
